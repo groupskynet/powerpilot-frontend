@@ -1,0 +1,7 @@
+.sidebar__link__item {
+   @apply p-2 mx-auto text-gray-700 w-11/12
+}
+
+.sidebar__link__active {
+     @apply  bg-gray-900 text-gray-50 font-semibold rounded-md  
+}
