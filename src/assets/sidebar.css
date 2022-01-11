@@ -3,5 +3,5 @@
 }
 
 .sidebar__link__active {
-     @apply  bg-gray-900 text-gray-50 font-semibold rounded-md  
+     @apply  bg-gray-900 text-gray-50 font-semibold rounded-md
 }

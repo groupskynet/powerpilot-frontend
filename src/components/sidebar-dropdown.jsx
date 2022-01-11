@@ -19,7 +19,7 @@ function SidebarDropdown(props) {
 					</svg>}
 				</span>
 			</div>
-			{open && <div class="pl-4 pt-2 flex flex-col items-start flex-grow overflow-y-auto">
+			{open && <div className="pl-4 pt-2 flex flex-col items-start flex-grow overflow-y-auto">
 				{children}
 			</div>}
 		</div >

@@ -1,5 +1,6 @@
 import React from 'react';
 import './index.css'
+import { Routes, Route } from "react-router-dom";
 
 //components
 import Sidebar from './parts/Sidebar.jsx'
@@ -14,7 +15,13 @@ function App() {
 				<div className="panel flex-grow flex flex-col px-6 mt-8">
 					<Navbar />
 					<div className="flex-grow overflow-y-auto">
-						heelo
+						<Routes>
+							<Route path={"usuarios"}>hello</Route>
+							<Route path={"gestion"}>hello</Route>
+							<Route path={"mantenimientos"}>hello</Route>
+							<Route path={"reportes"}>hello</Route>
+
+						</Routes>
 					</div>
 				</div>
 			</div>

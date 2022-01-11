@@ -4,7 +4,7 @@ function Navbar() {
 	return (
 		<div className="navbar flex items-center">
 			<div className="navbar__title text-gray-800 text-xl font-semibold flex-grow">
-				SIAT
+				DAR Arquitectura
 			</div>
 			<ul className="navbar__menu flex item-center  text-gray-500">
 				<li className="navbar__menu__date flex items-center bg-blue-100 p-2 rounded-md ">
@@ -13,7 +13,7 @@ function Navbar() {
 							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
 						</svg>
 					</span>
-					<span className="text-sm">26 may, 1957</span>
+					<span className="text-sm">11 dic, 2021</span>
 				</li>
 				<li className="navbar__menu__notification flex items-center ml-4">
 					<span className="px-4 border-l-2 border-r-2 border-gray-100">
