@@ -1,0 +1,31 @@
+.modal {
+    background-color: rgba(0, 0, 0, .8);
+    backdrop-filter: blur(3px);
+    position: fixed;
+    top:0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9;
+}
+
+.modal-content {
+  @apply bg-gray-100 rounded-lg;
+  max-height: 80vh;  
+  max-width: 90%;
+  padding: 10px 20px;
+  position: relative;
+  margin: 10vh auto;
+}
+
+.modal-lg {
+  width: 90%;
+}
+
+.modal-md {
+  width: 80%;
+}
+
+.modal-sm {
+  width: 50%;
+}

@@ -1,0 +1,19 @@
+table {
+    @apply table-auto w-full;
+}
+
+table thead {
+   @apply text-xs font-semibold uppercase text-gray-400 bg-gray-50;
+}
+
+table th {
+    @apply p-2 whitespace-nowrap;
+}
+
+table tbody {
+    @apply text-sm divide-y divide-gray-100;
+}
+
+table tbody td {
+    @apply p-2 whitespace-nowrap;
+}

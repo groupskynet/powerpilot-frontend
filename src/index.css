@@ -1,4 +1,8 @@
 /* ./src/index.css */
+@import "./assets/buttons.css";
+@import "./assets/forms.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+

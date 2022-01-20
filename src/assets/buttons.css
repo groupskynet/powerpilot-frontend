@@ -1,0 +1,15 @@
+.btn {
+    @apply py-2 px-4 rounded-md text-white font-semibold;
+}
+
+.btn-success {
+   @apply bg-green-500; 
+}
+
+.btn-danger {
+   @apply bg-red-500;
+}
+
+.btn-warning {
+    @apply bg-yellow-500;
+}
