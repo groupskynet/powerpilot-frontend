@@ -65,7 +65,7 @@ function OperadoresList() {
           </div>
         </div>
         <Table columns={columns} title="Operadores">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(() => (
+          {[1, 2, 3, 4, 5, 6, 7, 8].map(() => (
             <tr key={uuid()}>
               <td>1065848333</td>
               <td>Camilo Andres Colon</td>
@@ -80,7 +80,14 @@ function OperadoresList() {
                       show: true,
                       content: (
                         <OperadoresView
-                          operador={{ nombres: 'Camilo Andres' }}
+                          operador={{
+                            cedula: '1065848333',
+                            nombres: 'Camilo Andres Colon Cañizares',
+                            direccion: 'Cll 18d #36 - 125 Villa Luz',
+                            email: 'Colonca1999@gmail.com',
+                            telefono1: '301776478',
+                            telefono2: '3173827414'
+                          }}
                         />
                       ),
                       size: 'modal-sm'

@@ -6,6 +6,7 @@ import { Route, Routes } from 'react-router-dom';
 import Sidebar from './parts/Sidebar';
 import Navbar from './parts/Navbar';
 import OperadoresList from './pages/Operadores/OperadoresList';
+import MaquinasList from './pages/Maquinas/MaquinasList';
 
 function App() {
   return (
@@ -18,11 +19,15 @@ function App() {
             <Routes>
               <Route
                 exact
+                path="/gestion/maquinas"
+                element={<MaquinasList />}
+              />
+              <Route
+                exact
                 path="/gestion/operadores"
                 element={<OperadoresList />}
               />
               <Route path="/users/change_password">hello</Route>
-              <Route path="/gestion/maquinas">hello</Route>
               <Route path="/gestion/accesorios">hello</Route>
             </Routes>
           </div>
