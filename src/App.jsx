@@ -7,6 +7,7 @@ import Sidebar from './parts/Sidebar';
 import Navbar from './parts/Navbar';
 import OperadoresList from './pages/Operadores/OperadoresList';
 import MaquinasList from './pages/Maquinas/MaquinasList';
+import AccesoriosList from './pages/Accesorios/AccesoriosList';
 
 function App() {
   return (
@@ -26,6 +27,11 @@ function App() {
                 exact
                 path="/gestion/operadores"
                 element={<OperadoresList />}
+              />
+              <Route
+                exact
+                path="/gestion/accesorios"
+                element={<AccesoriosList />}
               />
               <Route path="/users/change_password">hello</Route>
               <Route path="/gestion/accesorios">hello</Route>
