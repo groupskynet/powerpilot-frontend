@@ -10,6 +10,7 @@ import MaquinasList from './pages/Maquinas/MaquinasList';
 import AccesoriosList from './pages/Accesorios/AccesoriosList';
 import ClientesList from './pages/Clientes/ClientesList';
 import ProveedoresList from './pages/Proveedores/ProveedoresList';
+import MarcasList from './pages/Marcas/MarcasList';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
                 path="/gestion/accesorios"
                 element={<AccesoriosList />}
               />
+              <Route exact path="/gestion/marcas" element={<MarcasList />} />
               <Route
                 exact
                 path="/servicios/clientes"
