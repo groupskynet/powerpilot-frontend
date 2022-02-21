@@ -7,7 +7,7 @@ import Modal from '../../components/Modal';
 import ModalDelete from '../../components/ModalDelete';
 import Table from '../../components/Table';
 import uuid from '../../utils/uuid';
-import CreateOrUpdateCliente from '../Cliente_ProveedorCreateOrUpdate';
+import CreateOrUpdateCliente from '../Shared/Cliente_ProveedorCreateOrUpdate';
 import ClientesView from './ClientesView';
 
 function ClientesList() {

@@ -7,7 +7,7 @@ import Modal from '../../components/Modal';
 import ModalDelete from '../../components/ModalDelete';
 import Table from '../../components/Table';
 import uuid from '../../utils/uuid';
-import CreateOrUpdateProveedor from '../Cliente_ProveedorCreateOrUpdate';
+import CreateOrUpdateProveedor from '../Shared/Cliente_ProveedorCreateOrUpdate';
 import ProveedoresView from './ProveedoresView';
 
 function ProveedoresList() {
