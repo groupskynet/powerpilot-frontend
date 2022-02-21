@@ -8,6 +8,8 @@ import Navbar from './parts/Navbar';
 import OperadoresList from './pages/Operadores/OperadoresList';
 import MaquinasList from './pages/Maquinas/MaquinasList';
 import AccesoriosList from './pages/Accesorios/AccesoriosList';
+import ClientesList from './pages/Clientes/ClientesList';
+import ProveedoresList from './pages/Proveedores/ProveedoresList';
 
 function App() {
   return (
@@ -32,6 +34,16 @@ function App() {
                 exact
                 path="/gestion/accesorios"
                 element={<AccesoriosList />}
+              />
+              <Route
+                exact
+                path="/servicios/clientes"
+                element={<ClientesList />}
+              />
+              <Route
+                exact
+                path="/movimientos/proveedores"
+                element={<ProveedoresList />}
               />
               <Route path="/users/change_password">hello</Route>
               <Route path="/gestion/accesorios">hello</Route>

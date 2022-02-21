@@ -153,7 +153,11 @@ function Sidebar() {
           }
           title="Servicios"
         >
-          <SidebarLink link="clientes" title="Clientes" linkactive={false}>
+          <SidebarLink
+            link="/servicios/clientes"
+            title="Clientes"
+            linkactive={false}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
@@ -170,7 +174,7 @@ function Sidebar() {
             </svg>
           </SidebarLink>
           <SidebarLink
-            link="orden_Servicio"
+            link="/servicios/orden_Servicio"
             title="Orden de Servicio"
             linkactive={false}
           >
@@ -190,7 +194,7 @@ function Sidebar() {
             </svg>
           </SidebarLink>
           <SidebarLink
-            link="asignar_Operador"
+            link="/servicios/asignar_Operador"
             title="Asignar Operador"
             linkactive={false}
           >
@@ -209,7 +213,11 @@ function Sidebar() {
               />
             </svg>
           </SidebarLink>
-          <SidebarLink link="tickets" title="Ticket" linkactive={false}>
+          <SidebarLink
+            link="/servicios/tickets"
+            title="Ticket"
+            linkactive={false}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
@@ -246,7 +254,7 @@ function Sidebar() {
           title="Movimientos"
         >
           <SidebarLink
-            link="mantenimientos"
+            link="/movimientos/mantenimientos"
             title="Mantenimientos"
             linkactive={false}
           >
@@ -265,7 +273,11 @@ function Sidebar() {
               />
             </svg>
           </SidebarLink>
-          <SidebarLink link="proveedor" title="Proveedores" linkactive={false}>
+          <SidebarLink
+            link="/movimientos/proveedores"
+            title="Proveedores"
+            linkactive={false}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
@@ -281,7 +293,11 @@ function Sidebar() {
               />
             </svg>
           </SidebarLink>
-          <SidebarLink link="gastos" title="Gastos" linkactive={false}>
+          <SidebarLink
+            link="/movimientos/gastos"
+            title="Gastos"
+            linkactive={false}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
@@ -297,7 +313,11 @@ function Sidebar() {
               />
             </svg>
           </SidebarLink>
-          <SidebarLink link="deudas" title="Deudas" linkactive={false}>
+          <SidebarLink
+            link="/movimientos/deudas"
+            title="Deudas"
+            linkactive={false}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
@@ -334,7 +354,7 @@ function Sidebar() {
           title="Reportes"
         >
           <SidebarLink
-            link="horometro"
+            link="/Reportes/horometro"
             title="Reporte horómetro"
             linkactive={false}
           >
@@ -354,7 +374,7 @@ function Sidebar() {
             </svg>
           </SidebarLink>
           <SidebarLink
-            link="ganancias"
+            link="/reportes/ganancias"
             title="Ganancias vs Gastos"
             linkactive={false}
           >
@@ -399,7 +419,11 @@ function Sidebar() {
           }
           title="Configuración"
         >
-          <SidebarLink link="seg" title="Seguridad Social" linkactive={false}>
+          <SidebarLink
+            link="/configuracion/seg"
+            title="Seguridad Social"
+            linkactive={false}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
