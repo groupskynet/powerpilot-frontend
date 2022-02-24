@@ -14,7 +14,8 @@ function CreateOrUpdateClienteProveedor({ onClose, id }) {
           information: {
             nit: '',
             razonSocial: '',
-            iva: false,
+            iva: false
+              ,
           }
         }}
         onSubmit={(values) => {
