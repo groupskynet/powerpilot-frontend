@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
 function Switch({ value, onChange }) {
-
   const [toggle, setToggle] = useState(value);
 
   useEffect(() => {

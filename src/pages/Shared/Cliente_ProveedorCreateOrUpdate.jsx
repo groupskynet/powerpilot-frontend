@@ -14,12 +14,10 @@ function CreateOrUpdateClienteProveedor({ onClose, id }) {
           information: {
             nit: '',
             razonSocial: '',
-            iva: false,
+            iva: false
           }
         }}
-        onSubmit={(values) => {
-          console.log(values);
-        }}
+        onSubmit={() => {}}
       >
         {(formik) => (
           <form className="my-4" onSubmit={formik.handleSubmit}>
@@ -33,7 +31,7 @@ function CreateOrUpdateClienteProveedor({ onClose, id }) {
                 <div className="relative">
                   <select
                     className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="grid-marca"
+                    id="grid-tipo"
                     value={formik.values.tipo}
                     name="tipo"
                     onChange={formik.handleChange}
@@ -107,7 +105,7 @@ function CreateOrUpdateClienteProveedor({ onClose, id }) {
                         </label>
                         <Switch
                           value={formik.values.iva}
-                          onChange={value => {
+                          onChange={(value) => {
                             formik.setFieldValue('iva', value);
                           }}
                         />
