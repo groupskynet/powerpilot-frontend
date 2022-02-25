@@ -1,5 +1,6 @@
 import React from 'react';
 import { Formik } from 'formik';
+import validationMaquina from './Schema';
 
 function CreateOrUpdateMaquina({ onClose, id }) {
   return (
@@ -18,6 +19,7 @@ function CreateOrUpdateMaquina({ onClose, id }) {
           registry: '',
           Vehiculo: { placa: '' }
         }}
+        validationSchema={validationMaquina}
         onSubmit={() => {}}
       >
         {(formik) => (
@@ -31,7 +33,9 @@ function CreateOrUpdateMaquina({ onClose, id }) {
               <div className="w-full md:w-1/3 px-3 mt-4">
                 <div className="relative">
                   <select
-                    className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                    className={`"block appearance-none w-full bg-gray-200 ${
+                      formik.errors.tipo ? 'border border-red-500' : ''
+                    } 'text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"'}`}
                     id="grid-tipo"
                     value={formik.values.tipo}
                     name="tipo"
@@ -64,7 +68,9 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                       Nombre
                     </label>
                     <input
-                      className="input-box"
+                      className={`input-box ${
+                        formik.errors.nombre ? 'border border-red-500' : ''
+                      }`}
                       id="grid-name"
                       type="text"
                       name="nombre"
@@ -82,7 +88,9 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                     </label>
                     <div className="relative">
                       <select
-                        className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                        className={`"block appearance-none w-full bg-gray-200 ${
+                          formik.errors.marca ? 'border border-red-500' : ''
+                        } 'text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"'}`}
                         id="grid-marca"
                         value={formik.values.marca}
                         name="marca"
@@ -120,7 +128,9 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                       Modelo
                     </label>
                     <input
-                      className="input-box"
+                      className={`input-box ${
+                        formik.errors.modelo ? 'border border-red-500' : ''
+                      }`}
                       id="grid-model"
                       type="text"
                       name="model"
@@ -143,7 +153,9 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                       Serie
                     </label>
                     <input
-                      className="input-box"
+                      className={`input-box ${
+                        formik.errors.serie ? 'border border-red-500' : ''
+                      }`}
                       id="grid-serie"
                       type="text"
                       name="serie"
@@ -164,7 +176,9 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                       Linea
                     </label>
                     <input
-                      className="input-box"
+                      className={`input-box ${
+                        formik.errors.linea ? 'border border-red-500' : ''
+                      }`}
                       id="grid-line"
                       type="text"
                       name="linea"
@@ -185,7 +199,9 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                       Número de Registro
                     </label>
                     <input
-                      className="input-box"
+                      className={`input-box ${
+                        formik.errors.registry ? 'border border-red-500' : ''
+                      }`}
                       id="grid-regitry"
                       type="text"
                       name="registry"
@@ -214,7 +230,7 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                   )}
                 </div>
                 <div className="flex justify-end mt-4">
-                  <button type="button" className="btn btn-success">
+                  <button type="submit" className="btn btn-success">
                     Guardar
                   </button>
                   <button
