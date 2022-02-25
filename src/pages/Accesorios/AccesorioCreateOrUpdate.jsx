@@ -1,5 +1,6 @@
 import React from 'react';
 import { Formik } from 'formik';
+import validationAccesorio from './Schema';
 
 function CreateOrUpdateAccesorio({ onClose, id }) {
   return (
@@ -17,6 +18,7 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
           registry: '',
           maquina: ''
         }}
+        validationSchema={validationAccesorio}
         onSubmit={() => {}}
       >
         {(formik) => (
@@ -30,13 +32,15 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
                   Nombre
                 </label>
                 <input
-                  className="input-box"
+                  className={`input-box ${
+                    formik.errors.nombre ? 'border border-red-500' : ''
+                  }`}
                   id="grid-name"
                   type="text"
                   name="nombre"
-                  value={formik.nombre}
+                  value={formik.values.nombre}
                   placeholder="name"
-                  onChange={formik.handleSubmit}
+                  onChange={formik.handleChange}
                 />
               </div>
               <div className="w-full md:w-1/3 px-3">
@@ -48,10 +52,12 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
                 </label>
                 <div className="relative">
                   <select
-                    className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                    className={`"block appearance-none w-full bg-gray-200 ${
+                      formik.errors.marca ? 'border border-red-500' : ''
+                    } 'text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"'}`}
                     id="grid-marca"
                     name="marca"
-                    value={formik.marca}
+                    value={formik.values.marca}
                     onChange={formik.handleChange}
                   >
                     <option>Seleccionar</option>
@@ -86,7 +92,9 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
                   Modelo
                 </label>
                 <input
-                  className="input-box"
+                  className={`input-box ${
+                    formik.errors.modelo ? 'border border-red-500' : ''
+                  }`}
                   id="grid-model"
                   type="text"
                   name="modelo"
@@ -105,11 +113,13 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
                   Serie
                 </label>
                 <input
-                  className="input-box"
+                  className={`input-box ${
+                    formik.errors.serie ? 'border border-red-500' : ''
+                  }`}
                   id="grid-serie"
                   type="text"
                   name="serie"
-                  value={formik.value.serie}
+                  value={formik.values.serie}
                   placeholder="serie"
                   onChange={formik.handleChange}
                 />
@@ -122,7 +132,9 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
                   Linea
                 </label>
                 <input
-                  className="input-box"
+                  className={`input-box ${
+                    formik.errors.linea ? 'border border-red-500' : ''
+                  }`}
                   id="grid-line"
                   type="text"
                   name="linea"
@@ -139,10 +151,12 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
                   Número de Registro
                 </label>
                 <input
-                  className="input-box"
+                  className={`input-box ${
+                    formik.errors.registry ? 'border border-red-500' : ''
+                  }`}
                   id="grid-regitry"
                   type="text"
-                  name="registro"
+                  name="registry"
                   value={formik.values.registry}
                   placeholder="registry"
                   onChange={formik.handleChange}
@@ -157,7 +171,9 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
                 </label>
                 <div className="relative">
                   <select
-                    className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                    className={`"block appearance-none w-full bg-gray-200 ${
+                      formik.errors.maquina ? 'border border-red-500' : ''
+                    } 'text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"'}`}
                     id="grid-marca"
                     value={formik.values.maquina}
                     name="maquina"
@@ -180,7 +196,7 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
               </div>
             </div>
             <div className="flex justify-end mt-4">
-              <button type="button" className="btn btn-success">
+              <button type="submit" className="btn btn-success">
                 Guardar
               </button>
               <button
