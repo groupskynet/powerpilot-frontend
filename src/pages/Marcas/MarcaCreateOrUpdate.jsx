@@ -16,7 +16,7 @@ function CreateOrUpdateMarca({ onClose, id }) {
         onSubmit={() => {}}
       >
         {(formik) => (
-          <form className="my-4" onSubmit={formik.handleChange}>
+          <form className="my-4" onSubmit={formik.handleSubmit}>
             <div className="flex flex-wrap -mx-3 mb-2">
               <div className="w-full md:w-2/3 px-3 mb-6 md:mb-0">
                 <label

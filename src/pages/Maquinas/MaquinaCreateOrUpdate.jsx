@@ -17,7 +17,7 @@ function CreateOrUpdateMaquina({ onClose, id }) {
           serie: '',
           linea: '',
           registry: '',
-          Vehiculo: { placa: '' }
+          placa: ''
         }}
         validationSchema={validationMaquina}
         onSubmit={() => {}}
@@ -69,7 +69,9 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                     </label>
                     <input
                       className={`input-box ${
-                        formik.errors.nombre ? 'border border-red-500' : ''
+                        formik.errors.nombre && formik.touched.nombre
+                          ? 'border border-red-500'
+                          : ''
                       }`}
                       id="grid-name"
                       type="text"
@@ -89,7 +91,9 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                     <div className="relative">
                       <select
                         className={`"block appearance-none w-full bg-gray-200 ${
-                          formik.errors.marca ? 'border border-red-500' : ''
+                          formik.errors.marca && formik.touched.marca
+                            ? 'border border-red-500'
+                            : ''
                         } 'text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"'}`}
                         id="grid-marca"
                         value={formik.values.marca}
@@ -129,7 +133,9 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                     </label>
                     <input
                       className={`input-box ${
-                        formik.errors.modelo ? 'border border-red-500' : ''
+                        formik.errors.modelo && formik.touched.modelo
+                          ? 'border border-red-500'
+                          : ''
                       }`}
                       id="grid-model"
                       type="text"
@@ -154,7 +160,9 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                     </label>
                     <input
                       className={`input-box ${
-                        formik.errors.serie ? 'border border-red-500' : ''
+                        formik.errors.serie && formik.touched.serie
+                          ? 'border border-red-500'
+                          : ''
                       }`}
                       id="grid-serie"
                       type="text"
@@ -177,7 +185,9 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                     </label>
                     <input
                       className={`input-box ${
-                        formik.errors.linea ? 'border border-red-500' : ''
+                        formik.errors.linea && formik.touched.linea
+                          ? 'border border-red-500'
+                          : ''
                       }`}
                       id="grid-line"
                       type="text"
@@ -200,7 +210,9 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                     </label>
                     <input
                       className={`input-box ${
-                        formik.errors.registry ? 'border border-red-500' : ''
+                        formik.errors.registry && formik.touched.registry
+                          ? 'border border-red-500'
+                          : ''
                       }`}
                       id="grid-regitry"
                       type="text"
@@ -220,11 +232,13 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                       </label>
                       <input
                         className={`input-box ${
-                          formik.errors.placa ? 'border border-red-500' : ''
+                          formik.errors.placa && formik.touched.placa
+                            ? 'border border-red-500'
+                            : ''
                         }`}
                         id="grid-plate"
                         type="text"
-                        name="plate"
+                        name="placa"
                         value={formik.values.placa}
                         placeholder="plate"
                       />
