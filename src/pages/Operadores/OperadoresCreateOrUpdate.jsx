@@ -1,5 +1,6 @@
 import React from 'react';
 import { Formik } from 'formik';
+import validationOperadores from './Schema';
 
 function CreateOrUpdateOperador({ onClose, id }) {
   return (
@@ -18,10 +19,11 @@ function CreateOrUpdateOperador({ onClose, id }) {
           direccion: '',
           email: ''
         }}
+        validationSchema={validationOperadores}
         onSubmit={() => {}}
       >
         {(formik) => (
-          <form className="my-4" onSubmit={formik.handleChange}>
+          <form className="my-4" onSubmit={formik.handleSubmit}>
             <div className="flex flex-wrap -mx-3 mb-2">
               <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
                 <label
@@ -31,7 +33,9 @@ function CreateOrUpdateOperador({ onClose, id }) {
                   Nombres
                 </label>
                 <input
-                  className="input-box"
+                  className={`input-box ${
+                    formik.errors.nombres ? 'border border-red-500' : ''
+                  }`}
                   id="grid-name"
                   type="text"
                   value={formik.values.nombres}
@@ -47,7 +51,9 @@ function CreateOrUpdateOperador({ onClose, id }) {
                   Apellidos
                 </label>
                 <input
-                  className="input-box"
+                  className={`input-box ${
+                    formik.errors.apellidos ? 'border border-red-500' : ''
+                  }`}
                   id="grid-last-name"
                   type="text"
                   name="apellidos"
@@ -64,7 +70,9 @@ function CreateOrUpdateOperador({ onClose, id }) {
                   Cédula
                 </label>
                 <input
-                  className="input-box"
+                  className={`input-box ${
+                    formik.errors.cedula ? 'border border-red-500' : ''
+                  }`}
                   id="grid-id"
                   type="number"
                   name="cedula"
@@ -83,7 +91,9 @@ function CreateOrUpdateOperador({ onClose, id }) {
                   Teléfono 1
                 </label>
                 <input
-                  className="input-box"
+                  className={`input-box ${
+                    formik.errors.telefono1 ? 'border border-red-500' : ''
+                  }`}
                   id="grid-phone-1"
                   type="number"
                   name="telefono1"
@@ -100,7 +110,9 @@ function CreateOrUpdateOperador({ onClose, id }) {
                   Teléfono 2
                 </label>
                 <input
-                  className="input-box"
+                  className={`input-box ${
+                    formik.errors.telefono2 ? 'border border-red-500' : ''
+                  }`}
                   id="grid-phone-2"
                   type="tel"
                   name="telefono2"
@@ -117,7 +129,9 @@ function CreateOrUpdateOperador({ onClose, id }) {
                   Licencia
                 </label>
                 <input
-                  className="input-box"
+                  className={`input-box ${
+                    formik.errors.licencia ? 'border border-red-500' : ''
+                  }`}
                   id="grid-licence"
                   type="file"
                   name="licencia"
@@ -136,7 +150,9 @@ function CreateOrUpdateOperador({ onClose, id }) {
                   Dirección
                 </label>
                 <input
-                  className="input-box"
+                  className={`input-box ${
+                    formik.errors.direccion ? 'border border-red-500' : ''
+                  }`}
                   id="grid-adress"
                   type="text"
                   name="direccion"
@@ -153,7 +169,9 @@ function CreateOrUpdateOperador({ onClose, id }) {
                   Correo Electrónico
                 </label>
                 <input
-                  className="input-box"
+                  className={`input-box ${
+                    formik.errors.email ? 'border border-red-500' : ''
+                  }`}
                   id="grid-email"
                   type="email"
                   name="email"
@@ -164,7 +182,7 @@ function CreateOrUpdateOperador({ onClose, id }) {
               </div>
             </div>
             <div className="flex justify-end mt-4">
-              <button type="button" className="btn btn-success">
+              <button type="submit" className="btn btn-success">
                 Guardar
               </button>
               <button
