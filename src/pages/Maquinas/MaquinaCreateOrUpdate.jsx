@@ -219,11 +219,13 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                         Placa
                       </label>
                       <input
-                        className="input-box"
+                        className={`input-box ${
+                          formik.errors.placa ? 'border border-red-500' : ''
+                        }`}
                         id="grid-plate"
                         type="text"
                         name="plate"
-                        value={formik.values.Vehiculo.placa}
+                        value={formik.values.placa}
                         placeholder="plate"
                       />
                     </div>

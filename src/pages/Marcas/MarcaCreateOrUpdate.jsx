@@ -1,5 +1,6 @@
 import React from 'react';
 import { Formik } from 'formik';
+import validationMarca from './Schema';
 
 function CreateOrUpdateMarca({ onClose, id }) {
   return (
@@ -11,6 +12,7 @@ function CreateOrUpdateMarca({ onClose, id }) {
         initialValues={{
           nombre: ''
         }}
+        validationSchema={validationMarca}
         onSubmit={() => {}}
       >
         {(formik) => (
@@ -24,7 +26,9 @@ function CreateOrUpdateMarca({ onClose, id }) {
                   Nombre
                 </label>
                 <input
-                  className="input-box"
+                  className={`input-box ${
+                    formik.errors.nombre ? 'border border-red-500' : ''
+                  }`}
                   id="grid-name"
                   type="text"
                   name="nombre"
@@ -35,7 +39,7 @@ function CreateOrUpdateMarca({ onClose, id }) {
               </div>
             </div>
             <div className="flex justify-end mt-4">
-              <button type="button" className="btn btn-success">
+              <button type="submit" className="btn btn-success">
                 Guardar
               </button>
               <button
