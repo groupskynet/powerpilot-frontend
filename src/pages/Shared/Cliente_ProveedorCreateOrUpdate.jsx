@@ -1,6 +1,7 @@
 import React from 'react';
 import { Formik } from 'formik';
 import Switch from '../../components/Switch';
+import validationClienteProveedor from './Schema';
 
 function CreateOrUpdateClienteProveedor({ onClose, id }) {
   return (
@@ -15,8 +16,15 @@ function CreateOrUpdateClienteProveedor({ onClose, id }) {
             nit: '',
             razonSocial: '',
             iva: false
-          }
+          },
+          nombres: '',
+          apellidos: '',
+          cedula: '',
+          direccion: '',
+          email: '',
+          telefono: ''
         }}
+        validationSchema={validationClienteProveedor}
         onSubmit={() => {}}
       >
         {(formik) => (
@@ -30,7 +38,11 @@ function CreateOrUpdateClienteProveedor({ onClose, id }) {
               <div className="w-full md:w-1/3 px-3 mt-4">
                 <div className="relative">
                   <select
-                    className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                    className={`"block appearance-none w-full bg-gray-200 ${
+                      formik.errors.tipo && formik.touched.tipo
+                        ? 'border border-red-500'
+                        : ''
+                    } 'text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"'}`}
                     id="grid-tipo"
                     value={formik.values.tipo}
                     name="tipo"
@@ -70,7 +82,11 @@ function CreateOrUpdateClienteProveedor({ onClose, id }) {
                           Nit
                         </label>
                         <input
-                          className="input-box"
+                          className={`input-box ${
+                            formik.errors.nit && formik.touched.nit
+                              ? 'border border-red-500 '
+                              : ''
+                          }`}
                           id="grid-nit"
                           type="text"
                           name="information.nit"
@@ -87,7 +103,12 @@ function CreateOrUpdateClienteProveedor({ onClose, id }) {
                           Razón Social
                         </label>
                         <input
-                          className="input-box"
+                          className={`input-box ${
+                            formik.errors.razonSocial &&
+                            formik.touched.razonSocial
+                              ? 'border border-red-500 '
+                              : ''
+                          }`}
                           id="grid-razon"
                           type="text"
                           name="information.razonSocial"
@@ -129,10 +150,17 @@ function CreateOrUpdateClienteProveedor({ onClose, id }) {
                       Nombres
                     </label>
                     <input
-                      className="input-box"
+                      className={`input-box ${
+                        formik.errors.nombres && formik.touched.nombres
+                          ? 'border border-red-500 '
+                          : ''
+                      }`}
                       id="grid-name"
                       type="text"
+                      name="nombres"
+                      value={formik.values.nombres}
                       placeholder="Name"
+                      onChange={formik.handleChange}
                     />
                   </div>
                   <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
@@ -143,10 +171,17 @@ function CreateOrUpdateClienteProveedor({ onClose, id }) {
                       Apellidos
                     </label>
                     <input
-                      className="input-box"
+                      className={`input-box ${
+                        formik.errors.apellidos && formik.touched.apellidos
+                          ? 'border border-red-500 '
+                          : ''
+                      }`}
                       id="grid-lastName"
                       type="text"
+                      name="apellidos"
+                      value={formik.values.apellidos}
                       placeholder="LastName"
+                      onChange={formik.handleChange}
                     />
                   </div>
                   <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
@@ -157,10 +192,17 @@ function CreateOrUpdateClienteProveedor({ onClose, id }) {
                       Cédula
                     </label>
                     <input
-                      className="input-box"
+                      className={`input-box ${
+                        formik.errors.cedula && formik.touched.cedula
+                          ? 'border border-red-500 '
+                          : ''
+                      }`}
                       id="grid-id"
                       type="text"
+                      name="cedula"
+                      value={formik.values.cedula}
                       placeholder="id"
+                      onChange={formik.handleChange}
                     />
                   </div>
                 </div>
@@ -173,10 +215,17 @@ function CreateOrUpdateClienteProveedor({ onClose, id }) {
                       Dirección
                     </label>
                     <input
-                      className="input-box"
+                      className={`input-box ${
+                        formik.errors.direccion && formik.touched.direccion
+                          ? 'border border-red-500 '
+                          : ''
+                      }`}
                       id="grid-adress"
                       type="text"
+                      name="direccion"
+                      value={formik.values.direccion}
                       placeholder="Adress"
+                      onChange={formik.handleChange}
                     />
                   </div>
                   <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
@@ -187,10 +236,17 @@ function CreateOrUpdateClienteProveedor({ onClose, id }) {
                       Email
                     </label>
                     <input
-                      className="input-box"
+                      className={`input-box ${
+                        formik.errors.email && formik.touched.email
+                          ? 'border border-red-500 '
+                          : ''
+                      }`}
                       id="grid-email"
-                      type="text"
+                      type="email"
+                      name="email"
+                      value={formik.values.email}
                       placeholder="Email"
+                      onChange={formik.handleChange}
                     />
                   </div>
                   <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
@@ -198,13 +254,20 @@ function CreateOrUpdateClienteProveedor({ onClose, id }) {
                       className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                       htmlFor="grid-phone"
                     >
-                      Phone
+                      Telefono
                     </label>
                     <input
-                      className="input-box"
+                      className={`input-box ${
+                        formik.errors.telefono && formik.touched.telefono
+                          ? 'border border-red-500 '
+                          : ''
+                      }`}
                       id="grid-phone"
-                      type="text"
+                      type="tel"
+                      name="telefono"
+                      value={formik.values.telefono}
                       placeholder="phone"
+                      onChange={formik.handleChange}
                     />
                   </div>
                 </div>
