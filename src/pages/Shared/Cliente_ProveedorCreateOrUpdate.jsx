@@ -12,11 +12,9 @@ function CreateOrUpdateClienteProveedor({ onClose, id }) {
       <Formik
         initialValues={{
           tipo: '',
-          information: {
-            nit: '',
-            razonSocial: '',
-            iva: false
-          },
+          nit: '',
+          razonSocial: '',
+          iva: true,
           nombres: '',
           apellidos: '',
           cedula: '',
@@ -89,8 +87,8 @@ function CreateOrUpdateClienteProveedor({ onClose, id }) {
                           }`}
                           id="grid-nit"
                           type="text"
-                          name="information.nit"
-                          value={formik.values.information.nit || ''}
+                          name="nit"
+                          value={formik.values.nit || ''}
                           placeholder="nit"
                           onChange={formik.handleChange}
                         />
@@ -111,8 +109,8 @@ function CreateOrUpdateClienteProveedor({ onClose, id }) {
                           }`}
                           id="grid-razon"
                           type="text"
-                          name="information.razonSocial"
-                          value={formik.values.information.razonSocial}
+                          name="razonSocial"
+                          value={formik.values.razonSocial || ''}
                           placeholder="business name"
                           onChange={formik.handleChange}
                         />

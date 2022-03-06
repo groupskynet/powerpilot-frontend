@@ -1,19 +1,49 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Formik } from 'formik';
 import validationMarca from './Schema';
+import MarcasServices from '../../services/MarcasServices';
 
-function CreateOrUpdateMarca({ onClose, id }) {
+function CreateOrUpdateMarca({ onClose, id, nombre }) {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    if (id) {
+      setData({
+        id,
+        nombre
+      });
+    }
+  }, [id, nombre]);
+
   return (
     <div className="">
       <h2 className="font-semibold">
         {id === null || id === undefined ? 'Nueva' : 'Actualizar'} Marca
       </h2>
       <Formik
-        initialValues={{
-          nombre: ''
-        }}
+        initialValues={
+          data || {
+            id: '',
+            nombre: ''
+          }
+        }
+        enableReinitialize
         validationSchema={validationMarca}
-        onSubmit={() => {}}
+        onSubmit={async (values) => {
+          try {
+            let data = null;
+            if (values.id !== '') {
+              data = await MarcasServices.update(values);
+            } else {
+              data = await MarcasServices.post(values);
+            }
+            if (data.status === 200) {
+              onClose();
+            }
+          } catch (execption) {
+            console.log(execption);
+          }
+        }}
       >
         {(formik) => (
           <form className="my-4" onSubmit={formik.handleSubmit}>

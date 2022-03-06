@@ -1,12 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import BreadCrumbs from '../../components/ BreadCrumbs';
 import ButtonDelete from '../../components/ButtonDelete';
 import ButtonEdit from '../../components/ButtonEdit';
 import ButtonView from '../../components/ButtonView';
 import Modal from '../../components/Modal';
-import ModalDelete from '../../components/ModalDelete';
 import Table from '../../components/Table';
-import uuid from '../../utils/uuid';
+import MarcasServices from '../../services/MarcasServices';
 import CreateOrUpdateMarcas from './MarcaCreateOrUpdate';
 import MarcasView from './MarcasView';
 
@@ -17,6 +16,21 @@ function MarcasList() {
     size: 'modal-sm'
   });
   const [deleteModal, setDeleteModal] = useState(false);
+  const [marcas, setMarcas] = useState([]);
+
+  useEffect(() => {
+    (async function fetch() {
+      try {
+        const data = await MarcasServices.get();
+        if (data.status === 200) {
+          setMarcas(data.data);
+        }
+      } catch (error) {
+        console.log('error');
+      }
+    })();
+  }, []);
+
   const breadCrumbs = useMemo(
     () => [
       { title: 'Inicio', url: '/' },
@@ -24,6 +38,14 @@ function MarcasList() {
     ],
     []
   );
+
+  async function onClose() {
+    const data = await MarcasServices.get();
+    if (data.status === 200) {
+      setMarcas(data.data);
+    }
+    setModal({ show: false, content: null });
+  }
 
   const columns = useMemo(() => ['Nombre', 'Acciones'], []);
 
@@ -41,11 +63,7 @@ function MarcasList() {
                 setModal({
                   show: true,
                   size: 'modal-md',
-                  content: (
-                    <CreateOrUpdateMarcas
-                      onClose={() => setModal({ show: false, content: null })}
-                    />
-                  )
+                  content: <CreateOrUpdateMarcas onClose={() => onClose()} />
                 })
               }
             >
@@ -54,52 +72,52 @@ function MarcasList() {
           </div>
         </div>
         <Table columns={columns} title="Maquinas">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map(() => (
-            <tr key={uuid()}>
-              <td>Caterpilar</td>
-              <td className="flex items-center  justify-between">
-                <ButtonView
-                  onClick={() => {
-                    setModal({
-                      show: true,
-                      content: (
-                        <MarcasView
-                          marca={{
-                            nombre: 'Caterpilar'
-                          }}
-                        />
-                      ),
-                      size: 'modal-sm'
-                    });
-                  }}
-                />
-                <ButtonEdit
-                  onClick={() =>
-                    setModal({
-                      show: true,
-                      content: (
-                        <CreateOrUpdateMarcas
-                          id={uuid()}
-                          onClose={() =>
-                            setModal({ show: false, content: null })
-                          }
-                        />
-                      ),
-                      size: 'modal-md'
-                    })
-                  }
-                />
-                <ButtonDelete
-                  onClick={() => {
-                    setDeleteModal(true);
-                  }}
-                />
-              </td>
-            </tr>
-          ))}
+          {marcas.length > 0 &&
+            marcas.map((item) => (
+              <tr key={item.id}>
+                <td>{item.nombre}</td>
+                <td className="flex items-center  justify-between">
+                  <ButtonView
+                    onClick={() => {
+                      setModal({
+                        show: true,
+                        content: (
+                          <MarcasView
+                            marca={{
+                              nombre: 'Caterpilar'
+                            }}
+                          />
+                        ),
+                        size: 'modal-sm'
+                      });
+                    }}
+                  />
+                  <ButtonEdit
+                    onClick={() =>
+                      setModal({
+                        show: true,
+                        content: (
+                          <CreateOrUpdateMarcas
+                            id={item.id}
+                            nombre={item.nombre}
+                            onClose={() => onClose()}
+                          />
+                        ),
+                        size: 'modal-md'
+                      })
+                    }
+                  />
+                  <ButtonDelete
+                    onClick={() => {
+                      setDeleteModal(true);
+                    }}
+                  />
+                </td>
+              </tr>
+            ))}
         </Table>
       </div>
-      {deleteModal && <ModalDelete onClose={() => setDeleteModal(false)} />}
+      {}
       {modal.show && (
         <Modal
           size={modal.size}

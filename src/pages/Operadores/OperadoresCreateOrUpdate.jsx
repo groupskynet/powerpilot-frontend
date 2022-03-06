@@ -175,7 +175,7 @@ function CreateOrUpdateOperador({ onClose, id }) {
                   id="grid-email"
                   type="email"
                   name="email"
-                  value={formik.values.direccion}
+                  value={formik.values.email}
                   placeholder="email"
                   onChange={formik.handleChange}
                 />
