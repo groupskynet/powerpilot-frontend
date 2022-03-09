@@ -23,10 +23,9 @@ ProveedoresServices.update = async (request) => {
   return data;
 };
 
-ProveedoresServices.delete = async (request) => {
+ProveedoresServices.delete = async (id) => {
   const { data } = await axios.delete(
-    `http://localhost:/api/proveedores/${request.id}`,
-    request
+    `http://localhost:/api/proveedores/${id}`
   );
   return data;
 };

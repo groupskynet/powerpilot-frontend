@@ -34,7 +34,7 @@ function MarcasList() {
   const breadCrumbs = useMemo(
     () => [
       { title: 'Inicio', url: '/' },
-      { title: 'Márcas', url: '/gestion/marcas' }
+      { title: 'Marcas', url: '/gestion/marcas' }
     ],
     []
   );
@@ -71,7 +71,7 @@ function MarcasList() {
             </button>
           </div>
         </div>
-        <Table columns={columns} title="Maquinas">
+        <Table columns={columns} title="Marcas">
           {marcas.length > 0 &&
             marcas.map((item) => (
               <tr key={item.id}>

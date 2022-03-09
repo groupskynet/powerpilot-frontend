@@ -17,17 +17,14 @@ OperadoresServices.post = async (request) => {
 
 OperadoresServices.update = async (request) => {
   const { data } = await axios.put(
-    `http://localhost:8000/api/operaadores/${request.id}`,
+    `http://localhost:8000/api/operadores/${request.id}`,
     request
   );
   return data;
 };
 
-OperadoresServices.delete = async (request) => {
-  const { data } = await axios.delete(
-    `http://localhost:/api/operadores/${request.id}`,
-    request
-  );
+OperadoresServices.delete = async (id) => {
+  const { data } = await axios.delete(`http://localhost:/api/operadores/${id}`);
   return data;
 };
 

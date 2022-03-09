@@ -23,11 +23,8 @@ AccesoriosServices.update = async (request) => {
   return data;
 };
 
-AccesoriosServices.delete = async (request) => {
-  const { data } = await axios.delete(
-    `http://localhost:/api/accesorios/${request.id}`,
-    request
-  );
+AccesoriosServices.delete = async (id) => {
+  const { data } = await axios.delete(`http://localhost:/api/accesorios/${id}`);
   return data;
 };
 

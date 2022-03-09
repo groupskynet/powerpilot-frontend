@@ -23,11 +23,8 @@ ClientesServices.update = async (request) => {
   return data;
 };
 
-ClientesServices.delete = async (request) => {
-  const { data } = await axios.delete(
-    `http://localhost:/api/clientes/${request.id}`,
-    request
-  );
+ClientesServices.delete = async (id) => {
+  const { data } = await axios.delete(`http://localhost:/api/clientes/${id}`);
   return data;
 };
 

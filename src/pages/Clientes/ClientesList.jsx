@@ -64,7 +64,7 @@ function ClientesList() {
             </button>
           </div>
         </div>
-        <Table columns={columns} title="Operadores">
+        <Table columns={columns} title="Clientes">
           {[1, 2, 3, 4, 5, 6, 7, 8].map(() => (
             <tr key={uuid()}>
               <td>1065848333</td>
