@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Formik } from 'formik';
+import { trackPromise } from 'react-promise-tracker';
 import validationMarca from './Schema';
 import MarcasServices from '../../services/MarcasServices';
 
-function CreateOrUpdateMarca({ onClose, id, nombre }) {
+function CreateOrUpdateMarca({ toggleModal, id, nombre }) {
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -29,20 +30,26 @@ function CreateOrUpdateMarca({ onClose, id, nombre }) {
         }
         enableReinitialize
         validationSchema={validationMarca}
-        onSubmit={async (values) => {
-          try {
-            let data = null;
-            if (values.id !== '') {
-              data = await MarcasServices.update(values);
-            } else {
-              data = await MarcasServices.post(values);
+        onSubmit={(values) => {
+          const fetch = async () => {
+            try {
+              let res = null;
+              if (values.id !== '') {
+                res = await MarcasServices.update(values);
+              } else {
+                res = await MarcasServices.post(values);
+              }
+              if (res.status === 200) {
+                toggleModal(false);
+              }
+            } catch (execption) {
+              console.log(execption);
             }
-            if (data.status === 200) {
-              onClose();
-            }
-          } catch (execption) {
-            console.log(execption);
-          }
+          };
+          toggleModal(false);
+          trackPromise(fetch()).catch(() => {
+            toggleModal(true);
+          });
         }}
       >
         {(formik) => (
@@ -75,7 +82,7 @@ function CreateOrUpdateMarca({ onClose, id, nombre }) {
               <button
                 type="button"
                 className="btn btn-danger ml-2"
-                onClick={() => onClose()}
+                onClick={() => toggleModal(false)}
               >
                 Cancelar
               </button>
