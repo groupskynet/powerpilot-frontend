@@ -3,7 +3,7 @@ import axios from 'axios';
 const MaquinaServices = {};
 
 MaquinaServices.get = async () => {
-  const { data } = await axios.get('http://localhost:8000/api/marcas');
+  const { data } = await axios.get('http://localhost:8000/api/maquinas');
   return data;
 };
 
@@ -17,15 +17,14 @@ MaquinaServices.post = async (request) => {
 
 MaquinaServices.update = async (request) => {
   const { data } = await axios.put(
-    `http://localhost:8000/api//maquinas${request.id}`,
+    `http://localhost:8000/api/maquinas/${request.id}`,
     request
   );
   return data;
 };
-MaquinaServices.delete = async (request) => {
+MaquinaServices.delete = async (id) => {
   const { data } = await axios.delete(
-    `http://localhost:/api/maquinas/${request.id}`,
-    request
+    `http://localhost:8000/api/maquinas/${id}`
   );
   return data;
 };

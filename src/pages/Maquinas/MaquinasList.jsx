@@ -1,4 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { trackPromise, usePromiseTracker } from 'react-promise-tracker';
+
 import BreadCrumbs from '../../components/ BreadCrumbs';
 import ButtonDelete from '../../components/ButtonDelete';
 import ButtonEdit from '../../components/ButtonEdit';
@@ -9,14 +11,20 @@ import Table from '../../components/Table';
 import uuid from '../../utils/uuid';
 import CreateOrUpdateMaquinas from './MaquinaCreateOrUpdate';
 import MaquinasView from './MaquinasView';
+import Loading from '../../components/Loading';
+import MaquinaServices from '../../services/MaquinasServices';
 
 function MaquinasList() {
+  const { promiseInProgress } = usePromiseTracker();
+
+  const [maquinas, setMaquinas] = useState([]);
+  const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
+
   const [modal, setModal] = useState({
     show: false,
     content: null,
     size: 'modal-sm'
   });
-  const [deleteModal, setDeleteModal] = useState(false);
   const breadCrumbs = useMemo(
     () => [
       { title: 'Inicio', url: '/' },
@@ -24,7 +32,6 @@ function MaquinasList() {
     ],
     []
   );
-
   const columns = useMemo(
     () => [
       'Tipo',
@@ -37,6 +44,31 @@ function MaquinasList() {
     ],
     []
   );
+
+  useEffect(() => {
+    async function fetch() {
+      try {
+        const respMaquinas = await MaquinaServices.get();
+        if (respMaquinas.status === 200) {
+          setMaquinas(respMaquinas.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    trackPromise(fetch());
+  }, []);
+
+  function toggleModal(show) {
+    setModal({ ...modal, show });
+    MaquinaServices.get().then((resp) => {
+      if (resp.status === 200) {
+        setMaquinas(resp.data);
+      }
+    });
+  }
+
+  if (promiseInProgress) return <Loading />;
 
   return (
     <div>
@@ -54,7 +86,7 @@ function MaquinasList() {
                   size: 'modal-md',
                   content: (
                     <CreateOrUpdateMaquinas
-                      onClose={() => setModal({ show: false, content: null })}
+                      toggleModal={(show) => toggleModal(show)}
                     />
                   )
                 })
@@ -65,14 +97,14 @@ function MaquinasList() {
           </div>
         </div>
         <Table columns={columns} title="Maquinas">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map(() => (
-            <tr key={uuid()}>
-              <td>Maquina</td>
-              <td>GGA55454545AJNJN</td>
-              <td>Mini Cargador</td>
-              <td>BobCat</td>
-              <td>S185</td>
-              <td>jksj555d88d555d</td>
+          {maquinas.map((item) => (
+            <tr key={item.id}>
+              <td>{item.tipo}</td>
+              <td>{item.serie}</td>
+              <td>{item.nombre}</td>
+              <td>{item.marca.nombre}</td>
+              <td>{item.modelo}</td>
+              <td>{item.registro}</td>
               <td className="flex items-center  justify-between">
                 <ButtonView
                   onClick={() => {
@@ -96,10 +128,12 @@ function MaquinasList() {
                       show: true,
                       content: (
                         <CreateOrUpdateMaquinas
-                          id={uuid()}
-                          onClose={() =>
-                            setModal({ show: false, content: null })
-                          }
+                          maquina={{
+                            ...item,
+                            marca: item.marca.id,
+                            placa: item.placa || ''
+                          }}
+                          toggleModal={(show) => toggleModal(show)}
                         />
                       ),
                       size: 'modal-md'
@@ -108,7 +142,7 @@ function MaquinasList() {
                 />
                 <ButtonDelete
                   onClick={() => {
-                    setDeleteModal(true);
+                    setDeleteModal({ show: true, id: item.id });
                   }}
                 />
               </td>
@@ -116,7 +150,20 @@ function MaquinasList() {
           ))}
         </Table>
       </div>
-      {deleteModal && <ModalDelete onClose={() => setDeleteModal(false)} />}
+      {deleteModal.show && (
+        <ModalDelete
+          onDelete={() => {
+            setDeleteModal({ ...deleteModal, show: false });
+            trackPromise(MaquinaServices.delete(deleteModal.id)).then(() => {
+              const filter = maquinas.filter(
+                (item) => item.id !== deleteModal.id
+              );
+              setMaquinas(filter);
+            });
+          }}
+          onClose={() => setDeleteModal(false)}
+        />
+      )}
       {modal.show && (
         <Modal
           size={modal.size}
