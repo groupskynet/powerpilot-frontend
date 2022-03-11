@@ -59,7 +59,7 @@ function AccesoriosList() {
   function toggleModal(show) {
     setModal({ ...modal, show });
     AccesoriosServices.get().then((resp) => {
-      if (resp === 200) {
+      if (resp.status === 200) {
         setAccesorios(resp.data);
       }
     });
@@ -102,7 +102,7 @@ function AccesoriosList() {
               <td>{item.nombre}</td>
               <td>{item.marca.nombre}</td>
               <td>{item.modelo}</td>
-              <td>{item.serie}</td>
+              <td>{item.Serie}</td>
               <td>{item.registro}</td>
               <td className="flex items-center">
                 <ButtonEdit

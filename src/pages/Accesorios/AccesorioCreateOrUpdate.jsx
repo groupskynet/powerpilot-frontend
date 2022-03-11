@@ -1,26 +1,69 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Formik } from 'formik';
+import { trackPromise } from 'react-promise-tracker';
 import validationAccesorio from './Schema';
+import MaquinasServices from '../../services/MaquinasServices';
+import MarcasServices from '../../services/MarcasServices';
+import AccesoriosServices from '../../services/AccesoriosServices';
 
-function CreateOrUpdateAccesorio({ onClose, id }) {
+function CreateOrUpdateAccesorio({ toggleModal, accesorio }) {
+  const [marcas, setMarcas] = useState([]);
+  const [maquinas, setMaquinas] = useState([]);
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    setData(accesorio);
+  }, [accesorio]);
+
+  useEffect(() => {
+    async function fetch() {
+      try {
+        const respMarcas = await MarcasServices.get();
+        if (respMarcas.status === 200) {
+          setMarcas(respMarcas.data);
+        }
+
+        const respMaquinas = await MaquinasServices.get();
+        if (respMaquinas.status === 200) {
+          setMaquinas(respMaquinas.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    if (marcas.length === 0 || maquinas.length === 0) fetch();
+  }, [marcas, maquinas]);
+
   return (
     <div className="">
       <h2 className="font-semibold">
-        {id === null || id === undefined ? 'Nuevo' : 'Actualizar'} Accesorio
+        {accesorio && accesorio.id ? 'Actualizar' : 'Nuevo'} Accesorio
       </h2>
       <Formik
-        initialValues={{
-          nombre: '',
-          marca: '',
-
-          modelo: '',
-          serie: '',
-          linea: '',
-          registry: '',
-          maquina: ''
-        }}
+        initialValues={
+          data || {
+            nombre: '',
+            marca: '',
+            modelo: '',
+            Serie: '',
+            linea: '',
+            registro: '',
+            maquina: ''
+          }
+        }
+        enableReinitialize
         validationSchema={validationAccesorio}
-        onSubmit={() => {}}
+        onSubmit={(values) => {
+          if (values.id) {
+            trackPromise(AccesoriosServices.update(values)).then(() => {
+              toggleModal(false);
+            });
+          } else {
+            trackPromise(AccesoriosServices.post(values)).then(() => {
+              toggleModal(false);
+            });
+          }
+        }}
       >
         {(formik) => (
           <form className="my-4" onSubmit={formik.handleSubmit}>
@@ -34,7 +77,9 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
                 </label>
                 <input
                   className={`input-box ${
-                    formik.errors.nombre ? 'border border-red-500' : ''
+                    formik.errors.nombre && formik.touched.nombre
+                      ? 'border border-red-500'
+                      : ''
                   }`}
                   id="grid-name"
                   type="text"
@@ -54,25 +99,19 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
                 <div className="relative">
                   <select
                     className={`"block appearance-none w-full bg-gray-200 ${
-                      formik.errors.marca ? 'border border-red-500' : ''
+                      formik.errors.marca && formik.touched.marca
+                        ? 'border border-red-500'
+                        : ''
                     } 'text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"'}`}
                     id="grid-marca"
                     name="marca"
                     value={formik.values.marca}
                     onChange={formik.handleChange}
                   >
-                    <option>Seleccionar</option>
-                    <option>Caterpillar</option>
-                    <option>Komatsu</option>
-                    <option>Hitachi</option>
-                    <option>Terex</option>
-                    <option>Jhon Deere</option>
-                    <option>XCMG</option>
-                    <option>Liebherr</option>
-                    <option>Doosan Infracore</option>
-                    <option>Volvo</option>
-                    <option>Zoomlion</option>
-                    <option>Sany</option>
+                    <option value="">Seleccionar</option>
+                    {marcas.map((item) => (
+                      <option value={item.id}>{item.nombre}</option>
+                    ))}
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                     <svg
@@ -94,7 +133,9 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
                 </label>
                 <input
                   className={`input-box ${
-                    formik.errors.modelo ? 'border border-red-500' : ''
+                    formik.errors.modelo && formik.touched.modelo
+                      ? 'border border-red-500'
+                      : ''
                   }`}
                   id="grid-model"
                   type="text"
@@ -115,12 +156,14 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
                 </label>
                 <input
                   className={`input-box ${
-                    formik.errors.serie ? 'border border-red-500' : ''
+                    formik.errors.Serie && formik.touched.Serie
+                      ? 'border border-red-500'
+                      : ''
                   }`}
                   id="grid-serie"
                   type="text"
-                  name="serie"
-                  value={formik.values.serie}
+                  name="Serie"
+                  value={formik.values.Serie}
                   placeholder="serie"
                   onChange={formik.handleChange}
                 />
@@ -134,7 +177,9 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
                 </label>
                 <input
                   className={`input-box ${
-                    formik.errors.linea ? 'border border-red-500' : ''
+                    formik.errors.linea && formik.touched.linea
+                      ? 'border border-red-500'
+                      : ''
                   }`}
                   id="grid-line"
                   type="text"
@@ -153,12 +198,14 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
                 </label>
                 <input
                   className={`input-box ${
-                    formik.errors.registry ? 'border border-red-500' : ''
+                    formik.errors.registro && formik.touched.registro
+                      ? 'border border-red-500'
+                      : ''
                   }`}
-                  id="grid-regitry"
+                  id="grid-regitro"
                   type="text"
-                  name="registry"
-                  value={formik.values.registry}
+                  name="registro"
+                  value={formik.values.registro}
                   placeholder="registry"
                   onChange={formik.handleChange}
                 />
@@ -173,16 +220,19 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
                 <div className="relative">
                   <select
                     className={`"block appearance-none w-full bg-gray-200 ${
-                      formik.errors.maquina ? 'border border-red-500' : ''
+                      formik.errors.maquina && formik.touched.maquina
+                        ? 'border border-red-500'
+                        : ''
                     } 'text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"'}`}
                     id="grid-marca"
                     value={formik.values.maquina}
                     name="maquina"
                     onChange={formik.handleChange}
                   >
-                    <option>Seleccionar</option>
-                    <option>Caterpillar</option>
-                    <option>Komatsu</option>
+                    <option value="">Seleccionar</option>
+                    {maquinas.map((item) => (
+                      <option value={item.id}>{item.nombre}</option>
+                    ))}
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                     <svg
@@ -203,7 +253,7 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
               <button
                 type="button"
                 className="btn btn-danger ml-2"
-                onClick={() => onClose()}
+                onClick={() => toggleModal(false)}
               >
                 Cancelar
               </button>
@@ -214,5 +264,4 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
     </div>
   );
 }
-
 export default CreateOrUpdateAccesorio;
