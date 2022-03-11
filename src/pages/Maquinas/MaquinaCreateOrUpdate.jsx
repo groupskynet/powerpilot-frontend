@@ -1,26 +1,63 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Formik } from 'formik';
+import { trackPromise } from 'react-promise-tracker';
 import validationMaquina from './Schema';
+import MarcasServices from '../../services/MarcasServices';
+import MaquinaServices from '../../services/MaquinasServices';
 
-function CreateOrUpdateMaquina({ onClose, id }) {
+function CreateOrUpdateMaquina({ toggleModal, maquina }) {
+  const [marcas, setMarcas] = useState([]);
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    setData(maquina);
+  }, [maquina]);
+
+  useEffect(() => {
+    async function fetch() {
+      try {
+        const respMarcas = await MarcasServices.get();
+        if (respMarcas.status === 200) {
+          setMarcas(respMarcas.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    if (marcas.length === 0) fetch();
+  }, [marcas]);
+
   return (
     <div className="">
       <h2 className="font-semibold">
-        {id === null || id === undefined ? 'Nueva' : 'Actualizar'} Máquina
+        {maquina && maquina.id ? 'Actualizar' : 'Nueva'} Máquina
       </h2>
       <Formik
-        initialValues={{
-          tipo: '',
-          nombre: '',
-          marca: '',
-          modelo: '',
-          serie: '',
-          linea: '',
-          registry: '',
-          placa: ''
-        }}
+        initialValues={
+          data || {
+            tipo: '',
+            nombre: '',
+            marca: '',
+            modelo: '',
+            serie: '',
+            linea: '',
+            registro: '',
+            placa: ''
+          }
+        }
+        enableReinitialize
         validationSchema={validationMaquina}
-        onSubmit={() => {}}
+        onSubmit={(values) => {
+          if (values.id) {
+            trackPromise(MaquinaServices.update(values)).then(() => {
+              toggleModal(false);
+            });
+          } else {
+            trackPromise(MaquinaServices.post(values)).then(() => {
+              toggleModal(false);
+            });
+          }
+        }}
       >
         {(formik) => (
           <form className="my-4" onSubmit={formik.handleSubmit}>
@@ -101,17 +138,9 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                         onChange={formik.handleChange}
                       >
                         <option value="">Seleccionar</option>
-                        <option>Caterpillar</option>
-                        <option>Komatsu</option>
-                        <option>Hitachi</option>
-                        <option>Terex</option>
-                        <option>Jhon Deere</option>
-                        <option>XCMG</option>
-                        <option>Liebherr</option>
-                        <option>Doosan Infracore</option>
-                        <option>Volvo</option>
-                        <option>Zoomlion</option>
-                        <option>Sany</option>
+                        {marcas.map((item) => (
+                          <option value={item.id}>{item.nombre}</option>
+                        ))}
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                         <svg
@@ -139,7 +168,7 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                       }`}
                       id="grid-model"
                       type="text"
-                      name="model"
+                      name="modelo"
                       value={formik.values.modelo}
                       placeholder="model"
                       onChange={formik.handleChange}
@@ -210,14 +239,14 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                     </label>
                     <input
                       className={`input-box ${
-                        formik.errors.registry && formik.touched.registry
+                        formik.errors.registro && formik.touched.registro
                           ? 'border border-red-500'
                           : ''
                       }`}
                       id="grid-regitry"
                       type="text"
-                      name="registry"
-                      value={formik.values.registry}
+                      name="registro"
+                      value={formik.values.registro}
                       placeholder="registry"
                       onChange={formik.handleChange}
                     />
@@ -240,6 +269,7 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                         type="text"
                         name="placa"
                         value={formik.values.placa}
+                        onChange={formik.handleChange}
                         placeholder="plate"
                         onChange={formik.handleChange}
                       />
@@ -253,7 +283,7 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                   <button
                     type="button"
                     className="btn btn-danger ml-2"
-                    onClick={() => onClose()}
+                    onClick={() => toggleModal(false)}
                   >
                     Cancelar
                   </button>

@@ -7,7 +7,7 @@ const validationMaquina = Yup.object().shape({
   modelo: Yup.string().required('El modelo es requerido'),
   serie: Yup.string().required('La serie es requerida'),
   linea: Yup.string().required('La linea es requerida'),
-  registry: Yup.string().required('El numero de registro es requerido'),
+  registro: Yup.string().required('El numero de registro es requerido'),
   placa: Yup.string().when('tipo', (tipo) => {
     if (tipo === 'VEHICULO')
       return Yup.string().required('La placa es requerida');

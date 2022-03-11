@@ -1,25 +1,28 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { trackPromise, usePromiseTracker } from 'react-promise-tracker';
 import BreadCrumbs from '../../components/ BreadCrumbs';
 import ButtonDelete from '../../components/ButtonDelete';
 import ButtonEdit from '../../components/ButtonEdit';
-import ButtonView from '../../components/ButtonView';
 import Modal from '../../components/Modal';
 import Table from '../../components/Table';
 import MarcasServices from '../../services/MarcasServices';
 import CreateOrUpdateMarcas from './MarcaCreateOrUpdate';
-import MarcasView from './MarcasView';
+import ModalDelete from '../../components/ModalDelete';
+import Loading from '../../components/Loading';
 
 function MarcasList() {
+  const { promiseInProgress } = usePromiseTracker();
+
   const [modal, setModal] = useState({
     show: false,
     content: null,
     size: 'modal-sm'
   });
-  const [deleteModal, setDeleteModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
   const [marcas, setMarcas] = useState([]);
 
   useEffect(() => {
-    (async function fetch() {
+    async function fetch() {
       try {
         const data = await MarcasServices.get();
         if (data.status === 200) {
@@ -28,7 +31,8 @@ function MarcasList() {
       } catch (error) {
         console.log('error');
       }
-    })();
+    }
+    trackPromise(fetch());
   }, []);
 
   const breadCrumbs = useMemo(
@@ -39,15 +43,17 @@ function MarcasList() {
     []
   );
 
-  async function onClose() {
+  async function toggleModal(show) {
     const data = await MarcasServices.get();
     if (data.status === 200) {
       setMarcas(data.data);
     }
-    setModal({ show: false, content: null });
+    setModal({ ...modal, show });
   }
 
   const columns = useMemo(() => ['Nombre', 'Acciones'], []);
+
+  if (promiseInProgress) return <Loading />;
 
   return (
     <div>
@@ -63,7 +69,11 @@ function MarcasList() {
                 setModal({
                   show: true,
                   size: 'modal-md',
-                  content: <CreateOrUpdateMarcas onClose={() => onClose()} />
+                  content: (
+                    <CreateOrUpdateMarcas
+                      toggleModal={(show) => toggleModal(show)}
+                    />
+                  )
                 })
               }
             >
@@ -76,22 +86,7 @@ function MarcasList() {
             marcas.map((item) => (
               <tr key={item.id}>
                 <td>{item.nombre}</td>
-                <td className="flex items-center  justify-between">
-                  <ButtonView
-                    onClick={() => {
-                      setModal({
-                        show: true,
-                        content: (
-                          <MarcasView
-                            marca={{
-                              nombre: 'Caterpilar'
-                            }}
-                          />
-                        ),
-                        size: 'modal-sm'
-                      });
-                    }}
-                  />
+                <td className="flex items-center ">
                   <ButtonEdit
                     onClick={() =>
                       setModal({
@@ -100,7 +95,7 @@ function MarcasList() {
                           <CreateOrUpdateMarcas
                             id={item.id}
                             nombre={item.nombre}
-                            onClose={() => onClose()}
+                            toggleModal={(show) => toggleModal(show)}
                           />
                         ),
                         size: 'modal-md'
@@ -109,7 +104,7 @@ function MarcasList() {
                   />
                   <ButtonDelete
                     onClick={() => {
-                      setDeleteModal(true);
+                      setDeleteModal({ show: true, id: item.id });
                     }}
                   />
                 </td>
@@ -117,7 +112,20 @@ function MarcasList() {
             ))}
         </Table>
       </div>
-      {}
+      {deleteModal.show && (
+        <ModalDelete
+          onDelete={() => {
+            setDeleteModal({ show: false, id: null });
+            trackPromise(MarcasServices.delete(deleteModal.id)).then(() => {
+              const filter = marcas.filter(
+                (item) => item.id !== deleteModal.id
+              );
+              setMarcas(filter);
+            });
+          }}
+          onClose={() => setDeleteModal(false)}
+        />
+      )}
       {modal.show && (
         <Modal
           size={modal.size}
