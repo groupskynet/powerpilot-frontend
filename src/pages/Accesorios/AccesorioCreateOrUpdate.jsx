@@ -12,6 +12,7 @@ function CreateOrUpdateAccesorio({ onClose, id }) {
         initialValues={{
           nombre: '',
           marca: '',
+
           modelo: '',
           serie: '',
           linea: '',

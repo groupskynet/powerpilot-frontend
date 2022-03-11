@@ -271,7 +271,6 @@ function CreateOrUpdateMaquina({ toggleModal, maquina }) {
                         value={formik.values.placa}
                         onChange={formik.handleChange}
                         placeholder="plate"
-                        onChange={formik.handleChange}
                       />
                     </div>
                   )}

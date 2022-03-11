@@ -24,7 +24,9 @@ AccesoriosServices.update = async (request) => {
 };
 
 AccesoriosServices.delete = async (id) => {
-  const { data } = await axios.delete(`http://localhost:/api/accesorios/${id}`);
+  const { data } = await axios.delete(
+    `http://localhost:8000/api/accesorios/${id}`
+  );
   return data;
 };
 

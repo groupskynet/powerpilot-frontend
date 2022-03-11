@@ -1,22 +1,26 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { trackPromise, usePromiseTracker } from 'react-promise-tracker';
+
 import BreadCrumbs from '../../components/ BreadCrumbs';
 import ButtonDelete from '../../components/ButtonDelete';
 import ButtonEdit from '../../components/ButtonEdit';
-import ButtonView from '../../components/ButtonView';
 import Modal from '../../components/Modal';
 import ModalDelete from '../../components/ModalDelete';
 import Table from '../../components/Table';
-import uuid from '../../utils/uuid';
 import CreateOrUpdateAccesorio from './AccesorioCreateOrUpdate';
-import AccesoriosView from './AccesoriosView';
+import Loading from '../../components/Loading';
+import AccesoriosServices from '../../services/AccesoriosServices';
 
 function AccesoriosList() {
+  const { promiseInProgress } = usePromiseTracker();
+
+  const [accesorios, setAccesorios] = useState([]);
+  const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
   const [modal, setModal] = useState({
     show: false,
     content: null,
     size: 'modal-sm'
   });
-  const [deleteModal, setDeleteModal] = useState(false);
   const breadCrumbs = useMemo(
     () => [
       { title: 'Inicio', url: '/' },
@@ -38,6 +42,31 @@ function AccesoriosList() {
     []
   );
 
+  useEffect(() => {
+    async function fetch() {
+      try {
+        const respAccesorios = await AccesoriosServices.get();
+        if (respAccesorios.status === 200) {
+          setAccesorios(respAccesorios.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    trackPromise(fetch());
+  }, []);
+
+  function toggleModal(show) {
+    setModal({ ...modal, show });
+    AccesoriosServices.get().then((resp) => {
+      if (resp === 200) {
+        setAccesorios(resp.data);
+      }
+    });
+  }
+
+  if (promiseInProgress) return <Loading />;
+
   return (
     <div>
       <BreadCrumbs items={breadCrumbs} />
@@ -56,7 +85,7 @@ function AccesoriosList() {
                   size: 'modal-md',
                   content: (
                     <CreateOrUpdateAccesorio
-                      onClose={() => setModal({ show: false, content: null })}
+                      toggleModal={(show) => toggleModal(show)}
                     />
                   )
                 })
@@ -67,41 +96,27 @@ function AccesoriosList() {
           </div>
         </div>
         <Table columns={columns} title="Accesorios">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map(() => (
-            <tr key={uuid()}>
-              <td>Minicargador</td>
-              <td>Balde</td>
-              <td>Caterpilar</td>
-              <td>S185</td>
-              <td>dfghjgfh</td>
-              <td>fcgvhbnj451dfghbnj56</td>
-              <td className="flex items-center  justify-between">
-                <ButtonView
-                  onClick={() => {
-                    setModal({
-                      show: true,
-                      content: (
-                        <AccesoriosView
-                          accesorio={{
-                            nombre: 'Balde',
-                            marca: 'Caterpilar'
-                          }}
-                        />
-                      ),
-                      size: 'modal-sm'
-                    });
-                  }}
-                />
+          {accesorios.map((item) => (
+            <tr key={item.id}>
+              <td>{item.maquina.nombre}</td>
+              <td>{item.nombre}</td>
+              <td>{item.marca.nombre}</td>
+              <td>{item.modelo}</td>
+              <td>{item.serie}</td>
+              <td>{item.registro}</td>
+              <td className="flex items-center">
                 <ButtonEdit
                   onClick={() =>
                     setModal({
                       show: true,
                       content: (
                         <CreateOrUpdateAccesorio
-                          id={uuid()}
-                          onClose={() =>
-                            setModal({ show: false, content: null })
-                          }
+                          accesorio={{
+                            ...item,
+                            marca: item.marca.id,
+                            maquina: item.maquina.id
+                          }}
+                          toggleModal={(show) => toggleModal(show)}
                         />
                       ),
                       size: 'modal-md'
@@ -110,7 +125,7 @@ function AccesoriosList() {
                 />
                 <ButtonDelete
                   onClick={() => {
-                    setDeleteModal(true);
+                    setDeleteModal({ show: true, id: item.id });
                   }}
                 />
               </td>
@@ -118,7 +133,20 @@ function AccesoriosList() {
           ))}
         </Table>
       </div>
-      {deleteModal && <ModalDelete onClose={() => setDeleteModal(false)} />}
+      {deleteModal.show && (
+        <ModalDelete
+          onDelete={() => {
+            setDeleteModal({ ...deleteModal, show: false });
+            trackPromise(AccesoriosServices.delete(deleteModal.id)).then(() => {
+              const filter = accesorios.filter(
+                (item) => item.id !== deleteModal.id
+              );
+              setAccesorios(filter);
+            });
+          }}
+          onClose={() => setDeleteModal(false)}
+        />
+      )}
       {modal.show && (
         <Modal
           size={modal.size}

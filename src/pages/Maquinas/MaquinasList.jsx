@@ -8,7 +8,6 @@ import ButtonView from '../../components/ButtonView';
 import Modal from '../../components/Modal';
 import ModalDelete from '../../components/ModalDelete';
 import Table from '../../components/Table';
-import uuid from '../../utils/uuid';
 import CreateOrUpdateMaquinas from './MaquinaCreateOrUpdate';
 import MaquinasView from './MaquinasView';
 import Loading from '../../components/Loading';
