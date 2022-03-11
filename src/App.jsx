@@ -11,6 +11,7 @@ import AccesoriosList from './pages/Accesorios/AccesoriosList';
 import ClientesList from './pages/Clientes/ClientesList';
 import ProveedoresList from './pages/Proveedores/ProveedoresList';
 import MarcasList from './pages/Marcas/MarcasList';
+import GastosList from './pages/Gastos/GastosList';
 
 function App() {
   return (
@@ -47,6 +48,12 @@ function App() {
                 path="/movimientos/proveedores"
                 element={<ProveedoresList />}
               />
+              <Route
+                exact
+                path="/movimientos/gastos"
+                element={<GastosList />}
+              />
+
               <Route path="/users/change_password">hello</Route>
               <Route path="/gestion/accesorios">hello</Route>
             </Routes>

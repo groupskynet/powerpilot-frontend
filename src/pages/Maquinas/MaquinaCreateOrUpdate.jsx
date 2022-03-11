@@ -241,6 +241,7 @@ function CreateOrUpdateMaquina({ onClose, id }) {
                         name="placa"
                         value={formik.values.placa}
                         placeholder="plate"
+                        onChange={formik.handleChange}
                       />
                     </div>
                   )}
