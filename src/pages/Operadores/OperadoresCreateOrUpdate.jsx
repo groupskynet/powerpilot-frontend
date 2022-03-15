@@ -1,26 +1,48 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Formik } from 'formik';
+import { trackPromise } from 'react-promise-tracker';
 import validationOperadores from './Schema';
+import OperadoresServices from '../../services/OperadoresServices';
 
-function CreateOrUpdateOperador({ onClose, id }) {
+function CreateOrUpdateOperador({ toogleModal, operador }) {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    console.log(operador);
+    setData(operador);
+  }, [operador]);
+
   return (
     <div className="">
       <h2 className="font-semibold">
-        {id === null || id === undefined ? 'Nuevo' : 'Actualizar'} Operador
+        {operador && operador.id ? 'Actualizar' : 'Nuevo'} Operador
       </h2>
       <Formik
-        initialValues={{
-          nombres: '',
-          apellidos: '',
-          cedula: '',
-          telefono1: '',
-          telefono2: '',
-          licencia: '',
-          direccion: '',
-          email: ''
-        }}
+        initialValues={
+          data || {
+            nombres: '',
+            apellidos: '',
+            cedula: '',
+            telefono1: '',
+            telefono2: '',
+            licencia: '',
+            direccion: '',
+            email: ''
+          }
+        }
+        enableReinitialize
         validationSchema={validationOperadores}
-        onSubmit={() => {}}
+        onSubmit={(values) => {
+          if (values.id) {
+            trackPromise(OperadoresServices.update(values)).then(() => {
+              toogleModal(false);
+            });
+          } else {
+            trackPromise(OperadoresServices.post(values)).then(() => {
+              toogleModal(false);
+            });
+          }
+        }}
       >
         {(formik) => (
           <form className="my-4" onSubmit={formik.handleSubmit}>
@@ -34,12 +56,15 @@ function CreateOrUpdateOperador({ onClose, id }) {
                 </label>
                 <input
                   className={`input-box ${
-                    formik.errors.nombres ? 'border border-red-500' : ''
+                    formik.errors.nombres && formik.touched.nombres
+                      ? 'border border-red-500'
+                      : ''
                   }`}
                   id="grid-name"
                   type="text"
+                  name="nombres"
                   value={formik.values.nombres}
-                  placeholder="id"
+                  placeholder="name"
                   onChange={formik.handleChange}
                 />
               </div>
@@ -52,7 +77,9 @@ function CreateOrUpdateOperador({ onClose, id }) {
                 </label>
                 <input
                   className={`input-box ${
-                    formik.errors.apellidos ? 'border border-red-500' : ''
+                    formik.errors.apellidos && formik.touched.apellidos
+                      ? 'border border-red-500'
+                      : ''
                   }`}
                   id="grid-last-name"
                   type="text"
@@ -71,7 +98,9 @@ function CreateOrUpdateOperador({ onClose, id }) {
                 </label>
                 <input
                   className={`input-box ${
-                    formik.errors.cedula ? 'border border-red-500' : ''
+                    formik.errors.cedula && formik.touched.cedula
+                      ? 'border border-red-500'
+                      : ''
                   }`}
                   id="grid-id"
                   type="number"
@@ -92,7 +121,9 @@ function CreateOrUpdateOperador({ onClose, id }) {
                 </label>
                 <input
                   className={`input-box ${
-                    formik.errors.telefono1 ? 'border border-red-500' : ''
+                    formik.errors.telefono1 && formik.touched.telefono1
+                      ? 'border border-red-500'
+                      : ''
                   }`}
                   id="grid-phone-1"
                   type="number"
@@ -111,7 +142,9 @@ function CreateOrUpdateOperador({ onClose, id }) {
                 </label>
                 <input
                   className={`input-box ${
-                    formik.errors.telefono2 ? 'border border-red-500' : ''
+                    formik.errors.telefono2 && formik.touched.telefono2
+                      ? 'border border-red-500'
+                      : ''
                   }`}
                   id="grid-phone-2"
                   type="tel"
@@ -130,12 +163,13 @@ function CreateOrUpdateOperador({ onClose, id }) {
                 </label>
                 <input
                   className={`input-box ${
-                    formik.errors.licencia ? 'border border-red-500' : ''
+                    formik.errors.licencia && formik.touched.licencia
+                      ? 'border border-red-500'
+                      : ''
                   }`}
                   id="grid-licence"
                   type="file"
                   name="licencia"
-                  value={formik.values.licencia}
                   placeholder=""
                   onChange={formik.handleChange}
                 />
@@ -151,7 +185,9 @@ function CreateOrUpdateOperador({ onClose, id }) {
                 </label>
                 <input
                   className={`input-box ${
-                    formik.errors.direccion ? 'border border-red-500' : ''
+                    formik.errors.direccion && formik.touched.direccion
+                      ? 'border border-red-500'
+                      : ''
                   }`}
                   id="grid-adress"
                   type="text"
@@ -170,7 +206,9 @@ function CreateOrUpdateOperador({ onClose, id }) {
                 </label>
                 <input
                   className={`input-box ${
-                    formik.errors.email ? 'border border-red-500' : ''
+                    formik.errors.email && formik.touched.email
+                      ? 'border border-red-500'
+                      : ''
                   }`}
                   id="grid-email"
                   type="email"
@@ -188,7 +226,7 @@ function CreateOrUpdateOperador({ onClose, id }) {
               <button
                 type="button"
                 className="btn btn-danger ml-2"
-                onClick={() => onClose()}
+                onClick={() => toogleModal(false)}
               >
                 Cancelar
               </button>

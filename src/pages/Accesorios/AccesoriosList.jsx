@@ -102,7 +102,7 @@ function AccesoriosList() {
               <td>{item.nombre}</td>
               <td>{item.marca.nombre}</td>
               <td>{item.modelo}</td>
-              <td>{item.Serie}</td>
+              <td>{item.serie}</td>
               <td>{item.registro}</td>
               <td className="flex items-center">
                 <ButtonEdit

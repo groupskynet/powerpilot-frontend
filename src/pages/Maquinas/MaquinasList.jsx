@@ -4,12 +4,10 @@ import { trackPromise, usePromiseTracker } from 'react-promise-tracker';
 import BreadCrumbs from '../../components/ BreadCrumbs';
 import ButtonDelete from '../../components/ButtonDelete';
 import ButtonEdit from '../../components/ButtonEdit';
-import ButtonView from '../../components/ButtonView';
 import Modal from '../../components/Modal';
 import ModalDelete from '../../components/ModalDelete';
 import Table from '../../components/Table';
 import CreateOrUpdateMaquinas from './MaquinaCreateOrUpdate';
-import MaquinasView from './MaquinasView';
 import Loading from '../../components/Loading';
 import MaquinaServices from '../../services/MaquinasServices';
 
@@ -104,23 +102,7 @@ function MaquinasList() {
               <td>{item.marca.nombre}</td>
               <td>{item.modelo}</td>
               <td>{item.registro}</td>
-              <td className="flex items-center  justify-between">
-                <ButtonView
-                  onClick={() => {
-                    setModal({
-                      show: true,
-                      content: (
-                        <MaquinasView
-                          maquina={{
-                            nombre: 'Minicargador',
-                            marca: 'bobocat'
-                          }}
-                        />
-                      ),
-                      size: 'modal-sm'
-                    });
-                  }}
-                />
+              <td className="flex items-center">
                 <ButtonEdit
                   onClick={() =>
                     setModal({

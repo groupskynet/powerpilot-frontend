@@ -45,7 +45,7 @@ function CreateOrUpdateAccesorio({ toggleModal, accesorio }) {
             nombre: '',
             marca: '',
             modelo: '',
-            Serie: '',
+            serie: '',
             linea: '',
             registro: '',
             maquina: ''
@@ -156,14 +156,14 @@ function CreateOrUpdateAccesorio({ toggleModal, accesorio }) {
                 </label>
                 <input
                   className={`input-box ${
-                    formik.errors.Serie && formik.touched.Serie
+                    formik.errors.serie && formik.touched.serie
                       ? 'border border-red-500'
                       : ''
                   }`}
                   id="grid-serie"
                   type="text"
-                  name="Serie"
-                  value={formik.values.Serie}
+                  name="serie"
+                  value={formik.values.serie}
                   placeholder="serie"
                   onChange={formik.handleChange}
                 />

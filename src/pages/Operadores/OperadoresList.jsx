@@ -1,22 +1,26 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { trackPromise, usePromiseTracker } from 'react-promise-tracker';
+
 import BreadCrumbs from '../../components/ BreadCrumbs';
 import ButtonDelete from '../../components/ButtonDelete';
 import ButtonEdit from '../../components/ButtonEdit';
-import ButtonView from '../../components/ButtonView';
 import Modal from '../../components/Modal';
 import ModalDelete from '../../components/ModalDelete';
 import Table from '../../components/Table';
-import uuid from '../../utils/uuid';
 import CreateOrUpdateOperador from './OperadoresCreateOrUpdate';
-import OperadoresView from './OperadoresView';
+import Loading from '../../components/Loading';
+import OperadoresServices from '../../services/OperadoresServices';
 
 function OperadoresList() {
+  const { promiseInProgress } = usePromiseTracker();
+
+  const [operadores, setOperadores] = useState([]);
+  const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
   const [modal, setModal] = useState({
     show: false,
     content: null,
     size: 'modal-sm'
   });
-  const [deleteModal, setDeleteModal] = useState(false);
   const breadCrumbs = useMemo(
     () => [
       { title: 'Inicio', url: '/' },
@@ -33,10 +37,35 @@ function OperadoresList() {
       'Telefono 2',
       'Direccion',
       'Email',
+      'licencia',
       'Acciones'
     ],
     []
   );
+
+  useEffect(() => {
+    async function fetch() {
+      try {
+        const respOperadores = await OperadoresServices.get();
+        if (respOperadores.status === 200) {
+          setOperadores(respOperadores.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    trackPromise(fetch());
+  }, []);
+
+  function toogleModal(show) {
+    setModal({ ...modal, show });
+    OperadoresServices.get().then((resp) => {
+      if (resp.status === 200) {
+        setOperadores(resp.data);
+      }
+    });
+  }
+  if (promiseInProgress) return <Loading />;
 
   return (
     <div>
@@ -54,7 +83,7 @@ function OperadoresList() {
                   size: 'modal-md',
                   content: (
                     <CreateOrUpdateOperador
-                      onClose={() => setModal({ show: false, content: null })}
+                      toogleModal={(show) => toogleModal(show)}
                     />
                   )
                 })
@@ -65,47 +94,53 @@ function OperadoresList() {
           </div>
         </div>
         <Table columns={columns} title="Operadores">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map(() => (
-            <tr key={uuid()}>
-              <td>1065848333</td>
-              <td>Camilo Andres Colon</td>
-              <td>3017764758</td>
-              <td>3173827414</td>
-              <td>Cll 18d #36 - 125 Villa Luz</td>
-              <td>Colonca1999@gmail.com</td>
-              <td className="flex items-center  justify-between">
-                <ButtonView
-                  onClick={() => {
-                    setModal({
-                      show: true,
-                      content: (
-                        <OperadoresView
-                          operador={{
-                            cedula: '1065848333',
-                            nombres: 'Camilo Andres Colon Cañizares',
-                            direccion: 'Cll 18d #36 - 125 Villa Luz',
-                            email: 'Colonca1999@gmail.com',
-                            telefono1: '301776478',
-                            telefono2: '3173827414'
-                          }}
-                        />
-                      ),
-                      size: 'modal-sm'
-                    });
-                  }}
-                />
+          {operadores.map((item) => (
+            <tr key={item.id}>
+              <td>{item.cedula}</td>
+              <td>{`${item.nombres} ${item.apellidos}`}</td>
+              <td>{item.telefono1}</td>
+              <td>{item.telefono2}</td>
+              <td>{item.direccion}</td>
+              <td>{item.email}</td>
+              <td className="flex justify-center">
+                <button type="button">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                    />
+                  </svg>
+                </button>
+              </td>
+              <td className="items-center">
                 <ButtonEdit
                   onClick={() =>
                     setModal({
                       show: true,
-                      content: <CreateOrUpdateOperador id={uuid()} />,
+                      content: (
+                        <CreateOrUpdateOperador
+                          operador={{
+                            ...item,
+                            telefono2: item.telefono2 || ''
+                          }}
+                          toogleModal={(show) => toogleModal(show)}
+                        />
+                      ),
                       size: 'modal-md'
                     })
                   }
                 />
                 <ButtonDelete
                   onClick={() => {
-                    setDeleteModal(true);
+                    setDeleteModal({ show: true, id: item.id });
                   }}
                 />
               </td>
@@ -113,7 +148,20 @@ function OperadoresList() {
           ))}
         </Table>
       </div>
-      {deleteModal && <ModalDelete onClose={() => setDeleteModal(false)} />}
+      {deleteModal.show && (
+        <ModalDelete
+          onDelete={() => {
+            setDeleteModal({ ...deleteModal, show: false });
+            trackPromise(OperadoresServices.delete(deleteModal.id)).then(() => {
+              const filter = operadores.filter(
+                (item) => item.d !== deleteModal.id
+              );
+              setOperadores(filter);
+            });
+          }}
+          onClose={() => setDeleteModal(false)}
+        />
+      )}
       {modal.show && (
         <Modal
           size={modal.size}
