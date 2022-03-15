@@ -48,12 +48,14 @@ function OperadoresList() {
       try {
         const respOperadores = await OperadoresServices.get();
         if (respOperadores.status === 200) {
+          console.log(respOperadores);
           setOperadores(respOperadores.data);
         }
       } catch (error) {
         console.log(error);
       }
     }
+
     trackPromise(fetch());
   }, []);
 
@@ -65,6 +67,7 @@ function OperadoresList() {
       }
     });
   }
+
   if (promiseInProgress) return <Loading />;
 
   return (
@@ -154,7 +157,7 @@ function OperadoresList() {
             setDeleteModal({ ...deleteModal, show: false });
             trackPromise(OperadoresServices.delete(deleteModal.id)).then(() => {
               const filter = operadores.filter(
-                (item) => item.d !== deleteModal.id
+                (item) => item.id !== deleteModal.id
               );
               setOperadores(filter);
             });

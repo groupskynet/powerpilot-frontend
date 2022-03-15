@@ -84,7 +84,7 @@ function CreateOrUpdateOperador({ toogleModal, operador }) {
                   id="grid-last-name"
                   type="text"
                   name="apellidos"
-                  values={formik.values.apellidos}
+                  value={formik.values.apellidos}
                   placeholder="last name"
                   onChange={formik.handleChange}
                 />
