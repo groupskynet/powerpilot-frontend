@@ -12,8 +12,6 @@ AccesoriosServices.post = async (request) => {
     'http://localhost:8000/api/accesorios',
     request
   );
-
-  console.log(request);
   return data;
 };
 
