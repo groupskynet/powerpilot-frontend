@@ -75,7 +75,7 @@ function GastosList() {
           {gastos.length > 0 &&
             gastos.map((item) => (
               <tr key={item.id}>
-                <td>{item.maquina}</td>
+                <td>{item.maquina.nombre}</td>
                 <td>{item.descripcion}</td>
                 <td>{item.valor}</td>
                 <td className="flex items-center  justify-between">
