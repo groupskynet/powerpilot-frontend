@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Formik } from 'formik';
 import { trackPromise } from 'react-promise-tracker';
+import Select from 'react-select';
 import validationAccesorio from './Schema';
 import MaquinasServices from '../../services/MaquinasServices';
 import MarcasServices from '../../services/MarcasServices';
@@ -21,6 +22,7 @@ function CreateOrUpdateAccesorio({ toggleModal, accesorio }) {
         const respMarcas = await MarcasServices.get();
         if (respMarcas.status === 200) {
           setMarcas(respMarcas.data);
+          console.log(marcas);
         }
 
         const respMaquinas = await MaquinasServices.get();
@@ -31,6 +33,7 @@ function CreateOrUpdateAccesorio({ toggleModal, accesorio }) {
         console.log(error);
       }
     }
+
     if (marcas.length === 0 || maquinas.length === 0) fetch();
   }, [marcas, maquinas]);
 
@@ -97,31 +100,17 @@ function CreateOrUpdateAccesorio({ toggleModal, accesorio }) {
                   Marca
                 </label>
                 <div className="relative">
-                  <select
-                    className={`"block appearance-none w-full bg-gray-200 ${
-                      formik.errors.marca && formik.touched.marca
-                        ? 'border border-red-500'
-                        : ''
-                    } 'text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"'}`}
-                    id="grid-marca"
-                    name="marca"
-                    value={formik.values.marca}
-                    onChange={formik.handleChange}
-                  >
-                    <option value="">Seleccionar</option>
-                    {marcas.map((item) => (
-                      <option value={item.id}>{item.nombre}</option>
-                    ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <svg
-                      className="fill-current h-4 w-4"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                    </svg>
-                  </div>
+                  <Select
+                    options={marcas}
+                    getOptionLabel={(marca) => marca && marca.nombre}
+                    getOptionValue={(marca) => marca && marca.id}
+                    value={marcas.filter(
+                      (marca) => marca.id === formik.values.marca
+                    )}
+                    onChange={(marca) => {
+                      formik.setFieldValue('marca', marca.id);
+                    }}
+                  />
                 </div>
               </div>
               <div className="w-full md:w-1/3 px-3">
@@ -218,22 +207,17 @@ function CreateOrUpdateAccesorio({ toggleModal, accesorio }) {
                   Máquina
                 </label>
                 <div className="relative">
-                  <select
-                    className={`"block appearance-none w-full bg-gray-200 ${
-                      formik.errors.maquina && formik.touched.maquina
-                        ? 'border border-red-500'
-                        : ''
-                    } 'text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"'}`}
-                    id="grid-marca"
-                    value={formik.values.maquina}
-                    name="maquina"
-                    onChange={formik.handleChange}
-                  >
-                    <option value="">Seleccionar</option>
-                    {maquinas.map((item) => (
-                      <option value={item.id}>{item.nombre}</option>
-                    ))}
-                  </select>
+                  <Select
+                    options={maquinas}
+                    getOptionLabel={(maquina) => maquina && maquina.nombre}
+                    getOptionValue={(maquina) => maquina && maquina.id}
+                    value={maquinas.filter(
+                      (maquina) => maquina.id === formik.values.maquina
+                    )}
+                    onChange={(maquina) => {
+                      formik.setFieldValue('maquina', maquina.id);
+                    }}
+                  />
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                     <svg
                       className="fill-current h-4 w-4"
@@ -264,4 +248,5 @@ function CreateOrUpdateAccesorio({ toggleModal, accesorio }) {
     </div>
   );
 }
+
 export default CreateOrUpdateAccesorio;

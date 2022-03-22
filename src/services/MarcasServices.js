@@ -2,8 +2,10 @@ import axios from 'axios';
 
 const MarcasServices = {};
 
-MarcasServices.get = async () => {
-  const { data } = await axios.get('http://localhost:8000/api/marcas');
+MarcasServices.get = async (pageNumber) => {
+  const { data } = await axios.get(
+    `http://localhost:8000/api/marcas?page=${pageNumber}`
+  );
   return data;
 };
 

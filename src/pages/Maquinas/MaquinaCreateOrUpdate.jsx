@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Formik } from 'formik';
 import { trackPromise } from 'react-promise-tracker';
+import Select from 'react-select';
 import validationMaquina from './Schema';
 import MarcasServices from '../../services/MarcasServices';
 import MaquinaServices from '../../services/MaquinasServices';
@@ -24,8 +25,17 @@ function CreateOrUpdateMaquina({ toggleModal, maquina }) {
         console.log(error);
       }
     }
+
     if (marcas.length === 0) fetch();
   }, [marcas]);
+
+  const tipos = useMemo(
+    () => [
+      { label: 'MÁQUINA', value: 'MAQUINA' },
+      { label: 'VEHICULO', value: 'VEHICULO' }
+    ],
+    []
+  );
 
   return (
     <div className="">
@@ -69,28 +79,17 @@ function CreateOrUpdateMaquina({ toggleModal, maquina }) {
               </div>
               <div className="w-full md:w-1/3 px-3 mt-4">
                 <div className="relative">
-                  <select
-                    className={`"block appearance-none w-full bg-gray-200 ${
-                      formik.errors.tipo ? 'border border-red-500' : ''
-                    } 'text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"'}`}
-                    id="grid-tipo"
-                    value={formik.values.tipo}
-                    name="tipo"
-                    onChange={formik.handleChange}
-                  >
-                    <option value="">Seleccionar</option>
-                    <option value="MAQUINA">Máquina</option>
-                    <option value="VEHICULO">Vehículo</option>
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <svg
-                      className="fill-current h-4 w-4"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                    </svg>
-                  </div>
+                  <Select
+                    options={tipos}
+                    textField="label"
+                    valueField="value"
+                    value={tipos.filter(
+                      (tipo) => tipo.value === formik.values.tipo
+                    )}
+                    onChange={(type) => {
+                      formik.setFieldValue('tipo', type.value);
+                    }}
+                  />
                 </div>
               </div>
             </div>
@@ -126,31 +125,18 @@ function CreateOrUpdateMaquina({ toggleModal, maquina }) {
                       Marca
                     </label>
                     <div className="relative">
-                      <select
-                        className={`"block appearance-none w-full bg-gray-200 ${
-                          formik.errors.marca && formik.touched.marca
-                            ? 'border border-red-500'
-                            : ''
-                        } 'text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"'}`}
-                        id="grid-marca"
-                        value={formik.values.marca}
-                        name="marca"
-                        onChange={formik.handleChange}
-                      >
-                        <option value="">Seleccionar</option>
-                        {marcas.map((item) => (
-                          <option value={item.id}>{item.nombre}</option>
-                        ))}
-                      </select>
-                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                        <svg
-                          className="fill-current h-4 w-4"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                        </svg>
-                      </div>
+                      <Select
+                        className="border-red-400"
+                        options={marcas}
+                        getOptionLabel={(marca) => marca && marca.nombre}
+                        getOptionValue={(marca) => marca && marca.id}
+                        value={marcas.filter(
+                          (marca) => marca.id === formik.values.marca
+                        )}
+                        onChange={(marca) => {
+                          formik.setFieldValue('marca', marca.id);
+                        }}
+                      />
                     </div>
                   </div>
                   <div className="w-full md:w-1/3 px-3">
