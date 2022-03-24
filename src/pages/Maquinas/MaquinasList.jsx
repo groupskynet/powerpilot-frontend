@@ -1,27 +1,30 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { trackPromise, usePromiseTracker } from 'react-promise-tracker';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  Box,
+  CloseButton
+} from '@chakra-ui/react';
+import { useModal } from '@ebay/nice-modal-react';
 import BreadCrumbs from '../../components/ BreadCrumbs';
 import ButtonDelete from '../../components/ButtonDelete';
 import ButtonEdit from '../../components/ButtonEdit';
-import Modal from '../../components/Modal';
-import ModalDelete from '../../components/ModalDelete';
 import Table from '../../components/Table';
-import CreateOrUpdateMaquinas from './MaquinaCreateOrUpdate';
 import Loading from '../../components/Loading';
 import MaquinaServices from '../../services/MaquinasServices';
+import Pagination from '../../components/Pagination/Pagination';
+import MaquinaCreateOrUpdateModal from './MaquinaCreateOrUpdateModal';
+import DeleteModal from '../Shared/DeleteModal';
 
 function MaquinasList() {
-  const { promiseInProgress } = usePromiseTracker();
-
+  const maquinaModal = useModal(MaquinaCreateOrUpdateModal);
+  const deleteModal = useModal(DeleteModal);
   const [maquinas, setMaquinas] = useState([]);
-  const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
+  const [loading, setLoading] = useState(false);
+  const [info, setInfo] = useState(null);
 
-  const [modal, setModal] = useState({
-    show: false,
-    content: null,
-    size: 'modal-sm'
-  });
   const breadCrumbs = useMemo(
     () => [
       { title: 'Inicio', url: '/' },
@@ -29,6 +32,7 @@ function MaquinasList() {
     ],
     []
   );
+
   const columns = useMemo(
     () => [
       'Tipo',
@@ -42,30 +46,88 @@ function MaquinasList() {
     []
   );
 
-  useEffect(() => {
-    async function fetch() {
-      try {
-        const respMaquinas = await MaquinaServices.get();
-        if (respMaquinas.status === 200) {
-          setMaquinas(respMaquinas.data);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    trackPromise(fetch());
-  }, []);
-
-  function toggleModal(show) {
-    setModal({ ...modal, show });
-    MaquinaServices.get().then((resp) => {
-      if (resp.status === 200) {
-        setMaquinas(resp.data);
-      }
+  const handleNewMaquina = useCallback(() => {
+    maquinaModal.show().then((newMaquina) => {
+      setInfo({ type: 'success', message: 'Maquina Creada Correctamente' });
+      setMaquinas((state) => ({ ...state, data: [newMaquina, ...state.data] }));
     });
+  }, [maquinaModal]);
+
+  const handleEditMarca = useCallback(
+    (maquina) => {
+      maquinaModal.show({ maquina }).then((newMaquina) => {
+        setMaquinas((state) => {
+          const i = state.data.findIndex((m) => m.id === newMaquina.id);
+          const updated = { ...state.data[i], ...newMaquina };
+          const arr = [...state.data];
+          arr.splice(i, 1, updated);
+          return { ...state, data: arr };
+        });
+        setInfo({
+          type: 'success',
+          message: 'Maquina Actualizada Correctamente'
+        });
+      });
+    },
+    [maquinaModal]
+  );
+  const handleDeleteMaquina = useCallback(
+    (id) => {
+      deleteModal.show().then(async () => {
+        try {
+          setLoading(true);
+          const response = await MaquinaServices.delete(id);
+          if (response.status === 200) {
+            setMaquinas((state) => {
+              const list = state.data.filter((item) => item.id !== id);
+              return { ...state, data: list };
+            });
+            setInfo({
+              type: 'success',
+              message: 'Maquina Eliminada Correctamente'
+            });
+          } else {
+            setInfo({
+              type: 'warning',
+              message: response.message
+            });
+          }
+        } catch (error) {
+          setInfo({
+            type: 'error',
+            message: 'se ha producido un error,por favor intentelo más tarde.'
+          });
+        } finally {
+          setLoading(false);
+          deleteModal.remove();
+        }
+      });
+    },
+    [deleteModal]
+  );
+
+  async function fetchData(pageNumber = 1) {
+    try {
+      setLoading(true);
+      const response = await MaquinaServices.get(pageNumber);
+      if (response.status === 200) {
+        setMaquinas(response.data);
+      }
+    } catch (error) {
+      setInfo({
+        type: 'error',
+        message: 'se ha producido un error,por favor intentelo más tarde.'
+      });
+    } finally {
+      setLoading(false);
+    }
   }
 
-  if (promiseInProgress) return <Loading />;
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  if (loading) return <Loading />;
 
   return (
     <div>
@@ -77,84 +139,66 @@ function MaquinasList() {
             <button
               type="button"
               className="btn btn-success"
-              onClick={() =>
-                setModal({
-                  show: true,
-                  size: 'modal-md',
-                  content: (
-                    <CreateOrUpdateMaquinas
-                      toggleModal={(show) => toggleModal(show)}
-                    />
-                  )
-                })
-              }
+              onClick={() => {
+                handleNewMaquina();
+              }}
             >
               Agregar
             </button>
           </div>
         </div>
+        {info && (
+          <div className="mb-2">
+            <Alert status={info.type}>
+              <AlertIcon />
+              <Box flex="1">
+                <AlertDescription display="block">
+                  {info.message}
+                </AlertDescription>
+              </Box>
+              <CloseButton
+                position="absolute"
+                right="8px"
+                top="8px"
+                onClick={() => setInfo(null)}
+              />
+            </Alert>
+          </div>
+        )}
         <Table columns={columns} title="Maquinas">
-          {maquinas.map((item) => (
-            <tr key={item.id}>
-              <td>{item.tipo}</td>
-              <td>{item.serie}</td>
-              <td>{item.nombre}</td>
-              <td>{item.marca.nombre}</td>
-              <td>{item.modelo}</td>
-              <td>{item.registro}</td>
-              <td className="flex items-center">
-                <ButtonEdit
-                  onClick={() =>
-                    setModal({
-                      show: true,
-                      content: (
-                        <CreateOrUpdateMaquinas
-                          maquina={{
-                            ...item,
-                            marca: item.marca.id,
-                            placa: item.placa || ''
-                          }}
-                          toggleModal={(show) => toggleModal(show)}
-                        />
-                      ),
-                      size: 'modal-md'
-                    })
-                  }
-                />
-                <ButtonDelete
-                  onClick={() => {
-                    setDeleteModal({ show: true, id: item.id });
-                  }}
-                />
-              </td>
-            </tr>
-          ))}
+          {maquinas?.data?.length &&
+            maquinas?.data?.map((item) => (
+              <tr key={item.id}>
+                <td>{item.tipo}</td>
+                <td>{item.serie}</td>
+                <td>{item.nombre}</td>
+                <td>{item.marca.nombre}</td>
+                <td>{item.modelo}</td>
+                <td>{item.registro}</td>
+                <td className="flex items-center">
+                  <ButtonEdit
+                    onClick={() => {
+                      handleEditMarca(item);
+                    }}
+                  />
+                  <ButtonDelete
+                    onClick={() => {
+                      handleDeleteMaquina(item.id);
+                    }}
+                  />
+                </td>
+              </tr>
+            ))}
         </Table>
-      </div>
-      {deleteModal.show && (
-        <ModalDelete
-          onDelete={() => {
-            setDeleteModal({ ...deleteModal, show: false });
-            trackPromise(MaquinaServices.delete(deleteModal.id)).then(() => {
-              const filter = maquinas.filter(
-                (item) => item.id !== deleteModal.id
-              );
-              setMaquinas(filter);
-            });
+        <Pagination
+          onPageChange={(pageNumber) => {
+            fetchData(pageNumber);
           }}
-          onClose={() => setDeleteModal(false)}
+          totalCount={maquinas?.total ? maquinas?.total : 0}
+          currentPage={maquinas?.current_page ? maquinas?.current_page : 0}
+          pageSize={maquinas?.per_page ? maquinas?.per_page : 0}
         />
-      )}
-      {modal.show && (
-        <Modal
-          size={modal.size}
-          onClose={() => {
-            setModal({ show: false, content: null });
-          }}
-        >
-          {modal.content}
-        </Modal>
-      )}
+      </div>
     </div>
   );
 }

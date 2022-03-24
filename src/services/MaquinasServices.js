@@ -2,8 +2,10 @@ import axios from 'axios';
 
 const MaquinaServices = {};
 
-MaquinaServices.get = async () => {
-  const { data } = await axios.get('http://localhost:8000/api/maquinas');
+MaquinaServices.get = async (pageNumber) => {
+  const { data } = await axios.get(
+    `http://localhost:8000/api/maquinas?page=${pageNumber}`
+  );
   return data;
 };
 
