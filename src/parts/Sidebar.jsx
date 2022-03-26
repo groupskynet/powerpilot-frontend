@@ -190,7 +190,7 @@ function Sidebar() {
             </svg>
           </SidebarLink>
           <SidebarLink
-            link="/servicios/orden_Servicio"
+            link="/servicios/ordenServicio"
             title="Orden de Servicio"
             linkactive={false}
           >

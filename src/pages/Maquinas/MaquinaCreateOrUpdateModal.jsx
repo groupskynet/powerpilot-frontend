@@ -51,14 +51,14 @@ export default NiceModal.create(({ maquina }) => {
     async function fetch() {
       try {
         setLoading(true);
-        const respMarcas = await MarcasServices.get(1);
+        const respMarcas = await MarcasServices.all();
         if (respMarcas.status === 200) {
-          setMarcas(respMarcas.data.data);
+          setMarcas(respMarcas.data);
         }
       } catch (error) {
         setInfo({
           type: 'error',
-          message: 'se ha producido un error,por favor intentelo más tarde.'
+          message: 'se ha producido un error, por favor intentelo más tarde.'
         });
       } finally {
         setLoading(false);
@@ -84,7 +84,7 @@ export default NiceModal.create(({ maquina }) => {
       } catch (e) {
         setInfo({
           type: 'error',
-          message: 'se ha producido un error,por favor intentelo más tarde.'
+          message: 'se ha producido un error, por favor intentelo más tarde.'
         });
       } finally {
         setLoading(false);
