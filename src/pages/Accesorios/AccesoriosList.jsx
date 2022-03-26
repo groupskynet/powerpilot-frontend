@@ -1,30 +1,34 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { trackPromise, usePromiseTracker } from 'react-promise-tracker';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  Box,
+  CloseButton
+} from '@chakra-ui/react';
+import { useModal } from '@ebay/nice-modal-react';
 import BreadCrumbs from '../../components/ BreadCrumbs';
 import ButtonDelete from '../../components/ButtonDelete';
 import ButtonEdit from '../../components/ButtonEdit';
-import Modal from '../../components/Modal';
-import ModalDelete from '../../components/ModalDelete';
+import DeleteModal from '../Shared/DeleteModal';
 import Table from '../../components/Table';
-import CreateOrUpdateAccesorio from './AccesorioCreateOrUpdate';
+import Pagination from '../../components/Pagination/Pagination';
+import AccesorioCreateOrUpdateModal from './AccesorioCreateOrUpdate';
 import Loading from '../../components/Loading';
 import AccesoriosServices from '../../services/AccesoriosServices';
 
 function AccesoriosList() {
-  const { promiseInProgress } = usePromiseTracker();
-
+  const accesorioModal = useModal(AccesorioCreateOrUpdateModal);
+  const deleteModal = useModal(DeleteModal);
   const [accesorios, setAccesorios] = useState([]);
-  const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
-  const [modal, setModal] = useState({
-    show: false,
-    content: null,
-    size: 'modal-sm'
-  });
+  const [loading, setLoading] = useState(false);
+  const [info, setInfo] = useState(false);
+
   const breadCrumbs = useMemo(
     () => [
       { title: 'Inicio', url: '/' },
-      { title: 'Accesorio', url: '/gestion/accesorios' }
+      { title: 'Accesorios', url: '/gestion/accesorios' }
     ],
     []
   );
@@ -42,30 +46,92 @@ function AccesoriosList() {
     []
   );
 
-  useEffect(() => {
-    async function fetch() {
-      try {
-        const respAccesorios = await AccesoriosServices.get();
-        if (respAccesorios.status === 200) {
-          setAccesorios(respAccesorios.data);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    trackPromise(fetch());
-  }, []);
-
-  function toggleModal(show) {
-    setModal({ ...modal, show });
-    AccesoriosServices.get().then((resp) => {
-      if (resp.status === 200) {
-        setAccesorios(resp.data);
-      }
+  const handleNewAccesorio = useCallback(() => {
+    accesorioModal.show().then((newAccesorio) => {
+      setInfo({ type: 'success', message: 'Accesorio Creado Correctamente' });
+      setAccesorios((state) => ({
+        ...state,
+        data: [newAccesorio, ...state.data]
+      }));
     });
+  }, [accesorioModal]);
+
+  const handleEditAccesorio = useCallback(
+    (accesorio) => {
+      accesorioModal.show({ accesorio }).then((newAccesorio) => {
+        setAccesorios((state) => {
+          const i = state.data.findIndex((m) => m.id === newAccesorio.id);
+          const updated = { ...state.data[i], ...accesorio };
+          const arr = [...state.data];
+          arr.splice(i, 1, updated);
+          return { ...state, data: arr };
+        });
+        setInfo({
+          type: 'success',
+          message: ' Accesorio Actualizado Correctamente'
+        });
+      });
+    },
+    [accesorioModal]
+  );
+
+  const handleDeleteAccesorio = useCallback(
+    (id) => {
+      deleteModal.show().then(async () => {
+        try {
+          setLoading(true);
+          const response = await AccesoriosServices.delete(id);
+          if (response.status === 200) {
+            setAccesorios((state) => {
+              const list = state.data.filter((item) => item.data !== id);
+              return { ...state, data: list };
+            });
+            setInfo({
+              type: 'success',
+              message: 'Accesorio Eliminado Correctamente'
+            });
+          } else {
+            setInfo({
+              type: 'warning',
+              message: response.message
+            });
+          }
+        } catch (error) {
+          setInfo({
+            type: 'error',
+            message: 'se ha producido un error, por favor intentelo mas tarde'
+          });
+        } finally {
+          setLoading(false);
+          deleteModal.remove();
+        }
+      });
+    },
+    [deleteModal]
+  );
+
+  async function fetchData(pageNumber = 1) {
+    try {
+      setLoading(true);
+      const response = await AccesoriosServices.get(pageNumber);
+      if (response.status === 200) {
+        setAccesorios(response.data);
+      }
+    } catch (error) {
+      setInfo({
+        type: 'error',
+        message: 'se ha producido error, por favor intentelo más tarde'
+      });
+    } finally {
+      setLoading(false);
+    }
   }
 
-  if (promiseInProgress) return <Loading />;
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  if (loading) return <Loading />;
 
   return (
     <div>
@@ -79,84 +145,66 @@ function AccesoriosList() {
             <button
               type="button"
               className="btn btn-success"
-              onClick={() =>
-                setModal({
-                  show: true,
-                  size: 'modal-md',
-                  content: (
-                    <CreateOrUpdateAccesorio
-                      toggleModal={(show) => toggleModal(show)}
-                    />
-                  )
-                })
-              }
+              onClick={() => {
+                handleNewAccesorio();
+              }}
             >
               Agregar
             </button>
           </div>
         </div>
+        {info && (
+          <div className="mb-2">
+            <Alert status={info.type}>
+              <AlertIcon />
+              <Box flex="1">
+                <AlertDescription display="block">
+                  {info.message}
+                </AlertDescription>
+              </Box>
+              <CloseButton
+                position="absolute"
+                right="8px"
+                top="8px"
+                onClick={() => setInfo(null)}
+              />
+            </Alert>
+          </div>
+        )}
         <Table columns={columns} title="Accesorios">
-          {accesorios.map((item) => (
-            <tr key={item.id}>
-              <td>{item.maquina.nombre}</td>
-              <td>{item.nombre}</td>
-              <td>{item.marca.nombre}</td>
-              <td>{item.modelo}</td>
-              <td>{item.serie}</td>
-              <td>{item.registro}</td>
-              <td className="flex items-center">
-                <ButtonEdit
-                  onClick={() =>
-                    setModal({
-                      show: true,
-                      content: (
-                        <CreateOrUpdateAccesorio
-                          accesorio={{
-                            ...item,
-                            marca: item.marca.id,
-                            maquina: item.maquina.id
-                          }}
-                          toggleModal={(show) => toggleModal(show)}
-                        />
-                      ),
-                      size: 'modal-md'
-                    })
-                  }
-                />
-                <ButtonDelete
-                  onClick={() => {
-                    setDeleteModal({ show: true, id: item.id });
-                  }}
-                />
-              </td>
-            </tr>
-          ))}
+          {accesorios?.data?.length &&
+            accesorios?.data.map((item) => (
+              <tr key={item.id}>
+                <td>{item.maquina.nombre}</td>
+                <td>{item.nombre}</td>
+                <td>{item.marca.nombre}</td>
+                <td>{item.modelo}</td>
+                <td>{item.serie}</td>
+                <td>{item.registro}</td>
+                <td className="flex items-center">
+                  <ButtonEdit
+                    onClick={() => {
+                      handleEditAccesorio(item);
+                    }}
+                  />
+                  <ButtonDelete
+                    onClick={() => {
+                      handleDeleteAccesorio(item.id);
+                    }}
+                  />
+                </td>
+              </tr>
+            ))}
         </Table>
-      </div>
-      {deleteModal.show && (
-        <ModalDelete
-          onDelete={() => {
-            setDeleteModal({ ...deleteModal, show: false });
-            trackPromise(AccesoriosServices.delete(deleteModal.id)).then(() => {
-              const filter = accesorios.filter(
-                (item) => item.id !== deleteModal.id
-              );
-              setAccesorios(filter);
-            });
+        <Pagination
+          onPageChange={(pageNumber) => {
+            fetchData(pageNumber);
           }}
-          onClose={() => setDeleteModal(false)}
+          totalCount={accesorios?.total ? accesorios?.total : 0}
+          currentPage={accesorios?.currentPage ? accesorios?.currentPage : 0}
+          pageSize={accesorios?.per_page ? accesorios?.per_page : 0}
         />
-      )}
-      {modal.show && (
-        <Modal
-          size={modal.size}
-          onClose={() => {
-            setModal({ show: false, content: null });
-          }}
-        >
-          {modal.content}
-        </Modal>
-      )}
+      </div>
     </div>
   );
 }
