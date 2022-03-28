@@ -174,7 +174,7 @@ function OperadoresList() {
           {operadores?.data?.length > 0 &&
             operadores?.data.map((item) => (
               <tr key={item.id}>
-                <td>{item.cedula}</td>
+                <td>{new Intl.NumberFormat().format(item.cedula)}</td>
                 <td>{`${item.nombres} ${item.apellidos}`}</td>
                 <td>{item.telefono1}</td>
                 <td>{item.telefono2 || 'N/A'}</td>

@@ -94,7 +94,7 @@ export default NiceModal.create(({ maquina }) => {
   );
 
   return (
-    <Modal isOpen={modal.visible} size="5xl" onClose={() => modal.hide()}>
+    <Modal isOpen={modal.visible} size="5xl" onClose={() => modal.remove()}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
@@ -350,7 +350,7 @@ export default NiceModal.create(({ maquina }) => {
                         <button
                           type="button"
                           className="btn btn-danger ml-2"
-                          onClick={() => modal.hide()}
+                          onClick={() => modal.remove()}
                         >
                           Cancelar
                         </button>

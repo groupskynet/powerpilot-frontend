@@ -1,22 +1,30 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  Box,
+  CloseButton
+} from '@chakra-ui/react';
+import { useModal } from '@ebay/nice-modal-react';
 import BreadCrumbs from '../../components/ BreadCrumbs';
 import ButtonDelete from '../../components/ButtonDelete';
 import ButtonEdit from '../../components/ButtonEdit';
 import ButtonView from '../../components/ButtonView';
-import Modal from '../../components/Modal';
-import ModalDelete from '../../components/ModalDelete';
 import Table from '../../components/Table';
-import uuid from '../../utils/uuid';
-import CreateOrUpdateProveedor from '../Shared/Cliente_ProveedorCreateOrUpdate';
-import ProveedoresView from './ProveedoresView';
+import Loading from '../../components/Loading';
+import Pagination from '../../components/Pagination/Pagination';
+import ProveedorCreateOrUpdateModal from './ProveedorCreateOrUpdateModal';
+import DeleteModal from '../Shared/DeleteModal';
+import ProveedoresServices from '../../services/ProveedoresServices';
 
 function ProveedoresList() {
-  const [modal, setModal] = useState({
-    show: false,
-    content: null,
-    size: 'modal-sm'
-  });
-  const [deleteModal, setDeleteModal] = useState(false);
+  const proveedorModal = useModal(ProveedorCreateOrUpdateModal);
+  const deleteModal = useModal(DeleteModal);
+  const [proveedores, setProveedores] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [info, setInfo] = useState(false);
+
   const breadCrumbs = useMemo(
     () => [
       { title: 'Inicio', url: '/' },
@@ -27,16 +35,103 @@ function ProveedoresList() {
 
   const columns = useMemo(
     () => [
-      'Cedula',
-      'Nombres',
-      'Telefono 1',
-      'Telefono 2',
+      'TIpo',
+      'Cedula/Nit',
+      'Nombres/Razon Social',
+      'Telefono',
       'Direccion',
       'Email',
       'Acciones'
     ],
     []
   );
+
+  const handleNewProveedor = useCallback(() => {
+    proveedorModal.show().then((newProveedor) => {
+      setInfo({ type: 'success', message: 'Proveedor Creado Correctamente' });
+      setProveedores((state) => ({
+        ...state,
+        data: [newProveedor, ...state.data]
+      }));
+    });
+  }, [proveedorModal]);
+
+  const handleEditProveedor = useCallback(
+    (proveedor) => {
+      proveedorModal.show({ proveedor }).then((newProveedor) => {
+        setProveedores((state) => {
+          const i = state.data.findIndex((m) => m.id === newProveedor.id);
+          const updated = { ...state.data[i], ...newProveedor };
+          const arr = [...state.data];
+          arr.splice(i, 1, updated);
+          return { ...state, data: arr };
+        });
+        setInfo({
+          type: 'success',
+          message: 'Proveedor Actualizado Correctamente'
+        });
+      });
+    },
+    [proveedorModal]
+  );
+
+  const handleDeleteProveedor = useCallback(
+    (id) => {
+      deleteModal.show().then(async () => {
+        try {
+          setLoading(true);
+          const response = await ProveedoresServices.delete(id);
+          if (response.status === 200) {
+            setProveedores((state) => {
+              const list = state.data.filter((item) => item.id !== id);
+              return { ...state, data: list };
+            });
+            setInfo({
+              type: 'success',
+              message: 'Proveedor Eliminado Correctamente'
+            });
+          } else {
+            setInfo({
+              type: 'warning',
+              message: response.message
+            });
+          }
+        } catch (error) {
+          setInfo({
+            type: 'error',
+            message: 'se ha producido un error, por favor intentalo más tarde.'
+          });
+        } finally {
+          setLoading(false);
+          deleteModal.remove();
+        }
+      });
+    },
+    [deleteModal]
+  );
+
+  async function fetchData(pageNumber = 1) {
+    try {
+      setLoading(true);
+      const response = await ProveedoresServices.get(pageNumber);
+      if (response.status === 200) {
+        setProveedores(response.data);
+      }
+    } catch (error) {
+      setInfo({
+        type: 'error',
+        message: 'se ha producido un error, por favor intentelo más tarde'
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  if (loading) return <Loading />;
 
   return (
     <div>
@@ -48,89 +143,75 @@ function ProveedoresList() {
             <button
               type="button"
               className="btn btn-success"
-              onClick={() =>
-                setModal({
-                  show: true,
-                  size: 'modal-md',
-                  content: (
-                    <CreateOrUpdateProveedor
-                      onClose={() => setModal({ show: false, content: null })}
-                    />
-                  )
-                })
-              }
+              onClick={() => {
+                handleNewProveedor();
+              }}
             >
               Agregar
             </button>
           </div>
         </div>
-        <Table columns={columns} title="Proveedores">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map(() => (
-            <tr key={uuid()}>
-              <td>1065848333</td>
-              <td>Camilo Andres Colon</td>
-              <td>3017764758</td>
-              <td>3173827414</td>
-              <td>Cll 18d #36 - 125 Villa Luz</td>
-              <td>Colonca1999@gmail.com</td>
-              <td className="flex items-center  justify-between">
-                <ButtonView
-                  onClick={() => {
-                    setModal({
-                      show: true,
-                      content: (
-                        <ProveedoresView
-                          proveedor={{
-                            cedula: '1065848333',
-                            nombres: 'Camilo Andres Colon Cañizares',
-                            direccion: 'Cll 18d #36 - 125 Villa Luz',
-                            email: 'Colonca1999@gmail.com',
-                            telefono1: '301776478',
-                            telefono2: '3173827414'
-                          }}
-                        />
-                      ),
-                      size: 'modal-sm'
-                    });
-                  }}
-                />
-                <ButtonEdit
-                  onClick={() =>
-                    setModal({
-                      show: true,
-                      content: (
-                        <CreateOrUpdateProveedor
-                          id={uuid()}
-                          onClose={() =>
-                            setModal({ show: false, content: null })
-                          }
-                        />
-                      ),
-                      size: 'modal-md'
-                    })
-                  }
-                />
-                <ButtonDelete
-                  onClick={() => {
-                    setDeleteModal(true);
-                  }}
-                />
-              </td>
-            </tr>
-          ))}
+        {info && (
+          <div className="mb-2">
+            <Alert status={info.type}>
+              <AlertIcon />
+              <Box flex="1">
+                <AlertDescription display="block">
+                  {info.message}
+                </AlertDescription>
+              </Box>
+              <CloseButton
+                position="absolute"
+                right="8px"
+                top="8px"
+                onClick={() => setInfo(null)}
+              />
+            </Alert>
+          </div>
+        )}
+        <Table columns={columns} title="Clientes">
+          {proveedores?.data?.length &&
+            proveedores?.data?.map((item) => (
+              <tr key={item.id}>
+                <td>{item.tipo}</td>
+                <td>
+                  {new Intl.NumberFormat().format(
+                    item.tipo === 'PERSONA JURIDICA' ? item.nit : item.cedula
+                  )}
+                </td>
+                <td>
+                  {item.tipo === 'PERSONA JURIDICA'
+                    ? item.razonSocial
+                    : item.nombres}
+                </td>
+                <td>{item.telefono}</td>
+                <td>{item.direccion}</td>
+                <td>{item.email}</td>
+                <td className="flex items-center">
+                  <ButtonView onClick={() => {}} />
+                  <ButtonEdit
+                    onClick={() => {
+                      handleEditProveedor(item);
+                    }}
+                  />
+                  <ButtonDelete
+                    onClick={() => {
+                      handleDeleteProveedor(item.id);
+                    }}
+                  />
+                </td>
+              </tr>
+            ))}
         </Table>
-      </div>
-      {deleteModal && <ModalDelete onClose={() => setDeleteModal(false)} />}
-      {modal.show && (
-        <Modal
-          size={modal.size}
-          onClose={() => {
-            setModal({ show: false, content: null });
+        <Pagination
+          onPageChange={(pageNumber) => {
+            fetchData(pageNumber);
           }}
-        >
-          {modal.content}
-        </Modal>
-      )}
+          totalCount={proveedores?.total ? proveedores?.total : 0}
+          currentPage={proveedores?.currentPage ? proveedores?.currentPage : 0}
+          pageSize={proveedores?.per_page ? proveedores?.per_page : 0}
+        />
+      </div>
     </div>
   );
 }

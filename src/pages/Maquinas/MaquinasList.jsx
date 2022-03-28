@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-
 import {
   Alert,
   AlertDescription,
@@ -95,7 +94,7 @@ function MaquinasList() {
         } catch (error) {
           setInfo({
             type: 'error',
-            message: 'se ha producido un error,por favor intentelo más tarde.'
+            message: 'se ha producido un error, por favor intentelo más tarde.'
           });
         } finally {
           setLoading(false);
@@ -116,7 +115,7 @@ function MaquinasList() {
     } catch (error) {
       setInfo({
         type: 'error',
-        message: 'se ha producido un error,por favor intentelo más tarde.'
+        message: 'se ha producido un error, por favor intentelo más tarde.'
       });
     } finally {
       setLoading(false);

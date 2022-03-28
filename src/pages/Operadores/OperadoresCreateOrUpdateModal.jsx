@@ -208,7 +208,7 @@ export default NiceModal.create(({ operador }) => {
                             : ''
                         }`}
                         id="grid-phone-2"
-                        type="tel"
+                        type="number"
                         name="telefono2"
                         value={formik.values.telefono2}
                         placeholder="phone 2"

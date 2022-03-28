@@ -24,7 +24,9 @@ ClientesServices.update = async (request) => {
 };
 
 ClientesServices.delete = async (id) => {
-  const { data } = await axios.delete(`http://localhost:/api/clientes/${id}`);
+  const { data } = await axios.delete(
+    `http://localhost:8000/api/clientes/${id}`
+  );
   return data;
 };
 
