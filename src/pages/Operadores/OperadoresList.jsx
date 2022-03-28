@@ -1,26 +1,30 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { trackPromise, usePromiseTracker } from 'react-promise-tracker';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  Box,
+  CloseButton
+} from '@chakra-ui/react';
+import { useModal } from '@ebay/nice-modal-react';
 import BreadCrumbs from '../../components/ BreadCrumbs';
 import ButtonDelete from '../../components/ButtonDelete';
 import ButtonEdit from '../../components/ButtonEdit';
-import Modal from '../../components/Modal';
-import ModalDelete from '../../components/ModalDelete';
 import Table from '../../components/Table';
-import CreateOrUpdateOperador from './OperadoresCreateOrUpdate';
 import Loading from '../../components/Loading';
 import OperadoresServices from '../../services/OperadoresServices';
+import OperadoresCreateOrUpdateModal from './OperadoresCreateOrUpdateModal';
+import DeleteModal from '../Shared/DeleteModal';
 
 function OperadoresList() {
-  const { promiseInProgress } = usePromiseTracker();
+  const operadorModal = useModal(OperadoresCreateOrUpdateModal);
+  const deleteModal = useModal(DeleteModal);
 
   const [operadores, setOperadores] = useState([]);
-  const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
-  const [modal, setModal] = useState({
-    show: false,
-    content: null,
-    size: 'modal-sm'
-  });
+  const [info, setInfo] = useState(null);
+  const [loading, setLoading] = useState(false);
+
   const breadCrumbs = useMemo(
     () => [
       { title: 'Inicio', url: '/' },
@@ -43,32 +47,92 @@ function OperadoresList() {
     []
   );
 
-  useEffect(() => {
-    async function fetch() {
-      try {
-        const respOperadores = await OperadoresServices.get();
-        if (respOperadores.status === 200) {
-          console.log(respOperadores);
-          setOperadores(respOperadores.data);
-        }
-      } catch (error) {
-        console.log(error);
+  const fetchData = async (pageNumber = 1) => {
+    try {
+      setLoading(true);
+      const respOperadores = await OperadoresServices.get(pageNumber);
+      if (respOperadores.status === 200) {
+        setOperadores(respOperadores.data);
       }
+    } catch (error) {
+      setInfo({
+        type: 'error',
+        message: 'se ha producido un error,por favor intentelo más tarde.'
+      });
+    } finally {
+      setLoading(false);
     }
+  };
 
-    trackPromise(fetch());
+  useEffect(() => {
+    fetchData();
   }, []);
 
-  function toogleModal(show) {
-    setModal({ ...modal, show });
-    OperadoresServices.get().then((resp) => {
-      if (resp.status === 200) {
-        setOperadores(resp.data);
-      }
+  const handleNewOperador = useCallback(() => {
+    operadorModal.show().then((newOperador) => {
+      setInfo({ type: 'success', message: 'Maquina Creada Correctamente' });
+      setOperadores((state) => ({
+        ...state,
+        data: [newOperador, ...state.data]
+      }));
     });
-  }
+  }, [operadorModal]);
 
-  if (promiseInProgress) return <Loading />;
+  const handleEditOperadores = useCallback(
+    (operador) => {
+      operadorModal.show({ operador }).then((newOperador) => {
+        setInfo({
+          type: 'success',
+          message: 'Operador Actualizada Correctamente'
+        });
+        setOperadores((state) => {
+          const i = state.data.findIndex((m) => m.id === newOperador.id);
+          const updated = { ...state.data[i], ...newOperador };
+          const arr = [...state.data];
+          arr.splice(i, 1, updated);
+          return { ...state, data: arr };
+        });
+      });
+    },
+    [operadorModal]
+  );
+
+  const handleDeleteOperador = useCallback(
+    (id) => {
+      deleteModal.show().then(async () => {
+        try {
+          setLoading(true);
+          const response = await OperadoresServices.delete(id);
+          if (response.status === 200) {
+            setOperadores((state) => {
+              const list = state.data.filter((item) => item.id !== id);
+              return { ...state, data: list };
+            });
+            setInfo({
+              type: 'success',
+              message: 'Operador Eliminado Correctamente'
+            });
+          } else {
+            setInfo({
+              type: 'warning',
+              message: response.message
+            });
+          }
+        } catch (error) {
+          setInfo({
+            type: 'error',
+            message: 'se ha producido un error,por favor intentelo más tarde.'
+          });
+        } finally {
+          setLoading(false);
+          deleteModal.remove();
+        }
+      });
+    },
+    [deleteModal]
+  );
+
+  if (loading) return <Loading />;
 
   return (
     <div>
@@ -80,101 +144,76 @@ function OperadoresList() {
             <button
               type="button"
               className="btn btn-success"
-              onClick={() =>
-                setModal({
-                  show: true,
-                  size: 'modal-md',
-                  content: (
-                    <CreateOrUpdateOperador
-                      toogleModal={(show) => toogleModal(show)}
-                    />
-                  )
-                })
-              }
+              onClick={() => {
+                handleNewOperador();
+              }}
             >
               Agregar
             </button>
           </div>
         </div>
+        {info && (
+          <div className="mb-2">
+            <Alert status={info.type}>
+              <AlertIcon />
+              <Box flex="1">
+                <AlertDescription display="block">
+                  {info.message}
+                </AlertDescription>
+              </Box>
+              <CloseButton
+                position="absolute"
+                right="8px"
+                top="8px"
+                onClick={() => setInfo(null)}
+              />
+            </Alert>
+          </div>
+        )}
         <Table columns={columns} title="Operadores">
-          {operadores.map((item) => (
-            <tr key={item.id}>
-              <td>{item.cedula}</td>
-              <td>{`${item.nombres} ${item.apellidos}`}</td>
-              <td>{item.telefono1}</td>
-              <td>{item.telefono2}</td>
-              <td>{item.direccion}</td>
-              <td>{item.email}</td>
-              <td className="flex justify-center">
-                <button type="button">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                    />
-                  </svg>
-                </button>
-              </td>
-              <td className="items-center">
-                <ButtonEdit
-                  onClick={() =>
-                    setModal({
-                      show: true,
-                      content: (
-                        <CreateOrUpdateOperador
-                          operador={{
-                            ...item,
-                            telefono2: item.telefono2 || ''
-                          }}
-                          toogleModal={(show) => toogleModal(show)}
-                        />
-                      ),
-                      size: 'modal-md'
-                    })
-                  }
-                />
-                <ButtonDelete
-                  onClick={() => {
-                    setDeleteModal({ show: true, id: item.id });
-                  }}
-                />
-              </td>
-            </tr>
-          ))}
+          {operadores?.data?.length > 0 &&
+            operadores?.data.map((item) => (
+              <tr key={item.id}>
+                <td>{item.cedula}</td>
+                <td>{`${item.nombres} ${item.apellidos}`}</td>
+                <td>{item.telefono1}</td>
+                <td>{item.telefono2 || 'N/A'}</td>
+                <td>{item.direccion}</td>
+                <td>{item.email}</td>
+                <td className="flex justify-center">
+                  <button type="button">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                      />
+                    </svg>
+                  </button>
+                </td>
+                <td className="items-center">
+                  <ButtonEdit
+                    onClick={() => {
+                      handleEditOperadores(item);
+                    }}
+                  />
+                  <ButtonDelete
+                    onClick={() => {
+                      handleDeleteOperador(item.id);
+                    }}
+                  />
+                </td>
+              </tr>
+            ))}
         </Table>
       </div>
-      {deleteModal.show && (
-        <ModalDelete
-          onDelete={() => {
-            setDeleteModal({ ...deleteModal, show: false });
-            trackPromise(OperadoresServices.delete(deleteModal.id)).then(() => {
-              const filter = operadores.filter(
-                (item) => item.id !== deleteModal.id
-              );
-              setOperadores(filter);
-            });
-          }}
-          onClose={() => setDeleteModal(false)}
-        />
-      )}
-      {modal.show && (
-        <Modal
-          size={modal.size}
-          onClose={() => {
-            setModal({ show: false, content: null });
-          }}
-        >
-          {modal.content}
-        </Modal>
-      )}
     </div>
   );
 }

@@ -2,6 +2,11 @@ import React, { useCallback, useState } from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  Box,
+  CloseButton,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -18,6 +23,7 @@ export default NiceModal.create(({ marca }) => {
   const modal = useModal();
 
   const [loading, setLoading] = useState(false);
+  const [info, setInfo] = useState(null);
 
   const handleSubmit = useCallback(
     async (values) => {
@@ -32,7 +38,10 @@ export default NiceModal.create(({ marca }) => {
         modal.resolve(newMarca);
         await modal.remove();
       } catch (e) {
-        console.log(e);
+        setInfo({
+          type: 'error',
+          message: 'se ha producido un error,por favor intentelo más tarde.'
+        });
       } finally {
         setLoading(false);
       }
@@ -53,6 +62,24 @@ export default NiceModal.create(({ marca }) => {
         )}
         {!loading && (
           <ModalBody>
+            {info && (
+              <div className="mb-2">
+                <Alert status={info.type}>
+                  <AlertIcon />
+                  <Box flex="1">
+                    <AlertDescription display="block">
+                      {info.message}
+                    </AlertDescription>
+                  </Box>
+                  <CloseButton
+                    position="absolute"
+                    right="8px"
+                    top="8px"
+                    onClick={() => setInfo(null)}
+                  />
+                </Alert>
+              </div>
+            )}
             <Formik
               initialValues={
                 marca || {

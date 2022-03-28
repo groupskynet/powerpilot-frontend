@@ -61,7 +61,7 @@ function AccesoriosList() {
       accesorioModal.show({ accesorio }).then((newAccesorio) => {
         setAccesorios((state) => {
           const i = state.data.findIndex((m) => m.id === newAccesorio.id);
-          const updated = { ...state.data[i], ...accesorio };
+          const updated = { ...state.data[i], ...newAccesorio };
           const arr = [...state.data];
           arr.splice(i, 1, updated);
           return { ...state, data: arr };
@@ -83,7 +83,7 @@ function AccesoriosList() {
           const response = await AccesoriosServices.delete(id);
           if (response.status === 200) {
             setAccesorios((state) => {
-              const list = state.data.filter((item) => item.data !== id);
+              const list = state.data.filter((item) => item.id !== id);
               return { ...state, data: list };
             });
             setInfo({

@@ -15,91 +15,50 @@ import {
   ModalOverlay
 } from '@chakra-ui/react';
 import { Formik } from 'formik';
-import Select from 'react-select';
 import Loading from '../../components/Loading';
+import OperadoresServices from '../../services/OperadoresServices';
+import validationOperadores from './Schema';
 
-import validationAccesorio from './Schema';
-import AccesoriosServices from '../../services/AccesoriosServices';
-import LiteralesServices from '../../services/LiteralesServices';
-
-export default NiceModal.create(({ accesorio }) => {
+export default NiceModal.create(({ operador }) => {
   const modal = useModal();
-
   const [loading, setLoading] = useState(false);
   const [info, setInfo] = useState(null);
   const [data, setData] = useState(null);
-  const [marcas, setMarcas] = useState([]);
-  const [maquinas, setMaquinas] = useState([]);
 
   useEffect(() => {
-    if (accesorio) {
-      setData({
-        ...accesorio,
-        marca: accesorio.marca.id,
-        maquina: accesorio.maquina.id
-      });
-    }
-  }, [accesorio]);
-
-  useEffect(() => {
-    async function fetch() {
-      try {
-        setLoading(true);
-        const respMarcas = await LiteralesServices.get({ model: 'marcas' });
-        if (respMarcas.status === 200) {
-          setMarcas(respMarcas.data);
-        }
-        const respMaquinas = await LiteralesServices.get({ model: 'maquinas' });
-        if (respMaquinas.status === 200) {
-          setMaquinas(respMaquinas.data);
-        }
-      } catch (error) {
-        setInfo({
-          type: 'error',
-          message: 'se ha producido un error, por favor intentelo más tarde'
-        });
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetch();
-  }, []);
+    if (operador) setData({ ...operador, telefono2: operador.telefono2 || '' });
+  }, [operador]);
 
   const handleSubmit = useCallback(
     async (values) => {
-      const newAccesorio = { ...values };
+      const newOperador = { ...values };
       try {
         setLoading(true);
-        let resp = null;
-        if (!accesorio) {
-          resp = await AccesoriosServices.post(newAccesorio);
+        if (!operador) {
+          await OperadoresServices.post(newOperador);
         } else {
-          resp = await AccesoriosServices.update(newAccesorio);
+          await OperadoresServices.update(newOperador);
         }
-        if (resp.status !== 200) throw new Error();
-        const marca = marcas.find((item) => item.id === values.marca);
-        const maquina = maquinas.find((item) => item.id === values.maquina);
-        modal.resolve({ ...newAccesorio, marca, maquina });
+        modal.resolve(newOperador);
         await modal.remove();
       } catch (e) {
         setInfo({
           type: 'error',
-          message: 'se ha producido un error, por favor intentelo más tarde'
+          message: 'Se ha producido un error,por favor intentalo más tarde.'
         });
       } finally {
         setLoading(false);
       }
     },
-    [modal, accesorio, marcas, maquinas]
+    [modal, operador]
   );
 
   return (
-    <Modal isOpen={modal.visible} size="5xl" onClose={() => modal.hide()}>
+    <Modal isOpen={modal.visible} size="4xl" onClose={() => modal.hide()}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          {accesorio ? 'Actualizar Accesorio' : 'Crear Accesorio'}
+          {operador ? 'Actualizar Operador' : 'Crear Operador'}
         </ModalHeader>
         <ModalCloseButton />
         {loading && (
@@ -110,7 +69,7 @@ export default NiceModal.create(({ accesorio }) => {
         {!loading && (
           <ModalBody>
             {info && (
-              <div className=" mb-2">
+              <div className="mb-2">
                 <Alert status={info.type}>
                   <AlertIcon />
                   <Box flex="1">
@@ -130,17 +89,18 @@ export default NiceModal.create(({ accesorio }) => {
             <Formik
               initialValues={
                 data || {
-                  nombre: '',
-                  marca: '',
-                  modelo: '',
-                  serie: '',
-                  linea: '',
-                  registro: '',
-                  maquina: ''
+                  nombres: '',
+                  apellidos: '',
+                  cedula: '',
+                  telefono1: '',
+                  telefono2: '',
+                  licencia: '',
+                  direccion: '',
+                  email: ''
                 }
               }
               enableReinitialize
-              validationSchema={validationAccesorio}
+              validationSchema={validationOperadores}
               onSubmit={(values) => {
                 handleSubmit(values);
               }}
@@ -153,18 +113,18 @@ export default NiceModal.create(({ accesorio }) => {
                         className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                         htmlFor="grid-name"
                       >
-                        Nombre
+                        Nombres
                       </label>
                       <input
                         className={`input-box ${
-                          formik.errors.nombre && formik.touched.nombre
+                          formik.errors.nombres && formik.touched.nombres
                             ? 'border border-red-500'
                             : ''
                         }`}
                         id="grid-name"
                         type="text"
-                        name="nombre"
-                        value={formik.values.nombre}
+                        name="nombres"
+                        value={formik.values.nombres}
                         placeholder="name"
                         onChange={formik.handleChange}
                       />
@@ -172,44 +132,42 @@ export default NiceModal.create(({ accesorio }) => {
                     <div className="w-full md:w-1/3 px-3">
                       <label
                         className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                        htmlFor="grid-marca"
+                        htmlFor="grid-last-name"
                       >
-                        Marca
+                        Apellidos
                       </label>
-                      <div className="relative">
-                        {marcas && (
-                          <Select
-                            options={marcas}
-                            getOptionLabel={(marca) => marca && marca.nombre}
-                            getOptionValue={(marca) => marca && marca.id}
-                            value={marcas.filter(
-                              (marca) => marca.id === formik.values.marca
-                            )}
-                            onChange={(marca) => {
-                              formik.setFieldValue('marca', marca.id);
-                            }}
-                          />
-                        )}
-                      </div>
+                      <input
+                        className={`input-box ${
+                          formik.errors.apellidos && formik.touched.apellidos
+                            ? 'border border-red-500'
+                            : ''
+                        }`}
+                        id="grid-last-name"
+                        type="text"
+                        name="apellidos"
+                        value={formik.values.apellidos}
+                        placeholder="last name"
+                        onChange={formik.handleChange}
+                      />
                     </div>
                     <div className="w-full md:w-1/3 px-3">
                       <label
                         className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                        htmlFor="grid-model"
+                        htmlFor="grid-id"
                       >
-                        Modelo
+                        Cédula
                       </label>
                       <input
                         className={`input-box ${
-                          formik.errors.modelo && formik.touched.modelo
+                          formik.errors.cedula && formik.touched.cedula
                             ? 'border border-red-500'
                             : ''
                         }`}
-                        id="grid-model"
+                        id="grid-id"
                         type="number"
-                        name="modelo"
-                        value={formik.values.modelo}
-                        placeholder="model"
+                        name="cedula"
+                        value={formik.values.cedula}
+                        placeholder="id"
                         onChange={formik.handleChange}
                       />
                     </div>
@@ -218,90 +176,108 @@ export default NiceModal.create(({ accesorio }) => {
                     <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
                       <label
                         className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                        htmlFor="grid-serie"
+                        htmlFor="grid-phone-1"
                       >
-                        Serie
+                        Teléfono 1
                       </label>
                       <input
                         className={`input-box ${
-                          formik.errors.serie && formik.touched.serie
+                          formik.errors.telefono1 && formik.touched.telefono1
                             ? 'border border-red-500'
                             : ''
                         }`}
-                        id="grid-serie"
-                        type="text"
-                        name="serie"
-                        value={formik.values.serie}
-                        placeholder="serie"
+                        id="grid-phone-1"
+                        type="number"
+                        name="telefono1"
+                        value={formik.values.telefono1}
+                        placeholder="phone 1"
                         onChange={formik.handleChange}
                       />
                     </div>
                     <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
                       <label
                         className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                        htmlFor="grid-line"
+                        htmlFor="grid-phone-2"
                       >
-                        Linea
+                        Teléfono 2
                       </label>
                       <input
                         className={`input-box ${
-                          formik.errors.linea && formik.touched.linea
+                          formik.errors.telefono2 && formik.touched.telefono2
                             ? 'border border-red-500'
                             : ''
                         }`}
-                        id="grid-line"
-                        type="text"
-                        name="linea"
-                        value={formik.values.linea}
-                        placeholder="line"
+                        id="grid-phone-2"
+                        type="tel"
+                        name="telefono2"
+                        value={formik.values.telefono2}
+                        placeholder="phone 2"
                         onChange={formik.handleChange}
                       />
                     </div>
-                    <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
+                    <div className="w-full md:w-2/4 px-3 mb-6 md:mb-0">
                       <label
                         className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                        htmlFor="grid-registry"
+                        htmlFor="grid-licence"
                       >
-                        número de registro
+                        Licencia
                       </label>
                       <input
                         className={`input-box ${
-                          formik.errors.registro && formik.touched.registro
+                          formik.errors.licencia && formik.touched.licencia
                             ? 'border border-red-500'
                             : ''
                         }`}
-                        id="grid-regitro"
-                        type="text"
-                        name="registro"
-                        value={formik.values.registro}
-                        placeholder="registry"
+                        id="grid-licence"
+                        type="file"
+                        name="licencia"
+                        placeholder=""
                         onChange={formik.handleChange}
                       />
                     </div>
-                    <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
+                  </div>
+                  <div className="flex flex-wrap -mx-3 mb-2">
+                    <div className="w-full md:w-1/2 px-3">
                       <label
                         className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                        htmlFor="grid-maquina"
+                        htmlFor="grid-adress"
                       >
-                        Máquina
+                        Dirección
                       </label>
-                      <div className="relative">
-                        {maquinas && (
-                          <Select
-                            options={maquinas}
-                            getOptionLabel={(maquina) =>
-                              maquina && maquina.nombre
-                            }
-                            getOptionValue={(maquina) => maquina && maquina.id}
-                            value={maquinas.filter(
-                              (maquina) => maquina.id === formik.values.maquina
-                            )}
-                            onChange={(maquina) => {
-                              formik.setFieldValue('maquina', maquina.id);
-                            }}
-                          />
-                        )}
-                      </div>
+                      <input
+                        className={`input-box ${
+                          formik.errors.direccion && formik.touched.direccion
+                            ? 'border border-red-500'
+                            : ''
+                        }`}
+                        id="grid-adress"
+                        type="text"
+                        name="direccion"
+                        value={formik.values.direccion}
+                        placeholder="adress"
+                        onChange={formik.handleChange}
+                      />
+                    </div>
+                    <div className="w-full md:w-1/2 px-3">
+                      <label
+                        className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                        htmlFor="grid-email"
+                      >
+                        Correo Electrónico
+                      </label>
+                      <input
+                        className={`input-box ${
+                          formik.errors.email && formik.touched.email
+                            ? 'border border-red-500'
+                            : ''
+                        }`}
+                        id="grid-email"
+                        type="email"
+                        name="email"
+                        value={formik.values.email}
+                        placeholder="email"
+                        onChange={formik.handleChange}
+                      />
                     </div>
                   </div>
                   <div className="flex justify-end mt-4">

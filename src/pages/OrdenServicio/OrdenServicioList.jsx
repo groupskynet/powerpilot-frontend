@@ -8,6 +8,7 @@ import {
   Box,
   CloseButton
 } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 import BreadCrumbs from '../../components/ BreadCrumbs';
 import ButtonDelete from '../../components/ButtonDelete';
 import ButtonEdit from '../../components/ButtonEdit';
@@ -146,15 +147,12 @@ function OrdenServicioList() {
             Orden de Servicio
           </h2>
           <div className="flex">
-            <button
-              type="button"
+            <Link
+              to="/servicios/orden-servicio/new"
               className="btn btn-success"
-              onClick={() => {
-                handleNewOrdenServicio();
-              }}
             >
               Agregar
-            </button>
+            </Link>
           </div>
         </div>
         {info && (

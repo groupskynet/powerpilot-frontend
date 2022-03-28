@@ -10,7 +10,9 @@ MarcasServices.get = async (pageNumber) => {
 };
 
 MarcasServices.all = async () => {
-  const { data } = await axios.all('http://localhost:8000/api/marcas/all');
+  const { data } = await axios.get(
+    'http://localhost:8000/api/literales/marcas/all'
+  );
   return data;
 };
 

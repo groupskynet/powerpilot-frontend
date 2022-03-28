@@ -2,8 +2,10 @@ import axios from 'axios';
 
 const OperadoresServices = {};
 
-OperadoresServices.get = async () => {
-  const { data } = await axios.get('http://localhost:8000/api/operadores');
+OperadoresServices.get = async (pageNumber) => {
+  const { data } = await axios.get(
+    `http://localhost:8000/api/operadores?page=${pageNumber}`
+  );
   return data;
 };
 
@@ -17,7 +19,7 @@ OperadoresServices.post = async (request) => {
 
 OperadoresServices.update = async (request) => {
   const { data } = await axios.put(
-    `http://localhost:8000/api/operadores/${request.id}`,
+    `http://localhost:8000/api/operadores/${request.id}?_method=PUT`,
     request
   );
   return data;

@@ -13,6 +13,7 @@ import ProveedoresList from './pages/Proveedores/ProveedoresList';
 import MarcasList from './pages/Marcas/MarcasList';
 import GastosList from './pages/Gastos/GastosList';
 import OrdenServicioList from './pages/OrdenServicio/OrdenServicioList';
+import OrdenServicioCreateOrUpdate from './pages/OrdenServicio/OrdenServicioCreateOrUpdate';
 
 function App() {
   return (
@@ -46,8 +47,13 @@ function App() {
               />
               <Route
                 exact
-                path="/servicios/ordenServicio"
+                path="/servicios/orden-servicio"
                 element={<OrdenServicioList />}
+              />
+              <Route
+                exact
+                path="/servicios/orden-servicio/new"
+                element={<OrdenServicioCreateOrUpdate />}
               />
 
               <Route

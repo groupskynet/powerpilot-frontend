@@ -19,7 +19,7 @@ import Select from 'react-select';
 import validationMaquina from './Schema';
 import Loading from '../../components/Loading';
 import MaquinaServices from '../../services/MaquinasServices';
-import MarcasServices from '../../services/MarcasServices';
+import LiteralesServices from '../../services/LiteralesServices';
 
 export default NiceModal.create(({ maquina }) => {
   const modal = useModal();
@@ -51,7 +51,7 @@ export default NiceModal.create(({ maquina }) => {
     async function fetch() {
       try {
         setLoading(true);
-        const respMarcas = await MarcasServices.all();
+        const respMarcas = await LiteralesServices.get({ model: 'marcas' });
         if (respMarcas.status === 200) {
           setMarcas(respMarcas.data);
         }
@@ -229,7 +229,7 @@ export default NiceModal.create(({ maquina }) => {
                                 : ''
                             }`}
                             id="grid-model"
-                            type="text"
+                            type="number"
                             name="modelo"
                             value={formik.values.modelo}
                             placeholder="model"
