@@ -287,7 +287,7 @@ export default NiceModal.create(({ operador }) => {
                     <button
                       type="button"
                       className="btn btn-danger ml-2"
-                      onClick={() => modal.hide()}
+                      onClick={() => modal.remove()}
                     >
                       Cancelar
                     </button>

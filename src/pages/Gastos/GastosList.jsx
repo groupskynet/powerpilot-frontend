@@ -1,32 +1,28 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  Box,
+  CloseButton
+} from '@chakra-ui/react';
+import { useModal } from '@ebay/nice-modal-react';
 import BreadCrumbs from '../../components/ BreadCrumbs';
 import ButtonDelete from '../../components/ButtonDelete';
 import ButtonEdit from '../../components/ButtonEdit';
-import Modal from '../../components/Modal';
 import Table from '../../components/Table';
+import Loading from '../../components/Loading';
+import Pagination from '../../components/Pagination/Pagination';
+import GastosCreateOrUpdateModal from './GastosCreateOrUpdateModal';
+import DeleteModal from '../Shared/DeleteModal';
 import GastosServices from '../../services/GastosServices';
-import CreateOrUpdateGastos from './GastosCreateOrUpdate';
 
 function GastosList() {
-  const [modal, setModal] = useState({
-    show: false,
-    content: null,
-    size: 'modal-sm'
-  });
+  const gastoModal = useModal(GastosCreateOrUpdateModal);
+  const deleteModal = useModal(DeleteModal);
   const [gastos, setGastos] = useState([]);
-
-  useEffect(() => {
-    (async function fetch() {
-      try {
-        const data = await GastosServices.get();
-        if (data.status === 200) {
-          setGastos(data.data);
-        }
-      } catch (error) {
-        console.log('error');
-      }
-    })();
-  }, []);
+  const [loading, setLoading] = useState(false);
+  const [info, setInfo] = useState(null);
 
   const breadCrumbs = useMemo(
     () => [
@@ -36,18 +32,91 @@ function GastosList() {
     []
   );
 
-  async function onClose() {
-    const data = await GastosServices.get();
-    if (data.status === 200) {
-      setGastos(data.data);
-    }
-    setModal({ show: false, content: null });
-  }
-
   const columns = useMemo(
     () => ['Maquina', 'Descripcion', 'Valor', 'soporte', 'Acciones'],
     []
   );
+
+  const handleNewGasto = useCallback(() => {
+    gastoModal.show().then((newGasto) => {
+      setInfo({ type: 'success', message: 'Gasto Creado Correctamente' });
+      setGastos((state) => ({ ...state, data: [newGasto, ...state.data] }));
+    });
+  }, [gastoModal]);
+
+  const handleEditGasto = useCallback(
+    (gasto) => {
+      gastoModal.show({ gasto }).then((newGasto) => {
+        setGastos((state) => {
+          const i = state.data.findIndex((m) => m.id === newGasto.id);
+          const updated = { ...state.data[i], ...newGasto };
+          const arr = [...state.data];
+          arr.splice(i, 1, updated);
+          return { ...state, data: arr };
+        });
+        setInfo({
+          type: 'success',
+          message: 'Gasto Actualizado Correctamente'
+        });
+      });
+    },
+    [gastoModal]
+  );
+
+  const handleDeleteGasto = useCallback(
+    (id) => {
+      deleteModal.show().then(async () => {
+        try {
+          setLoading(true);
+          const response = await GastosServices.delete(id);
+          if (response.status === 200) {
+            setGastos((state) => {
+              const list = state.data.filter((item) => item.id !== id);
+              return { ...state, data: list };
+            });
+            setInfo({
+              type: 'success',
+              message: 'Gasto Eliminado Correctamente'
+            });
+          } else {
+            setInfo({
+              type: 'warning',
+              message: response.message
+            });
+          }
+        } catch (error) {
+          setLoading(false);
+        } finally {
+          setLoading(false);
+          deleteModal.remove();
+        }
+      });
+    },
+    [deleteModal]
+  );
+
+  async function fetchData(pageNumber = 1) {
+    try {
+      setLoading(true);
+      const response = await GastosServices.get(pageNumber);
+      if (response.status === 200) {
+        setGastos(response.data);
+      }
+    } catch (error) {
+      setInfo({
+        type: 'error',
+        message: 'se ha producido un error, por favor intentelo más tarde'
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  if (loading) return <Loading />;
 
   return (
     <div>
@@ -59,26 +128,40 @@ function GastosList() {
             <button
               type="button"
               className="btn btn-success"
-              onClick={() =>
-                setModal({
-                  show: true,
-                  size: 'modal-md',
-                  content: <CreateOrUpdateGastos onClose={() => onClose()} />
-                })
-              }
+              onClick={() => {
+                handleNewGasto();
+              }}
             >
               Agregar
             </button>
           </div>
         </div>
+        {info && (
+          <div className="mb-2">
+            <Alert status={info.type}>
+              <AlertIcon />
+              <Box flex="1">
+                <AlertDescription display="block">
+                  {info.message}
+                </AlertDescription>
+              </Box>
+              <CloseButton
+                position="absolute"
+                right="8px"
+                top="8px"
+                onClick={() => setInfo(null)}
+              />
+            </Alert>
+          </div>
+        )}
         <Table columns={columns} title="Gastos">
-          {gastos.length > 0 &&
-            gastos.map((item) => (
+          {gastos?.data?.length &&
+            gastos?.data?.map((item) => (
               <tr key={item.id}>
                 <td>{item.maquina.nombre}</td>
                 <td>{item.descripcion}</td>
                 <td>{item.valor}</td>
-                <td className="flex justify-center">
+                <td className="justify-center">
                   <button type="button">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -96,42 +179,30 @@ function GastosList() {
                     </svg>
                   </button>
                 </td>
-
                 <td className="items-center">
                   <ButtonEdit
-                    onClick={() =>
-                      setModal({
-                        show: true,
-                        content: (
-                          <CreateOrUpdateGastos
-                            id={item.id}
-                            maquina={item.maquina}
-                            descripcion={item.descripcion}
-                            valor={item.valor}
-                            onClose={() => onClose()}
-                          />
-                        ),
-                        size: 'modal-md'
-                      })
-                    }
+                    onClick={() => {
+                      handleEditGasto(item);
+                    }}
                   />
-                  <ButtonDelete onClick={() => {}} />
+                  <ButtonDelete
+                    onClick={() => {
+                      handleDeleteGasto(item.id);
+                    }}
+                  />
                 </td>
               </tr>
             ))}
         </Table>
-      </div>
-      {}
-      {modal.show && (
-        <Modal
-          size={modal.size}
-          onClose={() => {
-            setModal({ show: false, content: null });
+        <Pagination
+          onPageChange={(pageNumber) => {
+            fetchData(pageNumber);
           }}
-        >
-          {modal.content}
-        </Modal>
-      )}
+          totalCount={gastos?.total ? gastos?.total : 0}
+          currentPage={gastos?.current_page ? gastos?.current_page : 0}
+          pageSize={gastos?.per_page ? gastos?.per_page : 0}
+        />
+      </div>
     </div>
   );
 }

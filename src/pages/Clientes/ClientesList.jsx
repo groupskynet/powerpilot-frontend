@@ -35,7 +35,7 @@ function ClientesList() {
 
   const columns = useMemo(
     () => [
-      'TIpo',
+      'Tipo',
       'Cedula/Nit',
       'Nombres/Razon Social',
       'Telefono',

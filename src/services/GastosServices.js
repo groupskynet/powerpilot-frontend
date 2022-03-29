@@ -23,7 +23,7 @@ GastosServices.update = async (request) => {
   return data;
 };
 GastosServices.delete = async (id) => {
-  const { data } = await axios.delete(`http://localhost:/api/gastos/${id}`);
+  const { data } = await axios.delete(`http://localhost:8000/api/gastos/${id}`);
   return data;
 };
 
