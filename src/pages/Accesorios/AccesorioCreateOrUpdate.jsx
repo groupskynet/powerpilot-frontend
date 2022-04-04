@@ -22,9 +22,8 @@ import validationAccesorio from './Schema';
 import AccesoriosServices from '../../services/AccesoriosServices';
 import LiteralesServices from '../../services/LiteralesServices';
 
-export default NiceModal.create(({ accesorio }) => {
+export default NiceModal.create(({ accesorio, list = [] }) => {
   const modal = useModal();
-
   const [loading, setLoading] = useState(false);
   const [info, setInfo] = useState(null);
   const [data, setData] = useState(null);
@@ -40,6 +39,10 @@ export default NiceModal.create(({ accesorio }) => {
       });
     }
   }, [accesorio]);
+
+  useEffect(() => {
+    if (list.length > 0) setMaquinas(list);
+  }, [list]);
 
   useEffect(() => {
     async function fetch() {
@@ -80,7 +83,8 @@ export default NiceModal.create(({ accesorio }) => {
         if (resp.status !== 200) throw new Error();
         const marca = marcas.find((item) => item.id === values.marca);
         const maquina = maquinas.find((item) => item.id === values.maquina);
-        modal.resolve({ ...newAccesorio, marca, maquina });
+        const item = { ...resp.data, marca, maquina };
+        modal.resolve(item);
         await modal.remove();
       } catch (e) {
         setInfo({

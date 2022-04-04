@@ -73,13 +73,16 @@ export default NiceModal.create(({ maquina }) => {
       const newMaquina = { ...values };
       try {
         setLoading(true);
+        let resp = null;
         if (!maquina) {
-          await MaquinaServices.post(newMaquina);
+          resp = await MaquinaServices.post(newMaquina);
         } else {
-          await MaquinaServices.update(newMaquina);
+          resp = await MaquinaServices.update(newMaquina);
         }
+        if (resp.status !== 200) throw new Error();
         const marca = marcas.find((item) => item.id === values.marca);
-        modal.resolve({ ...newMaquina, marca });
+        const item = { ...resp.data, marca };
+        modal.resolve(item);
         await modal.remove();
       } catch (e) {
         setInfo({

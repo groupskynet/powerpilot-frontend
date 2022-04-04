@@ -8,21 +8,19 @@ import {
   Box,
   CloseButton
 } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import BreadCrumbs from '../../components/ BreadCrumbs';
 import ButtonDelete from '../../components/ButtonDelete';
 import ButtonEdit from '../../components/ButtonEdit';
 import Table from '../../components/Table';
 import OrdenServicioServices from '../../services/OrdenServicioServices';
 import Loading from '../../components/Loading';
-import OrdenServicioCreateOrUpdate from './OrdenServicioCreateOrUpdate';
 import DeleteModal from '../Shared/DeleteModal';
 import Pagination from '../../components/Pagination/Pagination';
 
 function OrdenServicioList() {
-  const ordenServicioModal = useModal(OrdenServicioCreateOrUpdate);
   const deleteModal = useModal(DeleteModal);
-
+  const navegar = useNavigate();
   const [info, setInfo] = useState(null);
   const [ordenServicios, setOrdenServicio] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -47,38 +45,6 @@ function OrdenServicioList() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
-  const handleNewOrdenServicio = useCallback(() => {
-    ordenServicioModal.show().then((newOrdenServicio) => {
-      setInfo({
-        type: 'success',
-        message: 'Orden de servicio Creada Correctamente'
-      });
-      setOrdenServicio((state) => ({
-        ...state,
-        data: [newOrdenServicio, ...state.data]
-      }));
-    });
-  }, [ordenServicioModal]);
-
-  const handleEditOrdenServicio = useCallback(
-    (ordenServicio) => {
-      ordenServicioModal.show({ ordenServicio }).then((newOrdenServicio) => {
-        setInfo({
-          type: 'success',
-          message: 'Orden de Servicio Actualizada Correctamente'
-        });
-        setOrdenServicio((state) => {
-          const i = state.data.findIndex((m) => m.id === newOrdenServicio.id);
-          const updated = { ...state.data[i], ...newOrdenServicio };
-          const arr = [...state.data];
-          arr.splice(i, 1, updated);
-          return { ...state, data: arr };
-        });
-      });
-    },
-    [ordenServicioModal]
-  );
 
   const handleDeleteOrdenServicio = useCallback(
     (id) => {
@@ -148,7 +114,7 @@ function OrdenServicioList() {
           </h2>
           <div className="flex">
             <Link
-              to="/servicios/orden-servicio/new"
+              to="/servicios/orden-servicio/create"
               className="btn btn-success"
             >
               Agregar
@@ -203,7 +169,7 @@ function OrdenServicioList() {
                 <td className="flex items-center ">
                   <ButtonEdit
                     onClick={() => {
-                      handleEditOrdenServicio(item);
+                      navegar(`/servicios/orden-servicio/update/${item.id}`);
                     }}
                   />
                   <ButtonDelete

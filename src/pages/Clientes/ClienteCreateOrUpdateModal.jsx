@@ -50,12 +50,15 @@ export default NiceModal.create(({ cliente }) => {
       const newCliente = { ...values };
       try {
         setLoading(true);
+        let resp = null;
         if (!cliente) {
-          await ClientesServices.post(newCliente);
+          resp = await ClientesServices.post(newCliente);
         } else {
-          await ClientesServices.update(newCliente);
+          resp = await ClientesServices.update(newCliente);
         }
-        modal.resolve({ ...newCliente });
+        if (resp && resp.status !== 200) throw new Error();
+        const item = { ...resp.data };
+        modal.resolve(item);
         await modal.remove();
       } catch (e) {
         setInfo({

@@ -20,7 +20,7 @@ function App() {
     <div className="flex flex-col h-screen">
       <div className="flex flex-1 overflow-y-hidden">
         <Sidebar />
-        <div className="panel flex-grow flex flex-col px-6 mt-8">
+        <div className="panel flex-grow flex flex-col px-6 mt-8  overflow-x-hidden">
           <Navbar />
           <div className="flex-grow overflow-y-auto">
             <Routes>
@@ -47,12 +47,17 @@ function App() {
               />
               <Route
                 exact
+                path="/servicios/orden-servicio/update/:orden"
+                element={<OrdenServicioCreateOrUpdate />}
+              />
+              <Route
+                exact
                 path="/servicios/orden-servicio"
                 element={<OrdenServicioList />}
               />
               <Route
                 exact
-                path="/servicios/orden-servicio/new"
+                path="/servicios/orden-servicio/create"
                 element={<OrdenServicioCreateOrUpdate />}
               />
 

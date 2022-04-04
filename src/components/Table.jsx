@@ -4,7 +4,7 @@ import uuid from '../utils/uuid';
 
 function Table({ columns, children }) {
   return (
-    <div className="p-3 border rounded-lg">
+    <div className="p-3 border rounded-lg overflow-x-auto">
       <div className="overflow-x-auto">
         <table>
           <thead>
