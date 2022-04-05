@@ -15,27 +15,18 @@ import {
 } from '@chakra-ui/react';
 import { Formik } from 'formik';
 import Select from 'react-select';
-import validationGastos from './Schema';
 import Loading from '../../components/Loading';
 import LiteralesServices from '../../services/LiteralesServices';
-import GastosServices from '../../services/GastosServices';
+import validationAsignacion from './SchemaII';
+import MaquinaServices from '../../services/MaquinasServices';
 
-export default NiceModal.create(({ gasto }) => {
+export default NiceModal.create(() => {
   const modal = useModal();
 
   const [loading, setLoading] = useState(false);
   const [info, setInfo] = useState(null);
-  const [data, setData] = useState(null);
   const [maquinas, setMaquinas] = useState([]);
-
-  useEffect(() => {
-    if (gasto) {
-      setData({
-        ...gasto,
-        maquina: gasto.maquina.id
-      });
-    }
-  }, [gasto]);
+  const [operadores, setOperadores] = useState([]);
 
   useEffect(() => {
     async function fetch() {
@@ -44,6 +35,12 @@ export default NiceModal.create(({ gasto }) => {
         const respMaquinas = await LiteralesServices.get({ model: 'maquinas' });
         if (respMaquinas.status === 200) {
           setMaquinas(respMaquinas.data);
+        }
+        const respOperadores = await LiteralesServices.get({
+          model: 'operadores'
+        });
+        if (respOperadores.status === 200) {
+          setOperadores(respOperadores.data);
         }
       } catch (error) {
         setInfo({
@@ -57,34 +54,32 @@ export default NiceModal.create(({ gasto }) => {
     fetch();
   }, []);
 
-  const handleSubmit = useCallback(
-    async (values) => {
-      const newGasto = { ...values };
-      try {
-        setLoading(true);
-        if (!gasto) {
-          await GastosServices.post(newGasto);
-        } else {
-          await GastosServices.update(newGasto);
-        }
-        const maquina = maquinas.find((item) => item.id === values.maquina);
-        modal.resolve({ ...newGasto, maquina });
-        await modal.remove();
-      } catch (e) {
-        setInfo({
-          type: 'error',
-          message: 'se ha producido un error, por favor intentelo más tarde'
-        });
-      }
-    },
-    [modal, gasto, maquinas]
-  );
+  const handleSubmit = useCallback(async (values) => {
+    try {
+      setLoading(true);
+      const resp = await MaquinaServices.asignar(values);
+      if (resp.status !== 200) throw new Error();
+      setInfo({
+        type: 'success',
+        message: resp.message
+      });
+      modal.resolve(resp.data);
+      modal.remove();
+    } catch (err) {
+      setInfo({
+        type: 'error',
+        message: 'Se ha producido un error, por favor intentelo más tarde'
+      });
+    } finally {
+      setLoading(false);
+    }
+  });
 
   return (
     <Modal isOpen={modal.visible} size="5xl" onClose={() => modal.remove()}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{gasto ? 'Actualizar Gasto' : 'Nuevo Gasto'}</ModalHeader>
+        <ModalHeader>Asignar Operador</ModalHeader>
         <ModalCloseButton />
         {loading && (
           <div className="py-4">
@@ -112,16 +107,12 @@ export default NiceModal.create(({ gasto }) => {
               </div>
             )}
             <Formik
-              initialValues={
-                data || {
-                  maquina: '',
-                  valor: '',
-                  descripcion: '',
-                  soporte: ''
-                }
-              }
+              initialValues={{
+                maquina: '',
+                operador: ''
+              }}
               enableReinitialize
-              validationSchema={validationGastos}
+              validationSchema={validationAsignacion}
               onSubmit={(values) => {
                 handleSubmit(values);
               }}
@@ -139,7 +130,12 @@ export default NiceModal.create(({ gasto }) => {
 
                       <div className="relative">
                         <Select
-                          className="border-red-400"
+                          className={`${
+                            formik.errors.maquina &&
+                            formik.touched.maquina &&
+                            'border border-red-500 rounded'
+                          }`}
+                          id="maquina"
                           options={maquinas}
                           getOptionLabel={(maquina) =>
                             maquina && maquina.nombre
@@ -157,77 +153,37 @@ export default NiceModal.create(({ gasto }) => {
                     <div className="w-full md:w-2/4 px-3 mb-6 md:mb-0">
                       <label
                         className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                        htmlFor="grid-cost"
+                        htmlFor="grid-operador"
                       >
-                        Valor
+                        Operador
                       </label>
-                      <input
-                        className={`input-box ${
-                          formik.errors.valor && formik.touched.valor
-                            ? 'border border-red-500'
-                            : ''
-                        }`}
-                        id="grid-valor"
-                        type="number"
-                        name="valor"
-                        value={formik.values.valor}
-                        placeholder="valor"
-                        onChange={formik.handleChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap -mx-3 mb-2">
-                    <div className="w-full md:w-2/3 px-3 mb-6 md:mb-0">
-                      <label
-                        className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                        htmlFor="grid-descripcion"
-                      >
-                        Descripción
-                      </label>
-                      <textarea
-                        className={`block w-full px-3 py-1 text-base font-normal text-gray-700 bg-gray-100 border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none ${
-                          formik.errors.descripcion &&
-                          formik.touched.descripcion
-                            ? 'border border-red-500'
-                            : ''
-                        }`}
-                        id="textarea-serie"
-                        rows="4"
-                        name="descripcion"
-                        value={formik.values.descripcion}
-                        placeholder="ingrese descripcion "
-                        onChange={formik.handleChange}
-                      />
-                    </div>
-                    <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-                      <label
-                        className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                        htmlFor="grid-soporte"
-                      >
-                        Soporte
-                      </label>
-                      <input
-                        className={`input-box ${
-                          formik.errors.soporte && formik.touched.soporte
-                            ? 'border border-red-500'
-                            : ''
-                        }`}
-                        id="grid-soporte"
-                        type="file"
-                        name="soporte"
-                        placeholder=""
-                        onChange={(event) => {
-                          formik.setFieldValue(
-                            'soporte',
-                            event.target.files[0]
-                          );
-                        }}
-                      />
+
+                      <div className="relative">
+                        <Select
+                          className={`${
+                            formik.errors.operador &&
+                            formik.touched.operador &&
+                            'border border-red-500 rounded'
+                          }`}
+                          options={operadores}
+                          getOptionLabel={(operador) =>
+                            operador &&
+                            `${operador.nombres} ${operador.apellidos}`
+                          }
+                          getOptionValue={(operador) => operador && operador.id}
+                          value={operadores.filter(
+                            (operador) => operador.id === formik.values.operador
+                          )}
+                          onChange={(operador) => {
+                            formik.setFieldValue('operador', operador.id);
+                          }}
+                        />
+                      </div>
                     </div>
                   </div>
                   <div className="flex justify-end mt-4">
                     <button type="submit" className="btn btn-success">
-                      Guardar
+                      Asignar
                     </button>
                     <button
                       type="button"

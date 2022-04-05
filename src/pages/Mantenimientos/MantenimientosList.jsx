@@ -1,0 +1,233 @@
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { useModal } from '@ebay/nice-modal-react';
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  Box,
+  CloseButton
+} from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
+import BreadCrumbs from '../../components/ BreadCrumbs';
+import ButtonDelete from '../../components/ButtonDelete';
+import ButtonEdit from '../../components/ButtonEdit';
+import Table from '../../components/Table';
+import MantenimientosServices from '../../services/MantenimientosServices';
+import Loading from '../../components/Loading';
+import MantenimientoCreateOrUpdate from './MantenimientoCreateOrUpdate';
+import DeleteModal from '../Shared/DeleteModal';
+import Pagination from '../../components/Pagination/Pagination';
+
+function MantenimientosList() {
+  const mantenimientoModal = useModal(MantenimientoCreateOrUpdate);
+  const deleteModal = useModal(DeleteModal);
+
+  const [info, setInfo] = useState(null);
+  const [mantenimientos, setMantenimientos] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchData = useCallback(async (pageNumber = 1) => {
+    try {
+      setLoading(true);
+      const response = await MantenimientosServices.get(pageNumber);
+      if (response.status === 200) {
+        setOrdenServicio(response.data);
+      }
+    } catch (error) {
+      setInfo({
+        type: 'error',
+        message: 'se ha producido un error,por favor intentelo más tarde.'
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handleNewMantenimiento = useCallback(() => {
+    mantenimientoModal.show().then((newMantenimiento) => {
+      setInfo({
+        type: 'success',
+        message: 'Mantenimiento Creado Correctamente'
+      });
+      setMantenimientos((state) => ({
+        ...state,
+        data: [newMantenimiento, ...state.data]
+      }));
+    });
+  }, [mantenimientoModal]);
+
+  const handleEditMantenimiento = useCallback(
+    (mantenimiento) => {
+      mantenimientoModal.show({ mantenimiento }).then((newMantenimiento) => {
+        setInfo({
+          type: 'success',
+          message: 'Mantenimiento Actualizado Correctamente'
+        });
+        setMantenimientos((state) => {
+          const i = state.data.findIndex((m) => m.id === newMantenimiento.id);
+          const updated = { ...state.data[i], ...newMantenimiento };
+          const arr = [...state.data];
+          arr.splice(i, 1, updated);
+          return { ...state, data: arr };
+        });
+      });
+    },
+    [mantenimientoModal]
+  );
+
+  const handleDeleteMantenimiento = useCallback(
+    (id) => {
+      deleteModal.show().then(async () => {
+        try {
+          setLoading(true);
+          const response = await MantenimientosServices.delete(id);
+          if (response.status === 200) {
+            setMantenimientos((state) => {
+              const list = state.data.filter((item) => item.id !== id);
+              return { ...state, data: list };
+            });
+            setInfo({
+              type: 'success',
+              message: 'Mantenimientos Eliminado Correctamente'
+            });
+          } else {
+            setInfo({
+              type: 'warning',
+              message: response.message
+            });
+          }
+        } catch (error) {
+          setInfo({
+            type: 'error',
+            message: 'se ha producido un error,por favor intentelo más tarde.'
+          });
+        } finally {
+          setLoading(false);
+          deleteModal.remove();
+        }
+      });
+    },
+    [deleteModal]
+  );
+
+  const breadCrumbs = useMemo(
+    () => [
+      { title: 'Inicio', url: '/' },
+      { title: 'Mantenimientos', url: '/gestion/mantenimientos' }
+    ],
+    []
+  );
+
+  const columns = useMemo(
+    () => [
+      'Tipo',
+      'Maquina',
+      'Proveedor',
+      'Descripcion',
+      'Modalidad de Pago',
+      'Costo',
+      'factura',
+      'Acciones'
+    ],
+    []
+  );
+
+  if (loading) return <Loading />;
+
+  return (
+    <div>
+      <BreadCrumbs items={breadCrumbs} />
+      <div className="w-full mt-5 mx-auto bg-white rounded-lg">
+        <div className="px-5 py-4 flex items-center">
+          <h2 className="font-semibold text-gray-800 flex-grow">
+            Mantenimiento
+          </h2>
+          <div className="flex">
+            <Link
+              to="/movimientos/mantenimiento/new"
+              className="btn btn-success"
+            >
+              Agregar
+            </Link>
+          </div>
+        </div>
+        {info && (
+          <div className="mb-2">
+            <Alert status={info.type}>
+              <AlertIcon />
+              <Box flex="1">
+                <AlertDescription display="block">
+                  {info.message}
+                </AlertDescription>
+              </Box>
+              <CloseButton
+                position="absolute"
+                right="8px"
+                top="8px"
+                onClick={() => setInfo(null)}
+              />
+            </Alert>
+          </div>
+        )}
+        <Table columns={columns} title="Mantenimiento">
+          {mantenimientos?.data?.length > 0 &&
+            mantenimientos?.data?.map((item) => (
+              <tr key={item.id}>
+                <td>{item.tipo}</td>
+                <td>{item.maquina.nombre}</td>
+                <td>{item.proveedor.nombres}</td>
+                <td>{item.descripcion}</td>
+                <td>{item.modalidadPago}</td>
+                <td>{item.costo}</td>
+                <td className="justify-center">
+                  <button type="button">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                      />
+                    </svg>
+                  </button>
+                </td>
+                <td className="flex items-center ">
+                  <ButtonEdit
+                    onClick={() => {
+                      handleEditMantenimiento(item);
+                    }}
+                  />
+                  <ButtonDelete
+                    onClick={() => handleDeleteMantenimiento(item.id)}
+                  />
+                </td>
+              </tr>
+            ))}
+        </Table>
+        <Pagination
+          onPageChange={(pageNumber) => {
+            fetchData(pageNumber);
+          }}
+          totalCount={mantenimientos?.total ? mantenimientos?.total : 0}
+          currentPage={
+            mantenimientos?.current_page ? mantenimientos?.current_page : 0
+          }
+          pageSize={mantenimientos?.per_page ? mantenimientos?.per_page : 0}
+        />
+      </div>
+    </div>
+  );
+}
+
+export default MantenimientosList;

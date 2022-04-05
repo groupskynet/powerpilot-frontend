@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { jsonToFormData } from '../utils/services';
 
 const GastosServices = {};
 
@@ -8,17 +9,31 @@ GastosServices.get = async () => {
 };
 
 GastosServices.post = async (request) => {
+  const formData = jsonToFormData(request);
   const { data } = await axios.post(
     'http://localhost:8000/api/gastos',
-    request
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        type: 'formData'
+      }
+    }
   );
   return data;
 };
 
 GastosServices.update = async (request) => {
-  const { data } = await axios.put(
-    `http://localhost:8000/api/gastos/${request.id}`,
-    request
+  const formData = jsonToFormData(request);
+  const { data } = await axios.post(
+    `http://localhost:8000/api/gastos/${request.id}?_method=PUT`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        type: 'formData'
+      }
+    }
   );
   return data;
 };

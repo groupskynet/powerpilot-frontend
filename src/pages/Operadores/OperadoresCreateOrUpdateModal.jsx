@@ -232,7 +232,9 @@ export default NiceModal.create(({ operador }) => {
                         type="file"
                         name="licencia"
                         placeholder=""
-                        onChange={formik.handleChange}
+                        onChange={(event) => {
+                          formik.setFieldValue('licencia', event.target[0]);
+                        }}
                       />
                     </div>
                   </div>

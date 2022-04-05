@@ -9,6 +9,14 @@ MaquinaServices.get = async (pageNumber) => {
   return data;
 };
 
+MaquinaServices.asignar = async (request) => {
+  const { data } = await axios.post(
+    'http://localhost:8000/api/maquina/asignar',
+    request
+  );
+  return data;
+};
+
 MaquinaServices.all = async () => {
   const { data } = await axios.all('http://localhost:8000/api/maquinas/all');
   return data;

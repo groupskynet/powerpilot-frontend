@@ -4,7 +4,8 @@ import {
   AlertDescription,
   AlertIcon,
   Box,
-  CloseButton
+  CloseButton,
+  Button
 } from '@chakra-ui/react';
 import { useModal } from '@ebay/nice-modal-react';
 import BreadCrumbs from '../../components/ BreadCrumbs';
@@ -15,10 +16,12 @@ import Loading from '../../components/Loading';
 import MaquinaServices from '../../services/MaquinasServices';
 import Pagination from '../../components/Pagination/Pagination';
 import MaquinaCreateOrUpdateModal from './MaquinaCreateOrUpdateModal';
+import AsignarOperadorCreateOrUpdateModal from './AsignarOperadorCreateOrUpdateModal';
 import DeleteModal from '../Shared/DeleteModal';
 
 function MaquinasList() {
   const maquinaModal = useModal(MaquinaCreateOrUpdateModal);
+  const AsignarOperadorModal = useModal(AsignarOperadorCreateOrUpdateModal);
   const deleteModal = useModal(DeleteModal);
   const [maquinas, setMaquinas] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -40,6 +43,7 @@ function MaquinasList() {
       'Marca',
       'Modelo',
       'Número de Registro',
+      'Operador',
       'Acciones'
     ],
     []
@@ -51,8 +55,20 @@ function MaquinasList() {
       setMaquinas((state) => ({ ...state, data: [newMaquina, ...state.data] }));
     });
   }, [maquinaModal]);
+  const handleAsignarOperador = useCallback(() => {
+    AsignarOperadorModal.show().then((newMaquina) => {
+      setMaquinas((state) => {
+        const i = state.data.findIndex((m) => m.id === newMaquina.id);
+        const updated = { ...state.data[i], ...newMaquina };
+        const arr = [...state.data];
+        arr.splice(i, 1, updated);
+        return { ...state, data: arr };
+      });
+      setInfo({ type: 'success', message: 'Operador asignado Correctamente' });
+    });
+  }, [AsignarOperadorModal]);
 
-  const handleEditMarca = useCallback(
+  const handleEditMaquina = useCallback(
     (maquina) => {
       maquinaModal.show({ maquina }).then((newMaquina) => {
         setMaquinas((state) => {
@@ -134,6 +150,17 @@ function MaquinasList() {
       <div className="w-full mt-5 mx-auto bg-white shadow-lg rounded-lg">
         <div className="px-5 py-4 flex items-center">
           <h2 className="font-semibold text-gray-800 flex-grow">Máquinas</h2>
+          <div className="flex mr-3">
+            <Button
+              type="button"
+              colorScheme="blue"
+              onClick={() => {
+                handleAsignarOperador();
+              }}
+            >
+              Asignar Operador
+            </Button>
+          </div>
           <div className="flex">
             <button
               type="button"
@@ -174,10 +201,11 @@ function MaquinasList() {
                 <td>{item.marca.nombre}</td>
                 <td>{item.modelo}</td>
                 <td>{item.registro}</td>
+                <td>{`${item.operador.nombres} ${item.operador.apellidos}`}</td>
                 <td className="flex items-center">
                   <ButtonEdit
                     onClick={() => {
-                      handleEditMarca(item);
+                      handleEditMaquina(item);
                     }}
                   />
                   <ButtonDelete
