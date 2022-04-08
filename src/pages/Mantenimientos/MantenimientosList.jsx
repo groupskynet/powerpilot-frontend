@@ -15,12 +15,10 @@ import ButtonEdit from '../../components/ButtonEdit';
 import Table from '../../components/Table';
 import MantenimientosServices from '../../services/MantenimientosServices';
 import Loading from '../../components/Loading';
-import MantenimientoCreateOrUpdate from './MantenimientoCreateOrUpdate';
 import DeleteModal from '../Shared/DeleteModal';
 import Pagination from '../../components/Pagination/Pagination';
 
 function MantenimientosList() {
-  const mantenimientoModal = useModal(MantenimientoCreateOrUpdate);
   const deleteModal = useModal(DeleteModal);
 
   const [info, setInfo] = useState(null);
@@ -32,7 +30,7 @@ function MantenimientosList() {
       setLoading(true);
       const response = await MantenimientosServices.get(pageNumber);
       if (response.status === 200) {
-        setOrdenServicio(response.data);
+        setMantenimientos(response.data);
       }
     } catch (error) {
       setInfo({
@@ -48,38 +46,6 @@ function MantenimientosList() {
     fetchData();
   }, [fetchData]);
 
-  const handleNewMantenimiento = useCallback(() => {
-    mantenimientoModal.show().then((newMantenimiento) => {
-      setInfo({
-        type: 'success',
-        message: 'Mantenimiento Creado Correctamente'
-      });
-      setMantenimientos((state) => ({
-        ...state,
-        data: [newMantenimiento, ...state.data]
-      }));
-    });
-  }, [mantenimientoModal]);
-
-  const handleEditMantenimiento = useCallback(
-    (mantenimiento) => {
-      mantenimientoModal.show({ mantenimiento }).then((newMantenimiento) => {
-        setInfo({
-          type: 'success',
-          message: 'Mantenimiento Actualizado Correctamente'
-        });
-        setMantenimientos((state) => {
-          const i = state.data.findIndex((m) => m.id === newMantenimiento.id);
-          const updated = { ...state.data[i], ...newMantenimiento };
-          const arr = [...state.data];
-          arr.splice(i, 1, updated);
-          return { ...state, data: arr };
-        });
-      });
-    },
-    [mantenimientoModal]
-  );
-
   const handleDeleteMantenimiento = useCallback(
     (id) => {
       deleteModal.show().then(async () => {
@@ -93,7 +59,7 @@ function MantenimientosList() {
             });
             setInfo({
               type: 'success',
-              message: 'Mantenimientos Eliminado Correctamente'
+              message: 'Mantenimiento Eliminado Correctamente'
             });
           } else {
             setInfo({
@@ -104,7 +70,7 @@ function MantenimientosList() {
         } catch (error) {
           setInfo({
             type: 'error',
-            message: 'se ha producido un error,por favor intentelo más tarde.'
+            message: 'se ha producido un error, por favor intentelo más tarde.'
           });
         } finally {
           setLoading(false);
@@ -118,7 +84,7 @@ function MantenimientosList() {
   const breadCrumbs = useMemo(
     () => [
       { title: 'Inicio', url: '/' },
-      { title: 'Mantenimientos', url: '/gestion/mantenimientos' }
+      { title: 'Mantenimientos', url: '/movimientos/mantenimientos' }
     ],
     []
   );
@@ -131,7 +97,7 @@ function MantenimientosList() {
       'Descripcion',
       'Modalidad de Pago',
       'Costo',
-      'factura',
+      'Factura',
       'Acciones'
     ],
     []
@@ -149,7 +115,7 @@ function MantenimientosList() {
           </h2>
           <div className="flex">
             <Link
-              to="/movimientos/mantenimiento/new"
+              to="/movimientos/mantenimientos/new"
               className="btn btn-success"
             >
               Agregar
@@ -182,9 +148,9 @@ function MantenimientosList() {
                 <td>{item.maquina.nombre}</td>
                 <td>{item.proveedor.nombres}</td>
                 <td>{item.descripcion}</td>
-                <td>{item.modalidadPago}</td>
+                <td>{item.modalidad}</td>
                 <td>{item.costo}</td>
-                <td className="justify-center">
+                <td className="flex justify-center">
                   <button type="button">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -202,15 +168,9 @@ function MantenimientosList() {
                     </svg>
                   </button>
                 </td>
-                <td className="flex items-center ">
-                  <ButtonEdit
-                    onClick={() => {
-                      handleEditMantenimiento(item);
-                    }}
-                  />
-                  <ButtonDelete
-                    onClick={() => handleDeleteMantenimiento(item.id)}
-                  />
+                <td className="items-center ">
+                  <ButtonEdit />
+                  <ButtonDelete onClick={() => handleDeleteMantenimiento()} />
                 </td>
               </tr>
             ))}

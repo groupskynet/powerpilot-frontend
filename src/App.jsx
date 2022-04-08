@@ -14,6 +14,8 @@ import MarcasList from './pages/Marcas/MarcasList';
 import GastosList from './pages/Gastos/GastosList';
 import OrdenServicioList from './pages/OrdenServicio/OrdenServicioList';
 import OrdenServicioCreateOrUpdate from './pages/OrdenServicio/OrdenServicioCreateOrUpdate';
+import MantenimientosList from './pages/Mantenimientos/MantenimientosList';
+import MantenimientoCreateOrUpdate from './pages/Mantenimientos/MantenimientoCreateOrUpdate';
 
 function App() {
   return (
@@ -59,6 +61,18 @@ function App() {
                 exact
                 path="/servicios/orden-servicio/create"
                 element={<OrdenServicioCreateOrUpdate />}
+              />
+
+              <Route
+                exact
+                path="/movimientos/mantenimientos"
+                element={<MantenimientosList />}
+              />
+
+              <Route
+                exact
+                path="/movimientos/mantenimientos/create"
+                element={<MantenimientoCreateOrUpdate />}
               />
 
               <Route
