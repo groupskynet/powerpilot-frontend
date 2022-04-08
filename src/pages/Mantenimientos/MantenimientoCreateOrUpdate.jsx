@@ -71,7 +71,7 @@ function MantenimientoCreateOrUpdate() {
   const handelNewProveedor = useCallback(() => {
     modalProveedor.show().then((newProveedor) => {
       if (formikRef.current !== null) {
-        formikRef.current.setFieldValue('cliente', newProveedor);
+        formikRef.current.setFieldValue('proveedor', newProveedor);
       }
       setProveedores((state) => [...state, newProveedor]);
     });
