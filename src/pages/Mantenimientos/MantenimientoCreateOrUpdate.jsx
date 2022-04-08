@@ -24,14 +24,12 @@ import ProveedorCreateOrUpdateModal from '../Proveedores/ProveedorCreateOrUpdate
 import { initialData, validationMantenimiento } from './Schema';
 import Loading from '../../components/Loading';
 import MantenimientosServices from '../../services/MantenimientosServices';
-import MaquinaCreateOrUpdateModal from '../Maquinas/MaquinaCreateOrUpdateModal';
 
 function MantenimientoCreateOrUpdate() {
   const formikRef = useRef();
   const { mantenimiento } = useParams();
   const navigate = useNavigate();
   const modalProveedor = useModal(ProveedorCreateOrUpdateModal);
-  const modalMaquina = useModal(MaquinaCreateOrUpdateModal);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [proveedores, setProveedores] = useState([]);
@@ -98,7 +96,7 @@ function MantenimientoCreateOrUpdate() {
         const request = {
           ...values,
           maquina: values.maquina.id,
-          cliente: values.proveedor.id
+          proveedor: values.proveedor.id
         };
         let resp = null;
         if (!values.edit) {
@@ -274,10 +272,10 @@ function MantenimientoCreateOrUpdate() {
                           }
                           value={proveedores.filter(
                             (proveedor) =>
-                              proveedor.id === formik.values.proveedor.id
+                              proveedor.id === formik.values.proveedor?.id
                           )}
-                          onChange={(cliente) => {
-                            formik.setFieldValue('cliente', cliente);
+                          onChange={(proveedor) => {
+                            formik.setFieldValue('proveedor', proveedor);
                           }}
                         />
                       </Box>

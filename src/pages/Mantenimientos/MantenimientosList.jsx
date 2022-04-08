@@ -115,7 +115,7 @@ function MantenimientosList() {
           </h2>
           <div className="flex">
             <Link
-              to="/movimientos/mantenimientos/new"
+              to="/movimientos/mantenimientos/create"
               className="btn btn-success"
             >
               Agregar
