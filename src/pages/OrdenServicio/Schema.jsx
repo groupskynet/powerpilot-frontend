@@ -8,7 +8,7 @@ export const validationOrdenServicio = Yup.object().shape({
   valorXhora: Yup.number().required('El valor por hora es requerido'),
   pagare: Yup.mixed().when('edit', (edit) => {
     if (!edit) {
-      return Yup.mixed().required('el pagare es requerido');
+      return Yup.mixed().required('El pagare es requerido');
     }
   }),
   valorIda: Yup.number().required('El valor de Ida es requerido'),
@@ -17,7 +17,13 @@ export const validationOrdenServicio = Yup.object().shape({
       return Yup.number().required('el valor de vuelta es requerido');
     }
   }),
-  accesorios: Yup.array().min(1, 'Debes Ingresar por lo menos un accesorio')
+  accesorios: Yup.array().when('tieneAccesorios', (tieneAccesorios) => {
+    if (tieneAccesorios)
+      return Yup.array().min(
+        1,
+        'La orden debe tener por lo menos un accesorio.'
+      );
+  })
 });
 
 export const initialData = {

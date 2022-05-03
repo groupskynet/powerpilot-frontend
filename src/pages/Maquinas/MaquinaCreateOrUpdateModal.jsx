@@ -33,6 +33,7 @@ export default NiceModal.create(({ maquina }) => {
     if (maquina) {
       setData({
         ...maquina,
+        edit: true,
         marca: maquina.marca.id,
         placa: maquina.placa || ''
       });
@@ -139,7 +140,8 @@ export default NiceModal.create(({ maquina }) => {
                   serie: '',
                   linea: '',
                   registro: '',
-                  placa: ''
+                  placa: '',
+                  edit: false
                 }
               }
               enableReinitialize
@@ -156,8 +158,8 @@ export default NiceModal.create(({ maquina }) => {
                         TIPO
                       </h3>
                     </div>
-                    <div className="w-full md:w-1/3 px-3 my-4">
-                      <div className="relative">
+                    <div className="w-full flex px-3 py-2">
+                      <div className="w-1/3">
                         <Select
                           options={tipos}
                           textField="label"
@@ -175,7 +177,7 @@ export default NiceModal.create(({ maquina }) => {
                   {formik.values.tipo !== '' && (
                     <>
                       <div className="flex flex-wrap -mx-3 mb-2">
-                        <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+                        <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
                           <label
                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             htmlFor="grid-name"
@@ -196,7 +198,7 @@ export default NiceModal.create(({ maquina }) => {
                             onChange={formik.handleChange}
                           />
                         </div>
-                        <div className="w-full md:w-1/3 px-3">
+                        <div className="w-full md:w-1/4 px-3">
                           <label
                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             htmlFor="grid-marca"
@@ -218,7 +220,7 @@ export default NiceModal.create(({ maquina }) => {
                             />
                           </div>
                         </div>
-                        <div className="w-full md:w-1/3 px-3">
+                        <div className="w-full md:w-1/4 px-3">
                           <label
                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                             htmlFor="grid-model"
@@ -236,6 +238,37 @@ export default NiceModal.create(({ maquina }) => {
                             name="modelo"
                             value={formik.values.modelo}
                             placeholder="model"
+                            onChange={formik.handleChange}
+                          />
+                        </div>
+                        <div className="w-full md:w-1/4 px-3">
+                          <label
+                            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                            htmlFor="grid-model"
+                          >
+                            {`${
+                              formik.values.tipo === 'MAQUINA'
+                                ? 'HOROMETRO'
+                                : 'KILOMETRAJE'
+                            }`}
+                          </label>
+                          <input
+                            className={`input-box ${
+                              formik.errors.horometro &&
+                              formik.touched.horometro
+                                ? 'border border-red-500'
+                                : ''
+                            }`}
+                            id="grid-model"
+                            type="number"
+                            name="horometro"
+                            disabled={formik.values.edit}
+                            value={formik.values.horometro}
+                            placeholder={`${
+                              formik.values.tipo === 'MAQUINA'
+                                ? 'horometro'
+                                : 'kilometraje'
+                            }`}
                             onChange={formik.handleChange}
                           />
                         </div>

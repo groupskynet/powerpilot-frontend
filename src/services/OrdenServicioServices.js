@@ -15,6 +15,11 @@ OrdenServicioServices.find = async (id) => {
   return data;
 };
 
+OrdenServicioServices.buscarOrdenDeServicioActiva = async (id) => {
+  const { data } = await axios.get(`http://localhost:8000/api/orden/${id}`);
+  return data;
+};
+
 OrdenServicioServices.post = async (request) => {
   const formData = jsonToFormData(request);
   const { data } = await axios.post(

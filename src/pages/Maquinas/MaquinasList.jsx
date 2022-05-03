@@ -4,8 +4,8 @@ import {
   AlertDescription,
   AlertIcon,
   Box,
-  CloseButton,
-  Button
+  Button,
+  CloseButton
 } from '@chakra-ui/react';
 import { useModal } from '@ebay/nice-modal-react';
 import BreadCrumbs from '../../components/ BreadCrumbs';
@@ -201,7 +201,11 @@ function MaquinasList() {
                 <td>{item.marca.nombre}</td>
                 <td>{item.modelo}</td>
                 <td>{item.registro}</td>
-                <td>{`${item.operador.nombres} ${item.operador.apellidos}`}</td>
+                <td>
+                  {item.operador
+                    ? `${item.operador.nombres} ${item.operador.apellidos}`
+                    : 'SIN ASIGNAR'}
+                </td>
                 <td className="flex items-center">
                   <ButtonEdit
                     onClick={() => {

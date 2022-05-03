@@ -64,6 +64,7 @@ function OrdenServicioCreateOrUpdate() {
           const resp = await OrdenServicioServices.find(orden);
           setData({
             ...resp.data,
+            valorVuelta: resp.data.valorVuelta || 0,
             edit: true,
             tieneAccesorio: resp.data.accesorios.length > 0,
             accesorios: resp.data.accesorios.map((item) => ({
@@ -98,6 +99,10 @@ function OrdenServicioCreateOrUpdate() {
     modalMaquina.show().then((newMaquina) => {
       if (formikRef.current !== null) {
         formikRef.current.setFieldValue('maquina', newMaquina);
+        formikRef.current.setFieldValue(
+          'horometroInicial',
+          newMaquina.horometro
+        );
       }
       setMaquinas((state) => [...state, newMaquina]);
     });
@@ -169,7 +174,10 @@ function OrdenServicioCreateOrUpdate() {
       } else {
         resp = await OrdenServicioServices.update(request);
       }
-      if (resp.status !== 200) throw new Error();
+      if (resp.status !== 200) {
+        setInfo({ type: 'error', message: resp.message });
+        return;
+      }
       setInfo({
         type: 'success',
         message: resp.message
@@ -312,6 +320,10 @@ function OrdenServicioCreateOrUpdate() {
                         )}
                         onChange={(maquina) => {
                           formik.setFieldValue('maquina', maquina);
+                          formik.setFieldValue(
+                            'horometroInicial',
+                            maquina.horometro
+                          );
                         }}
                       />
                     )}
@@ -435,7 +447,7 @@ function OrdenServicioCreateOrUpdate() {
                   type="number"
                   placeholder="Horometro"
                   value={formik.values.horometroInicial}
-                  onChange={formik.handleChange}
+                  disabled
                 />
               </div>
               <div className="w-1/4 mx-2">
@@ -547,6 +559,7 @@ function OrdenServicioCreateOrUpdate() {
                 className="btn btn-success"
                 onClick={(event) => {
                   event.preventDefault();
+                  console.log(formik.errors);
                   if (formik.errors.accesorios) {
                     setInfo({
                       type: 'error',

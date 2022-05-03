@@ -14,6 +14,7 @@ import MarcasList from './pages/Marcas/MarcasList';
 import GastosList from './pages/Gastos/GastosList';
 import OrdenServicioList from './pages/OrdenServicio/OrdenServicioList';
 import OrdenServicioCreateOrUpdate from './pages/OrdenServicio/OrdenServicioCreateOrUpdate';
+import TicketsList from './pages/Tickets/TicketsList';
 
 function App() {
   return (
@@ -44,6 +45,11 @@ function App() {
                 exact
                 path="/servicios/clientes"
                 element={<ClientesList />}
+              />
+              <Route
+                exact
+                path="/servicios/tickets"
+                element={<TicketsList />}
               />
               <Route
                 exact

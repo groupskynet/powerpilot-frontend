@@ -142,8 +142,13 @@ function OrdenServicioList() {
         <Table columns={columns} title="OrdenServicio">
           {ordenServicios?.data?.length > 0 &&
             ordenServicios?.data?.map((item) => (
-              <tr key={item.id}>
-                <td>{item.id}</td>
+              <tr
+                className={`${
+                  item.estado === 'PENDIENTE' ? 'text-red-500' : ''
+                }`}
+                key={item.id}
+              >
+                <td>{`ORD-${String(item.id).padStart(4, '0')}`}</td>
                 <td>{item.cliente.nombres}</td>
                 <td>{item.maquina.nombre}</td>
                 <td>{item.horasPromedio}</td>

@@ -70,7 +70,7 @@ function OperadoresList() {
 
   const handleNewOperador = useCallback(() => {
     operadorModal.show().then((newOperador) => {
-      setInfo({ type: 'success', message: 'Maquina Creada Correctamente' });
+      setInfo({ type: 'success', message: 'Operador Creado Correctamente' });
       setOperadores((state) => ({
         ...state,
         data: [newOperador, ...state.data]
@@ -83,7 +83,7 @@ function OperadoresList() {
       operadorModal.show({ operador }).then((newOperador) => {
         setInfo({
           type: 'success',
-          message: 'Operador Actualizada Correctamente'
+          message: 'Operador Actualizado Correctamente'
         });
         setOperadores((state) => {
           const i = state.data.findIndex((m) => m.id === newOperador.id);

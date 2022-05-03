@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { jsonToFormData } from '../utils/services';
 
 const TicketsServices = {};
 
@@ -8,17 +9,16 @@ TicketsServices.get = async () => {
 };
 
 TicketsServices.post = async (request) => {
+  const formData = jsonToFormData(request);
   const { data } = await axios.post(
     'http://localhost:8000/api/tickets',
-    request
-  );
-  return data;
-};
-
-TicketsServices.update = async (request) => {
-  const { data } = await axios.put(
-    `http://localhost:8000/api/tickets/${request.id}`,
-    request
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        type: 'formData'
+      }
+    }
   );
   return data;
 };

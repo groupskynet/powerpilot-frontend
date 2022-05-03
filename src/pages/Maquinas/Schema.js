@@ -1,6 +1,11 @@
 import * as Yup from 'yup';
 
 const validationMaquina = Yup.object().shape({
+  horometro: Yup.number().when('edit', (edit) => {
+    if (!edit) {
+      return Yup.number().required('El horometro es requerido');
+    }
+  }),
   tipo: Yup.string().required('El tipo de vehiculo'),
   nombre: Yup.string().required('El nombre es requerido'),
   marca: Yup.number().required('La marca es requerida'),
