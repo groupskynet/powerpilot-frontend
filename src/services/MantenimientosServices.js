@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { jsonToFormData } from '../utils/services';
 
 const MantenimientosServices = {};
 
@@ -8,17 +9,31 @@ MantenimientosServices.get = async () => {
 };
 
 MantenimientosServices.post = async (request) => {
+  const formData = jsonToFormData(request);
   const { data } = await axios.post(
     'http://localhost:8000/api/mantenimientos',
-    request
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        type: 'formData'
+      }
+    }
   );
   return data;
 };
 
 MantenimientosServices.update = async (request) => {
+  const formData = jsonToFormData(request);
   const { data } = await axios.put(
     `http://localhost:8000/api/mantenimientos/${request.id}`,
-    request
+    formData,
+    {
+      headers: {
+        'Content-Type': 'miltipart/form-data',
+        type: 'formData'
+      }
+    }
   );
   return data;
 };

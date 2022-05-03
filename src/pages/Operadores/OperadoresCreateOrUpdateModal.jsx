@@ -34,11 +34,13 @@ export default NiceModal.create(({ operador }) => {
       const newOperador = { ...values };
       try {
         setLoading(true);
+        let resp = null;
         if (!operador) {
-          await OperadoresServices.post(newOperador);
+          resp = await OperadoresServices.post(newOperador);
         } else {
-          await OperadoresServices.update(newOperador);
+          resp = await OperadoresServices.update(newOperador);
         }
+        if (resp.status !== 200) throw new Error();
         modal.resolve(newOperador);
         await modal.remove();
       } catch (e) {
