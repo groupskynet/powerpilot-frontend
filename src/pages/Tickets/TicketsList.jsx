@@ -15,9 +15,11 @@ import Pagination from '../../components/Pagination/Pagination';
 import TicketsServices from '../../services/TicketsServices';
 import TicketCreateOrUpdateModal from './TicketCreateOrUpdateModal';
 import ButtonView from '../../components/ButtonView';
+import DeleteModal from '../Shared/DeleteModal';
 
 function TicketsList() {
   const modalTicket = useModal(TicketCreateOrUpdateModal);
+  const deleteModal = useModal(DeleteModal);
   const [info, setInfo] = useState(null);
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -54,6 +56,38 @@ function TicketsList() {
   const handleNewTicket = useCallback(() => {
     modalTicket.show().then(() => {});
   }, [modalTicket]);
+
+  const handleDeleteTicket = useCallback(
+    (id) => {
+      deleteModal.show().then(async () => {
+        try {
+          setLoading(true);
+          const response = await TicketsServices.delete(id);
+          if (response.status === 200) {
+            setTickets(response.data);
+            setInfo({
+              type: 'success',
+              message: 'Ticket Eliminado Correctamente'
+            });
+          } else {
+            setInfo({
+              type: 'warning',
+              message: response.message
+            });
+          }
+        } catch (error) {
+          setInfo({
+            type: 'error',
+            message: 'se ha producido un error,por favor intentelo más tarde.'
+          });
+        } finally {
+          setLoading(false);
+          deleteModal.remove();
+        }
+      });
+    },
+    [deleteModal]
+  );
 
   const columns = useMemo(
     () => [
@@ -127,7 +161,11 @@ function TicketsList() {
                 <td>{item.fecha}</td>
                 <td className="flex items-center ">
                   <ButtonView onClick={() => {}} />
-                  <ButtonDelete onClick={() => {}} />
+                  <ButtonDelete
+                    onClick={() => {
+                      handleDeleteTicket(item.id);
+                    }}
+                  />
                 </td>
               </tr>
             ))}

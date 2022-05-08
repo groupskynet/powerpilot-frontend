@@ -50,12 +50,16 @@ export default NiceModal.create(({ proveedor }) => {
       const newProveedor = { ...values };
       try {
         setLoading(true);
+        let resp = null;
         if (!proveedor) {
-          await ProveedoresServices.post(newProveedor);
+          resp = await ProveedoresServices.post(newProveedor);
         } else {
-          await ProveedoresServices.update(newProveedor);
+          resp = await ProveedoresServices.update(newProveedor);
         }
-        modal.resolve({ ...newProveedor });
+        if (resp && resp.status !== 200) {
+          setInfo({ type: 'error', message: resp.message });
+        }
+        modal.resolve({ ...resp.data });
         await modal.remove();
       } catch (e) {
         setInfo({

@@ -24,6 +24,12 @@ export const validationTicket = Yup.object().shape({
   }),
   costo: Yup.number().when('tieneCombustible', (tieneCombustible) => {
     if (tieneCombustible) return Yup.number().required('El costo es requerido');
+  }),
+  factura: Yup.number().when('tieneCombustible', (tieneCombustible) => {
+    if (tieneCombustible)
+      return Yup.mixed().required(
+        'La factura de la compra de combustible es requerida'
+      );
   })
 });
 
@@ -32,11 +38,12 @@ export const initialData = {
   fecha: '',
   maquina: '',
   accesorio: '',
-  tieneCombustible: true,
+  tieneCombustible: false,
   horometroInicial: 0,
   horometroFinal: 0,
   galones: 0,
   costo: 0,
   soporte: '',
-  accesorios: []
+  accesorios: [],
+  factura: ''
 };

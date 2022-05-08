@@ -35,6 +35,7 @@ export const initialData = {
   accesorios: [],
   valorXhora: 0,
   pagare: '',
-  valorVuelta: '',
-  valorIda: ''
+  valorVuelta: 0,
+  valorIda: '',
+  tieneAccesorios: false
 };

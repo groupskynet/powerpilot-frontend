@@ -98,7 +98,10 @@ export default NiceModal.create(() => {
         setLoading(true);
         let resp = null;
         resp = await TicketsServices.post(newTicket);
-        if (resp.status === 200) throw new Error('');
+        if (resp.status !== 200) {
+          setInfo({ type: 'error', message: resp.message });
+          return;
+        }
         modal.resolve(newTicket);
         await modal.remove();
       } catch (e) {
@@ -331,43 +334,65 @@ export default NiceModal.create(() => {
                         </FormControl>
                       </Box>
                       {formik.values.tieneCombustible && (
-                        <Flex marginTop={4} flexWrap="wrap">
+                        <>
                           <Text
                             fontWeight="bold"
                             width="100%"
                             pb={2}
-                            mb={3}
+                            my={3}
                             borderBottom="1px dashed gray"
                           >
                             COMBUSTIBLE
                           </Text>
-                          <FormControl width="25%">
-                            <FormLabel>CANTIDAD DE GALONES</FormLabel>
-                            <Input
-                              name="galones"
-                              isInvalid={
-                                formik.errors.galones && formik.touched.galones
-                              }
-                              type="number"
-                              placeholder="Cantidad"
-                              value={formik.values.galones}
-                              onChange={formik.handleChange}
-                            />
-                          </FormControl>
-                          <FormControl width="25%" className="ml-2">
-                            <FormLabel>COSTO POR GALON</FormLabel>
-                            <Input
-                              name="costo"
-                              type="number"
-                              isInvalid={
-                                formik.errors.costo && formik.touched.costo
-                              }
-                              placeholder="Costo"
-                              value={formik.values.costo}
-                              onChange={formik.handleChange}
-                            />
-                          </FormControl>
-                        </Flex>
+                          <Flex>
+                            <FormControl className="w-1/3">
+                              <FormLabel>CANTIDAD DE GALONES</FormLabel>
+                              <Input
+                                name="galones"
+                                isInvalid={
+                                  formik.errors.galones &&
+                                  formik.touched.galones
+                                }
+                                type="number"
+                                placeholder="Cantidad"
+                                value={formik.values.galones}
+                                onChange={formik.handleChange}
+                              />
+                            </FormControl>
+                            <FormControl className="ml-2 w-1/3">
+                              <FormLabel>COSTO POR GALON</FormLabel>
+                              <Input
+                                name="costo"
+                                type="number"
+                                isInvalid={
+                                  formik.errors.costo && formik.touched.costo
+                                }
+                                placeholder="Costo"
+                                value={formik.values.costo}
+                                onChange={formik.handleChange}
+                              />
+                            </FormControl>
+                            <FormControl className="ml-2 w-1/3">
+                              <FormLabel>Factura</FormLabel>
+                              <Input
+                                name="factura"
+                                type="file"
+                                isInvalid={
+                                  formik.errors.factura &&
+                                  formik.touched.factura
+                                }
+                                placeholder="File"
+                                accept="image/*"
+                                onChange={(event) => {
+                                  formik.setFieldValue(
+                                    'factura',
+                                    event.target.files[0]
+                                  );
+                                }}
+                              />
+                            </FormControl>
+                          </Flex>
+                        </>
                       )}
                       <div className="flex justify-end mt-4">
                         <button type="submit" className="btn btn-success">

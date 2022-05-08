@@ -92,7 +92,6 @@ function MantenimientoCreateOrUpdate() {
     async (values) => {
       try {
         setLoading(true);
-
         const request = {
           ...values,
           maquina: values.maquina.id,

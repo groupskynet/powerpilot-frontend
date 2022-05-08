@@ -66,7 +66,7 @@ function OrdenServicioCreateOrUpdate() {
             ...resp.data,
             valorVuelta: resp.data.valorVuelta || 0,
             edit: true,
-            tieneAccesorio: resp.data.accesorios.length > 0,
+            tieneAccesorios: resp.data.accesorios.length > 0,
             accesorios: resp.data.accesorios.map((item) => ({
               accesorio: { ...item },
               valor: item.pivot.valorXhora
