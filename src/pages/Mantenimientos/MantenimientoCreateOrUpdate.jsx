@@ -77,16 +77,22 @@ function MantenimientoCreateOrUpdate() {
     });
   }, [modalProveedor]);
 
-  const tipos = useMemo(() => [
-    { label: 'PREVENTIVO', value: 'PREVENTIVO' },
-    { label: 'CORRECTIVO', value: 'CORRECTIVO' }
-  ]);
+  const tipos = useMemo(
+    () => [
+      { label: 'PREVENTIVO', value: 'PREVENTIVO' },
+      { label: 'CORRECTIVO', value: 'CORRECTIVO' }
+    ],
+    []
+  );
 
-  const modalidades = useMemo(() => [
-    { label: 'CREDITO', value: 'CREDITO' },
-    { label: 'PAGO PARCIAL', value: 'PAGO PARCIAL' },
-    { label: 'EFECTIVO', value: 'EFECTIVO' }
-  ]);
+  const modalidades = useMemo(
+    () => [
+      { label: 'CREDITO', value: 'CREDITO' },
+      { label: 'PAGO PARCIAL', value: 'PAGO PARCIAL' },
+      { label: 'EFECTIVO', value: 'EFECTIVO' }
+    ],
+    []
+  );
 
   const handelSubmit = useCallback(
     async (values) => {
@@ -103,7 +109,10 @@ function MantenimientoCreateOrUpdate() {
         } else {
           resp = await MantenimientosServices.update(request);
         }
-        if (resp.status !== 200) throw new Error();
+        if (resp.status !== 200) {
+          setInfo({ type: 'error', message: resp.message });
+          return;
+        }
         setInfo({
           type: 'success',
           message: resp.message
