@@ -13,7 +13,7 @@ import ButtonEdit from '../../components/ButtonEdit';
 import Table from '../../components/Table';
 import Loading from '../../components/Loading';
 import Pagination from '../../components/Pagination/Pagination';
-import MantenimientosServices from '../../services/MantenimientosServices';
+import DeudasServices from '../../services/DeudasServices';
 
 function DeudasList() {
   const [deudas, setDeudas] = useState([]);
@@ -33,7 +33,7 @@ function DeudasList() {
   async function fetchData(pageNumber = 1) {
     try {
       setLoading(true);
-      const response = await MantenimientosServices.get(pageNumber);
+      const response = await DeudasServices.get(pageNumber);
       if (response.status === 200) {
         setDeudas(response.data);
       }
@@ -58,12 +58,10 @@ function DeudasList() {
       <BreadCrumbs items={breadCrumbs} />
       <div className="w-full mt-5 mx-auto bg-white shadow-lg rounded-lg">
         <div className="px-5 py-4 flex items-center">
-          <h2 className="font-semibold text-gray-800 flex-grow">
-            Mantenimientos
-          </h2>
+          <h2 className="font-semibold text-gray-800 flex-grow">Deudas</h2>
           <div className="flex">
             <button type="button" className="btn btn-success">
-              Agregar
+              Abonar
             </button>
           </div>
         </div>
@@ -89,9 +87,9 @@ function DeudasList() {
           {deudas?.data?.length &&
             deudas?.data?.map((item) => (
               <tr key={item.id}>
-                <td>{item.mantenimiento.proveedor.nombres}</td>
-                <td>{item.descripcion}</td>
-                <td>{item.valor}</td>
+                <td>{}</td>
+                <td>{}</td>
+                <td>{}</td>
                 <td className="justify-center">
                   <button type="button">
                     <svg
@@ -121,11 +119,9 @@ function DeudasList() {
           onPageChange={(pageNumber) => {
             fetchData(pageNumber);
           }}
-          totalCount={mantenimientos?.total ? mantenimientos?.total : 0}
-          currentPage={
-            mantenimientos?.current_page ? mantenimientos?.current_page : 0
-          }
-          pageSize={mantenimientos?.per_page ? mantenimientos?.per_page : 0}
+          totalCount={deudas?.total ? deudas?.total : 0}
+          currentPage={deudas?.current_page ? deudas?.current_page : 0}
+          pageSize={deudas?.per_page ? deudas?.per_page : 0}
         />
       </div>
     </div>

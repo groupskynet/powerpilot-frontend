@@ -17,6 +17,7 @@ import OrdenServicioCreateOrUpdate from './pages/OrdenServicio/OrdenServicioCrea
 import MantenimientosList from './pages/Mantenimientos/MantenimientosList';
 import MantenimientoCreateOrUpdate from './pages/Mantenimientos/MantenimientoCreateOrUpdate';
 import TicketsList from './pages/Tickets/TicketsList';
+import DeudasList from './pages/Deudas/DeudasList';
 
 function App() {
   return (
@@ -90,6 +91,12 @@ function App() {
                 exact
                 path="/movimientos/gastos"
                 element={<GastosList />}
+              />
+
+              <Route
+                exact
+                path="/movimientos/deudas"
+                element={<DeudasList />}
               />
 
               <Route path="/users/change_password">hello</Route>
