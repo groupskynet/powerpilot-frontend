@@ -16,9 +16,11 @@ import TicketsServices from '../../services/TicketsServices';
 import TicketCreateOrUpdateModal from './TicketCreateOrUpdateModal';
 import ButtonView from '../../components/ButtonView';
 import DeleteModal from '../Shared/DeleteModal';
+import TicketViewModal from './TicketViewModal';
 
 function TicketsList() {
   const modalTicket = useModal(TicketCreateOrUpdateModal);
+  const modalViewTicket = useModal(TicketViewModal);
   const deleteModal = useModal(DeleteModal);
   const [info, setInfo] = useState(null);
   const [tickets, setTickets] = useState([]);
@@ -56,6 +58,13 @@ function TicketsList() {
   const handleNewTicket = useCallback(() => {
     modalTicket.show().then(() => {});
   }, [modalTicket]);
+
+  const handleViewTicket = useCallback(
+    (ticket) => {
+      modalViewTicket.show({ ticket }).then(() => {});
+    },
+    [modalViewTicket]
+  );
 
   const handleDeleteTicket = useCallback(
     (id) => {
@@ -160,7 +169,11 @@ function TicketsList() {
                 <td>{item.horometroFinal}</td>
                 <td>{item.fecha}</td>
                 <td className="flex items-center ">
-                  <ButtonView onClick={() => {}} />
+                  <ButtonView
+                    onClick={() => {
+                      handleViewTicket(item);
+                    }}
+                  />
                   <ButtonDelete
                     onClick={() => {
                       handleDeleteTicket(item.id);

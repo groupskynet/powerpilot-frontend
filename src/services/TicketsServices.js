@@ -23,6 +23,13 @@ TicketsServices.post = async (request) => {
   return data;
 };
 
+TicketsServices.update = async (id) => {
+  const { data } = await axios.post(
+    `http://localhost:8000/api/tickets/${id}?_method=PUT`
+  );
+  return data;
+};
+
 TicketsServices.delete = async (id) => {
   const { data } = await axios.delete(
     `http://localhost:8000/api/tickets/${id}`
