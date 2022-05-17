@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   AlertDescription,
@@ -6,46 +6,37 @@ import {
   Box,
   CloseButton
 } from '@chakra-ui/react';
-import { useModal } from '@ebay/nice-modal-react';
 import BreadCrumbs from '../../components/ BreadCrumbs';
-import ButtonDelete from '../../components/ButtonDelete';
 import ButtonEdit from '../../components/ButtonEdit';
 import Table from '../../components/Table';
 import Loading from '../../components/Loading';
 import Pagination from '../../components/Pagination/Pagination';
-import DeudasServices from '../../services/DeudasServices';
-import AbonoCreateOrUpdateModal from './AbonosCreateOrUpdateModal';
+import AbonosServices from '../../services/AbonosServices';
 
-function DeudasList() {
-  const abonoModal = useModal(AbonoCreateOrUpdateModal);
-  const [deudas, setDeudas] = useState([]);
-  const [abonos, setAbono] = useState([]);
+function AbonosList() {
+  const [abonos, setAbonos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [info, setInfo] = useState(null);
 
   const breadCrumbs = useMemo(
     () => [
       { title: 'Inicio', url: '/' },
-      { title: 'Deudas', url: '/movimientos/deudas' }
+      { title: 'Abonos', url: '/movimientos/deudas/abonos' }
     ],
     []
   );
 
-  const columns = useMemo(() => ['Proveedor', 'Valor', 'Acciones'], []);
-
-  const handleNewAbono = useCallback(() => {
-    abonoModal.show().then((newAbono) => {
-      setInfo({ type: 'success', message: 'Abono Creado Correctamente' });
-      setAbono((state) => ({ ...state, data: [newAbono, ...state.data] }));
-    });
-  }, [abonoModal]);
+  const columns = useMemo(
+    () => ['Proveedor', 'Valor', 'fecha', 'Acciones'],
+    []
+  );
 
   async function fetchData(pageNumber = 1) {
     try {
       setLoading(true);
-      const response = await DeudasServices.get(pageNumber);
+      const response = await AbonosServices.get(pageNumber);
       if (response.status === 200) {
-        setDeudas(response.data);
+        setAbonos(response.data);
       }
     } catch (error) {
       setInfo({
@@ -68,18 +59,7 @@ function DeudasList() {
       <BreadCrumbs items={breadCrumbs} />
       <div className="w-full mt-5 mx-auto bg-white shadow-lg rounded-lg">
         <div className="px-5 py-4 flex items-center">
-          <h2 className="font-semibold text-gray-800 flex-grow">Deudas</h2>
-          <div className="flex">
-            <button
-              type="button"
-              className="btn btn-success"
-              onClick={() => {
-                handleNewAbono();
-              }}
-            >
-              Abonar
-            </button>
-          </div>
+          <h2 className="font-semibold text-gray-800 flex-grow">Abonos</h2>
         </div>
         {info && (
           <div className="mb-2">
@@ -99,9 +79,9 @@ function DeudasList() {
             </Alert>
           </div>
         )}
-        <Table columns={columns} title="Deudas">
-          {deudas?.data?.length &&
-            deudas?.data?.map((item) => (
+        <Table columns={columns} title="Abonos">
+          {abonos?.data?.length &&
+            abonos?.data?.map((item) => (
               <tr key={item.id}>
                 <td>{}</td>
                 <td>{}</td>
@@ -126,7 +106,6 @@ function DeudasList() {
                 </td>
                 <td className="items-center">
                   <ButtonEdit />
-                  <ButtonDelete />
                 </td>
               </tr>
             ))}
@@ -135,13 +114,13 @@ function DeudasList() {
           onPageChange={(pageNumber) => {
             fetchData(pageNumber);
           }}
-          totalCount={deudas?.total ? deudas?.total : 0}
-          currentPage={deudas?.current_page ? deudas?.current_page : 0}
-          pageSize={deudas?.per_page ? deudas?.per_page : 0}
+          totalCount={abonos?.total ? abonos?.total : 0}
+          currentPage={abonos?.current_page ? abonos?.current_page : 0}
+          pageSize={abonos?.per_page ? abonos?.per_page : 0}
         />
       </div>
     </div>
   );
 }
 
-export default DeudasList;
+export default AbonosList;

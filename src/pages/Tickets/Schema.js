@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 
 export const validationTicket = Yup.object().shape({
-  nOrden: Yup.number().integer().required('El numero de orden es requirda'),
+  nOrden: Yup.number().integer().required('El numero de orden es requerido'),
   operador: Yup.number().integer().required('El operador es requerido'),
   cliente: Yup.object().required('El cliente es requerido'),
   maquina: Yup.object().required('la maquina es requerido'),

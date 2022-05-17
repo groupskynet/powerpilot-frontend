@@ -62,7 +62,11 @@ export default NiceModal.create(({ ticket }) => {
     <Modal isOpen={modal.visible} size="6xl" onClose={() => modal.hide()}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Confirmar Ticket</ModalHeader>
+        <ModalHeader>
+          {ticket.estado === 'PENDIENTE'
+            ? `Confirmar TICKET-${String(ticket.id).padStart(4, '0')}`
+            : `TICKET-${String(ticket.id).padStart(4, '0')}`}
+        </ModalHeader>
         <ModalCloseButton />
         {loading && (
           <div className="py-4">
@@ -194,13 +198,15 @@ export default NiceModal.create(({ ticket }) => {
               </div>
             </div>
             <div className="flex justify-end mt-4">
-              <button
-                type="button"
-                className="btn btn-success"
-                onClick={() => handleSubmit(ticket.id)}
-              >
-                Confirmar
-              </button>
+              {ticket.estado === 'PENDIENTE' && (
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  onClick={() => handleSubmit(ticket.id)}
+                >
+                  Confirmar
+                </button>
+              )}
               <button
                 type="button"
                 className="btn btn-danger ml-2"
