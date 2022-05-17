@@ -15,6 +15,7 @@ import Pagination from '../../components/Pagination/Pagination';
 import TicketsServices from '../../services/TicketsServices';
 import TicketCreateOrUpdateModal from './TicketCreateOrUpdateModal';
 import ButtonView from '../../components/ButtonView';
+import ButtonCheck from '../../components/ButtonCheck';
 import DeleteModal from '../Shared/DeleteModal';
 import TicketViewModal from './TicketViewModal';
 
@@ -169,11 +170,20 @@ function TicketsList() {
                 <td>{item.horometroFinal}</td>
                 <td>{item.fecha}</td>
                 <td className="flex items-center ">
-                  <ButtonView
-                    onClick={() => {
-                      handleViewTicket(item);
-                    }}
-                  />
+                  {item.estado === 'PENDIENTE' ? (
+                    <ButtonCheck
+                      onClick={() => {
+                        handleViewTicket(item);
+                      }}
+                    />
+                  ) : (
+                    <ButtonView
+                      onClick={() => {
+                        handleViewTicket(item);
+                      }}
+                    />
+                  )}
+
                   <ButtonDelete
                     onClick={() => {
                       handleDeleteTicket(item.id);
