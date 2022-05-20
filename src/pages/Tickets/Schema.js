@@ -13,7 +13,7 @@ export const validationTicket = Yup.object().shape({
   horometroInicial: Yup.number().required('El nombre es requerido'),
   horometroFinal: Yup.number()
     .min(
-      Yup.ref('horometroInicial'),
+      Yup.ref('horometroInicial') + 0.001,
       'El Horometro Final no puede ser menor o igual al Horometro Inicial'
     )
     .required(),
