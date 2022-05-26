@@ -18,6 +18,7 @@ import MantenimientosList from './pages/Mantenimientos/MantenimientosList';
 import MantenimientoCreateOrUpdate from './pages/Mantenimientos/MantenimientoCreateOrUpdate';
 import TicketsList from './pages/Tickets/TicketsList';
 import DeudasList from './pages/Deudas/DeudasList';
+import AbonosList from './pages/Deudas/AbonosList';
 
 function App() {
   return (
@@ -99,6 +100,11 @@ function App() {
                 element={<DeudasList />}
               />
 
+              <Route
+                exact
+                path="/movimientos/abonos"
+                element={<AbonosList />}
+              />
               <Route path="/users/change_password">hello</Route>
               <Route path="/gestion/accesorios">hello</Route>
             </Routes>

@@ -9,7 +9,7 @@ import {
 import { useModal } from '@ebay/nice-modal-react';
 import BreadCrumbs from '../../components/ BreadCrumbs';
 import ButtonDelete from '../../components/ButtonDelete';
-import ButtonEdit from '../../components/ButtonEdit';
+import ButtonView from '../../components/ButtonView';
 import Table from '../../components/Table';
 import Loading from '../../components/Loading';
 import Pagination from '../../components/Pagination/Pagination';
@@ -103,29 +103,17 @@ function DeudasList() {
           {deudas?.data?.length &&
             deudas?.data?.map((item) => (
               <tr key={item.id}>
-                <td>{}</td>
-                <td>{}</td>
-                <td>{}</td>
-                <td className="justify-center">
-                  <button type="button">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                      />
-                    </svg>
-                  </button>
+                <td>{item.mantenimiento.proveedor.nombres}</td>
+                <td>
+                  {(
+                    item.mantenimiento.costo - item.mantenimiento.abono
+                  ).toLocaleString('es-CO', {
+                    style: 'currency',
+                    currency: 'COP'
+                  })}
                 </td>
-                <td className="items-center">
-                  <ButtonEdit />
+                <td className="items justify-center">
+                  <ButtonView />
                   <ButtonDelete />
                 </td>
               </tr>
