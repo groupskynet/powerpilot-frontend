@@ -72,6 +72,22 @@ function Sidebar() {
           }
           title="Gestion"
         >
+          <SidebarLink link="/gestion/marcas" title="Marcas" linkactive={false}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+          </SidebarLink>
           <SidebarLink
             link="/gestion/maquinas"
             title="Máquinas"
@@ -133,19 +149,23 @@ function Sidebar() {
               />
             </svg>
           </SidebarLink>
-          <SidebarLink link="/gestion/marcas" title="Marcas" linkactive={false}>
+          <SidebarLink
+            link="/gestion/asignaciones"
+            title="Asignaciones"
+            linkactive={false}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
+              strokeWidth="2"
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth="2"
-                d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"
               />
             </svg>
           </SidebarLink>

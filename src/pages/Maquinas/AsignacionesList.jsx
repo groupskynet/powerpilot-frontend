@@ -12,32 +12,32 @@ import ButtonView from '../../components/ButtonView';
 import Table from '../../components/Table';
 import Loading from '../../components/Loading';
 import Pagination from '../../components/Pagination/Pagination';
-import AbonosServices from '../../services/AbonosServices';
+import AsignacionesServices from '../../services/AsigancionesServices';
 
-function AbonosList() {
-  const [abonos, setAbonos] = useState([]);
+function AsignacionesList() {
+  const [asignaciones, setAsignaciones] = useState([]);
   const [loading, setLoading] = useState(false);
   const [info, setInfo] = useState(null);
 
   const breadCrumbs = useMemo(
     () => [
       { title: 'Inicio', url: '/' },
-      { title: 'Abonos', url: '/movimientos/abonos' }
+      { title: 'Asignaciones', url: '/gestion/asignaciones' }
     ],
     []
   );
 
   const columns = useMemo(
-    () => ['Proveedor', 'Valor', 'Fecha', 'Acciones'],
+    () => ['Operador', 'Maquina', 'Fecha', 'Acciones'],
     []
   );
 
   async function fetchData(pageNumber = 1) {
     try {
       setLoading(true);
-      const response = await AbonosServices.get(pageNumber);
+      const response = await AsignacionesServices.get(pageNumber);
       if (response.status === 200) {
-        setAbonos(response.data);
+        setAsignaciones(response.data);
       }
     } catch (error) {
       setInfo({
@@ -60,7 +60,9 @@ function AbonosList() {
       <BreadCrumbs items={breadCrumbs} />
       <div className="w-full mt-5 mx-auto bg-white shadow-lg rounded-lg">
         <div className="px-5 py-4 flex items-center">
-          <h2 className="font-semibold text-gray-800 flex-grow">Abonos</h2>
+          <h2 className="font-semibold text-gray-800 flex-grow">
+            Asignaciones
+          </h2>
         </div>
         {info && (
           <div className="mb-2">
@@ -81,17 +83,11 @@ function AbonosList() {
           </div>
         )}
         <Table columns={columns} title="Abonos">
-          {abonos?.data?.length &&
-            abonos?.data?.map((item) => (
+          {asignaciones?.data?.length &&
+            asignaciones?.data?.map((item) => (
               <tr key={item.id}>
-                <td>{item.proveedor.nombres}</td>
-                <td>
-                  {' '}
-                  {item.valor.toLocaleString('es-CO', {
-                    style: 'currency',
-                    currency: 'COP'
-                  })}
-                </td>
+                <td>{}</td>
+                <td> {}</td>
                 <td>{dateFormat(item.created_at, 'dd mmmm yyyy')}</td>
                 <td className="items justify-center">
                   <ButtonView />
@@ -103,13 +99,15 @@ function AbonosList() {
           onPageChange={(pageNumber) => {
             fetchData(pageNumber);
           }}
-          totalCount={abonos?.total ? abonos?.total : 0}
-          currentPage={abonos?.current_page ? abonos?.current_page : 0}
-          pageSize={abonos?.per_page ? abonos?.per_page : 0}
+          totalCount={asignaciones?.total ? asignaciones?.total : 0}
+          currentPage={
+            asignaciones?.current_page ? asignaciones?.current_page : 0
+          }
+          pageSize={asignaciones?.per_page ? asignaciones?.per_page : 0}
         />
       </div>
     </div>
   );
 }
 
-export default AbonosList;
+export default AsignacionesList;

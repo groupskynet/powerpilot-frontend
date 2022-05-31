@@ -13,6 +13,8 @@ import BreadCrumbs from '../../components/ BreadCrumbs';
 import ButtonDelete from '../../components/ButtonDelete';
 import ButtonEdit from '../../components/ButtonEdit';
 import ButtonDownload from '../../components/ButtonDownload';
+import ButtonView from '../../components/ButtonView';
+import ButtonCheck from '../../components/ButtonCheck';
 import Table from '../../components/Table';
 import OrdenServicioServices from '../../services/OrdenServicioServices';
 import Loading from '../../components/Loading';
@@ -158,6 +160,11 @@ function OrdenServicioList() {
                   <ButtonDownload />
                 </td>
                 <td className="flex items-center ">
+                  {item.estado === 'PENDIENTE' ? (
+                    <ButtonCheck onClick={() => {}} />
+                  ) : (
+                    <ButtonView onClick={() => {}} />
+                  )}
                   <ButtonEdit
                     onClick={() => {
                       navegar(`/servicios/orden-servicio/update/${item.id}`);

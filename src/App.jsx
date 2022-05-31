@@ -19,6 +19,7 @@ import MantenimientoCreateOrUpdate from './pages/Mantenimientos/MantenimientoCre
 import TicketsList from './pages/Tickets/TicketsList';
 import DeudasList from './pages/Deudas/DeudasList';
 import AbonosList from './pages/Deudas/AbonosList';
+import AsignacionesList from './pages/Maquinas/AsignacionesList';
 
 function App() {
   return (
@@ -45,6 +46,12 @@ function App() {
                 element={<AccesoriosList />}
               />
               <Route exact path="/gestion/marcas" element={<MarcasList />} />
+
+              <Route
+                exact
+                path="/gestion/asignaciones"
+                element={<AsignacionesList />}
+              />
               <Route
                 exact
                 path="/servicios/clientes"
