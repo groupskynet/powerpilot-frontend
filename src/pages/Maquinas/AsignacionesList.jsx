@@ -28,7 +28,7 @@ function AsignacionesList() {
   );
 
   const columns = useMemo(
-    () => ['Operador', 'Maquina', 'Fecha', 'Acciones'],
+    () => ['Operador', 'Maquina', 'Fecha Inicio', 'Fecha Fin', 'Acciones'],
     []
   );
 
@@ -86,9 +86,14 @@ function AsignacionesList() {
           {asignaciones?.data?.length &&
             asignaciones?.data?.map((item) => (
               <tr key={item.id}>
-                <td>{}</td>
-                <td> {}</td>
+                <td>{item.operador.nombres}</td>
+                <td> {item.maquina.nombre}</td>
                 <td>{dateFormat(item.created_at, 'dd mmmm yyyy')}</td>
+                <td>
+                  {item.update_at
+                    ? dateFormat(item.update_at, 'dd mmmm yyyy')
+                    : 'ACTIVO'}
+                </td>
                 <td className="items justify-center">
                   <ButtonView />
                 </td>
