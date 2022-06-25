@@ -6,7 +6,7 @@ import {
   Box,
   CloseButton
 } from '@chakra-ui/react';
-import dateFormat, { masks } from 'dateformat';
+import dateFormat from 'dateformat';
 import BreadCrumbs from '../../components/ BreadCrumbs';
 import ButtonView from '../../components/ButtonView';
 import Table from '../../components/Table';
@@ -86,12 +86,14 @@ function AsignacionesList() {
           {asignaciones?.data?.length &&
             asignaciones?.data?.map((item) => (
               <tr key={item.id}>
-                <td>{item.operador.nombres}</td>
-                <td> {item.maquina.nombre}</td>
-                <td>{dateFormat(item.created_at, 'dd mmmm yyyy')}</td>
                 <td>
-                  {item.update_at
-                    ? dateFormat(item.update_at, 'dd mmmm yyyy')
+                  {`${item.operador_relation.nombres} ${item.operador_relation.apellidos}`}
+                </td>
+                <td> {item.maquina_relation.nombre}</td>
+                <td>{dateFormat(item.created_at, 'dd mmmm yyyy HH:MM')}</td>
+                <td>
+                  {item.fechaFin
+                    ? dateFormat(item.update_at, 'dd mmmm yyyy HH:MM')
                     : 'ACTIVO'}
                 </td>
                 <td className="items justify-center">
