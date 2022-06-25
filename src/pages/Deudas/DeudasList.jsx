@@ -19,7 +19,6 @@ import AbonoCreateOrUpdateModal from './AbonosCreateOrUpdateModal';
 function DeudasList() {
   const abonoModal = useModal(AbonoCreateOrUpdateModal);
   const [deudas, setDeudas] = useState([]);
-  const [abonos, setAbono] = useState([]);
   const [loading, setLoading] = useState(false);
   const [info, setInfo] = useState(null);
 
@@ -31,12 +30,11 @@ function DeudasList() {
     []
   );
 
-  const columns = useMemo(() => ['Proveedor', 'Valor', 'Acciones'], []);
+  const columns = useMemo(() => ['Proveedor', 'Valor'], []);
 
   const handleNewAbono = useCallback(() => {
-    abonoModal.show().then((newAbono) => {
+    abonoModal.show().then(() => {
       setInfo({ type: 'success', message: 'Abono Creado Correctamente' });
-      setAbono((state) => ({ ...state, data: [newAbono, ...state.data] }));
     });
   }, [abonoModal]);
 
@@ -103,18 +101,12 @@ function DeudasList() {
           {deudas?.data?.length &&
             deudas?.data?.map((item) => (
               <tr key={item.id}>
-                <td>{item.mantenimiento.proveedor.nombres}</td>
+                <td>{item.proveedor}</td>
                 <td>
-                  {(
-                    item.mantenimiento.costo - item.mantenimiento.abono
-                  ).toLocaleString('es-CO', {
+                  {item.cantidad.toLocaleString('es-CO', {
                     style: 'currency',
                     currency: 'COP'
                   })}
-                </td>
-                <td className="items justify-center">
-                  <ButtonView />
-                  <ButtonDelete />
                 </td>
               </tr>
             ))}
