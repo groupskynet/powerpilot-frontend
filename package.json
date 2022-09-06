@@ -2,16 +2,20 @@
   "name": "dar",
   "version": "0.0.0",
   "scripts": {
+    "copy": "copyfiles -f ./node_modules/@axa-fr/react-oidc/dist/OidcServiceWorker.js ./public && copyfiles -f -s ./node_modules/@axa-fr/react-oidc/dist/OidcTrustedDomains.js ./public",
     "dev": "vite",
     "lint": "eslint --ext .js,.jsx --fix",
-    "build": "vite build",
-    "serve": "vite preview"
+    "build": "npm run copy && vite build",
+    "serve": "vite preview",
+    "prepare" : "npm run copy"
   },
   "dependencies": {
+    "@axa-fr/react-oidc": "^5.12.0",
     "@chakra-ui/react": "^1.8.6",
     "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.8.1",
     "axios": "^0.26.0",
+    "copyfiles": "^2.4.1",
     "dateformat": "^5.0.3",
     "formik": "^2.2.9",
     "framer-motion": "^6.2.8",

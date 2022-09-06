@@ -98,7 +98,7 @@ function MantenimientosList() {
       'Descripcion',
       'Modalidad de Pago',
       'Costo',
-      'Factura',
+      'Factura/cotización',
       'Acciones'
     ],
     []
