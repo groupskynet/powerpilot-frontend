@@ -21,17 +21,18 @@ export default NiceModal.create(({ ticket }) => {
   const modal = useModal();
 
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState(null);
+  const [file, setFile] = useState('');
   const [info, setInfo] = useState(null);
 
   useEffect(() => {
-    if (ticket) {
-      setData({
-        ...ticket,
-        operador: ticket.operador.id,
-        maquina: ticket.maquina.id
-      });
-    }
+    (async () => {
+      if (ticket) {
+        setLoading(true);
+        const base64 = await TicketsServices.file(ticket.soporte);
+        setFile(base64);
+        setLoading(false);
+      }
+    })();
   }, [ticket]);
 
   const handleSubmit = useCallback(
@@ -94,7 +95,7 @@ export default NiceModal.create(({ ticket }) => {
               </div>
             )}
             <div className="w-full flex px-3 mb-6 md:mb-0">
-              <div className="w-full md:w-2/3 px-3 mb-6 md:mb-0">
+              <div className="md:w-1/2 px-3 mb-6 md:mb-0">
                 <div className="flex flex-wrap -mx-3 mb-2">
                   <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
                     <label
@@ -191,9 +192,9 @@ export default NiceModal.create(({ ticket }) => {
                   </div>
                 </div>
               </div>
-              <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-                <div>
-                  <img src={ticket.soporte} alt="ticket" />
+              <div className="md:w-1/2 px-3 mb-6 md:mb-0">
+                <div className="border rounded-lg p-5 w-full">
+                  <img width="100%" src={file} alt="ticket" />
                 </div>
               </div>
             </div>

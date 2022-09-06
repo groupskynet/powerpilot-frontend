@@ -23,6 +23,11 @@ TicketsServices.post = async (request) => {
   return data;
 };
 
+TicketsServices.file = async (path) => {
+  const { data } = await axios.post('http://localhost:8000/api/file', { path });
+  return data;
+};
+
 TicketsServices.update = async (id) => {
   const { data } = await axios.post(
     `http://localhost:8000/api/tickets/${id}?_method=PUT`

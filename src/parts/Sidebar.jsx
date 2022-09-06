@@ -1,4 +1,6 @@
 import React from 'react';
+import { useOidc } from '@axa-fr/react-oidc';
+
 import '../assets/sidebar.css';
 import logo from '../assets/images/LogoDar..png';
 
@@ -7,6 +9,8 @@ import SidebarLink from '../components/SidebarLink';
 import SidebarDropdown from '../components/SidebarDropdown';
 
 function Sidebar() {
+  const { logout } = useOidc();
+
   return (
     <div className="sidebar bg-gray-50 w-68 flex-none flex flex-col  overflow-y-hiden">
       <div className="sidebar__logo flex justify-center mt-5">
@@ -456,7 +460,15 @@ function Sidebar() {
             </svg>
           </SidebarLink>
         </SidebarDropdown>
-        <SidebarLink link="salir" title="Salir" linkactive={false}>
+        <SidebarLink
+          type="button"
+          link="salir"
+          title="Salir"
+          linkactive={false}
+          onClick={() => {
+            logout();
+          }}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6"
