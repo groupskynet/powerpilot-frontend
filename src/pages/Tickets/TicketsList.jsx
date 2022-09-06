@@ -30,7 +30,7 @@ function TicketsList() {
   const breadCrumbs = useMemo(
     () => [
       { title: 'Inicio', url: '/' },
-      { title: 'Marcas', url: '/gestion/marcas' }
+      { title: 'Tickets', url: '/servicios/tickets' }
     ],
     []
   );

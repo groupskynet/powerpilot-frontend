@@ -56,7 +56,7 @@ export default NiceModal.create(({ operador }) => {
   );
 
   return (
-    <Modal isOpen={modal.visible} size="4xl" onClose={() => modal.hide()}>
+    <Modal isOpen={modal.visible} size="4xl" onClose={() => modal.remove()}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>

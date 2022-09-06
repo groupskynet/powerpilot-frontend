@@ -8,7 +8,6 @@ import {
 } from '@chakra-ui/react';
 import dateFormat from 'dateformat';
 import BreadCrumbs from '../../components/ BreadCrumbs';
-import ButtonView from '../../components/ButtonView';
 import Table from '../../components/Table';
 import Loading from '../../components/Loading';
 import Pagination from '../../components/Pagination/Pagination';
@@ -28,7 +27,7 @@ function AsignacionesList() {
   );
 
   const columns = useMemo(
-    () => ['Operador', 'Maquina', 'Fecha Inicio', 'Fecha Fin', 'Acciones'],
+    () => ['Operador', 'Maquina', 'Fecha Inicio', 'Fecha Fin'],
     []
   );
 
@@ -95,9 +94,6 @@ function AsignacionesList() {
                   {item.fechaFin
                     ? dateFormat(item.update_at, 'dd mmmm yyyy HH:MM')
                     : 'ACTIVO'}
-                </td>
-                <td className="items justify-center">
-                  <ButtonView />
                 </td>
               </tr>
             ))}

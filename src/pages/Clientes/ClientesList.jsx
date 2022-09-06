@@ -17,9 +17,11 @@ import Pagination from '../../components/Pagination/Pagination';
 import ClienteCreateOrUpdateModal from './ClienteCreateOrUpdateModal';
 import DeleteModal from '../Shared/DeleteModal';
 import ClientesServices from '../../services/ClientesServices';
+import ClientViewModal from './ClienteViewModal';
 
 function ClientesList() {
   const clienteModal = useModal(ClienteCreateOrUpdateModal);
+  const modalViewClient = useModal(ClientViewModal);
   const deleteModal = useModal(DeleteModal);
   const [clientes, setClientes] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -70,6 +72,13 @@ function ClientesList() {
       });
     },
     [clienteModal]
+  );
+
+  const handleViewClient = useCallback(
+    (cliente) => {
+      modalViewClient.show({ cliente }).then(() => {});
+    },
+    [modalViewClient]
   );
 
   const handleDeleteCliente = useCallback(
@@ -185,7 +194,11 @@ function ClientesList() {
                 <td>{item.direccion}</td>
                 <td>{item.email}</td>
                 <td className="flex items-center">
-                  <ButtonView onClick={() => {}} />
+                  <ButtonView
+                    onClick={() => {
+                      handleViewClient(item);
+                    }}
+                  />
                   <ButtonEdit
                     onClick={() => {
                       handleEditCliente(item);
