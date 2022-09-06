@@ -1,7 +1,7 @@
 import React from 'react';
-import { useOidc } from '@axa-fr/react-oidc';
 
 import '../assets/sidebar.css';
+import { useKeycloak } from '@react-keycloak/web';
 import logo from '../assets/images/LogoDar..png';
 
 // components
@@ -9,7 +9,7 @@ import SidebarLink from '../components/SidebarLink';
 import SidebarDropdown from '../components/SidebarDropdown';
 
 function Sidebar() {
-  const { logout } = useOidc();
+  const { keycloak, initialized } = useKeycloak();
 
   return (
     <div className="sidebar bg-gray-50 w-68 flex-none flex flex-col  overflow-y-hiden">
@@ -466,7 +466,7 @@ function Sidebar() {
           title="Salir"
           linkactive={false}
           onClick={() => {
-            logout();
+            keycloak.logout();
           }}
         >
           <svg
