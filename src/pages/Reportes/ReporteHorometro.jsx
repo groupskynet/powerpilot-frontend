@@ -67,7 +67,7 @@ function ReporteHorometro() {
           </Alert>
         </div>
       )}
-      <Box>
+      <Box display="flex" alignItems="center" borderRadius="md">
         <div className="w-1/3 ">
           <Box display="flex" alignItems="end">
             <Box flexGrow={1}>
@@ -92,31 +92,31 @@ function ReporteHorometro() {
             </Box>
           </Box>
         </div>
-        <div className="w-1/3">
+        <div className="w-1/3 ml-4">
           <label
             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            htmlFor="grid-modalidad"
+            htmlFor="grid-fecha-inicio"
           >
-            Fecha inicio
+            Fecha Inicio
           </label>
         </div>
-        <div className="w-1/3">
+        <div className="w-1/3 ml-4">
           <label
             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            htmlFor="grid-modalidad"
+            htmlFor="grid-fecha-fin"
           >
             Fecha Fin
           </label>
         </div>
       </Box>
 
-      <Box display="flex" alignItems="center" borderRadius="md">
-        <div className="w-1/3 mx-4">
+      <Box display="flex" alignItems="center" borderRadius="md" marginY={4}>
+        <div className="w-1/3">
           <Box display="flex" alignItems="end">
             <Box flexGrow={1}>
               <label
                 className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                htmlFor="grid-proveedor"
+                htmlFor="grid-horometro-inicial"
               >
                 Horometro Inicial
               </label>
@@ -126,23 +126,16 @@ function ReporteHorometro() {
         <div className="w-1/4 ml-4">
           <label
             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            htmlFor="grid-horometro"
+            htmlFor="grid-horometro-final"
           >
             Horometro Final
           </label>
         </div>
-        <div className="w-1/3">
+
+        <div className="w-1/3 ml-4">
           <label
             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            htmlFor="grid-modalidad"
-          >
-            Fecha inicio
-          </label>
-        </div>
-        <div className="w-1/3">
-          <label
-            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            htmlFor="grid-modalidad"
+            htmlFor="grid-total-horas"
           >
             Total Horas
           </label>
@@ -152,9 +145,9 @@ function ReporteHorometro() {
         <div className="w-1/4">
           <label
             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            htmlFor="grid-modalidad"
+            htmlFor="grid-horas-accesorio"
           >
-            Total Horas
+            Horas Por Accesorio
           </label>
         </div>
         <div className="w-1/4 ml-4">
