@@ -20,6 +20,7 @@ import TicketsList from './pages/Tickets/TicketsList';
 import DeudasList from './pages/Deudas/DeudasList';
 import AbonosList from './pages/Deudas/AbonosList';
 import AsignacionesList from './pages/Maquinas/AsignacionesList';
+import ReporteHorometro from './pages/Reportes/ReporteHorometro';
 
 function App() {
   return (
@@ -111,6 +112,11 @@ function App() {
                 exact
                 path="/movimientos/abonos"
                 element={<AbonosList />}
+              />
+              <Route
+                exact
+                path="/reportes/horometro"
+                element={<ReporteHorometro />}
               />
               <Route path="/users/change_password">hello</Route>
               <Route path="/gestion/accesorios">hello</Route>
