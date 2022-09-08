@@ -329,6 +329,11 @@ function MantenimientoCreateOrUpdate() {
                       value={formik.values.horometro}
                       onChange={formik.handleChange}
                     />
+                    {formik.values.maquina && (
+                      <span>
+                        Horometro Actual ({formik.values.maquina.horometro})
+                      </span>
+                    )}
                   </div>
                 </Box>
                 <Box
