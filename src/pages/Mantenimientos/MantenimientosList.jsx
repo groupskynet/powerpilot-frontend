@@ -18,9 +18,11 @@ import MantenimientosServices from '../../services/MantenimientosServices';
 import Loading from '../../components/Loading';
 import DeleteModal from '../Shared/DeleteModal';
 import Pagination from '../../components/Pagination/Pagination';
+import ModalPdf from '../../components/ModalPdf';
 
 function MantenimientosList() {
   const deleteModal = useModal(DeleteModal);
+  const documentoModal = useModal(ModalPdf);
 
   const [info, setInfo] = useState(null);
   const [mantenimientos, setMantenimientos] = useState([]);
@@ -152,7 +154,11 @@ function MantenimientosList() {
                 <td>{item.modalidad}</td>
                 <td>{item.costo}</td>
                 <td className="flex justify-center">
-                  <ButtonDownload />
+                  <ButtonDownload
+                    onClick={() =>
+                      documentoModal.show({ soporte: item.soporte })
+                    }
+                  />
                 </td>
                 <td className="items-center ">
                   <ButtonEdit />

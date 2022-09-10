@@ -17,10 +17,13 @@ import Pagination from '../../components/Pagination/Pagination';
 import GastosCreateOrUpdateModal from './GastosCreateOrUpdateModal';
 import DeleteModal from '../Shared/DeleteModal';
 import GastosServices from '../../services/GastosServices';
+import ModalPdf from '../../components/ModalPdf';
 
 function GastosList() {
   const gastoModal = useModal(GastosCreateOrUpdateModal);
   const deleteModal = useModal(DeleteModal);
+  const documentoModal = useModal(ModalPdf);
+
   const [gastos, setGastos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [info, setInfo] = useState(null);
@@ -163,7 +166,11 @@ function GastosList() {
                 <td>{item.descripcion}</td>
                 <td>$ {new Intl.NumberFormat('es-CO').format(item.valor)}</td>
                 <td className="flex items-center">
-                  <ButtonDownload />
+                  <ButtonDownload
+                    onClick={() =>
+                      documentoModal.show({ soporte: item.soporte })
+                    }
+                  />
                 </td>
                 <td className="items-center">
                   <ButtonEdit

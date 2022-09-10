@@ -8,6 +8,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "@ebay/nice-modal-react": "^1.2.1",
     "@chakra-ui/react": "^1.8.6",
     "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.8.1",
@@ -28,7 +29,6 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
-    "@ebay/nice-modal-react": "^1.2.1",
     "@vitejs/plugin-react": "^1.0.0",
     "autoprefixer": "^10.4.0",
     "babel-eslint": "^10.1.0",

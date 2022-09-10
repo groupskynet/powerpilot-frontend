@@ -20,9 +20,11 @@ import OrdenServicioServices from '../../services/OrdenServicioServices';
 import Loading from '../../components/Loading';
 import DeleteModal from '../Shared/DeleteModal';
 import Pagination from '../../components/Pagination/Pagination';
+import ModalPdf from '../../components/ModalPdf';
 
 function OrdenServicioList() {
   const deleteModal = useModal(DeleteModal);
+  const documentoModal = useModal(ModalPdf);
   const navegar = useNavigate();
   const [info, setInfo] = useState(null);
   const [ordenServicios, setOrdenServicio] = useState([]);
@@ -157,7 +159,11 @@ function OrdenServicioList() {
                 <td>{item.horasPromedio}</td>
                 <td>{item.horometroInicial}</td>
                 <td className="justify-center">
-                  <ButtonDownload />
+                  <ButtonDownload
+                    onClick={() =>
+                      documentoModal.show({ soporte: item.soporte })
+                    }
+                  />
                 </td>
                 <td className="flex items-center ">
                   {item.estado === 'PENDIENTE' ? (
