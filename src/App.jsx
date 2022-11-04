@@ -21,6 +21,7 @@ import DeudasList from './pages/Deudas/DeudasList';
 import AbonosList from './pages/Deudas/AbonosList';
 import AsignacionesList from './pages/Maquinas/AsignacionesList';
 import ReporteHorometro from './pages/Reportes/ReporteHorometro';
+import Pagos from './pages/Pagos';
 
 function App() {
   return (
@@ -118,8 +119,7 @@ function App() {
                 path="/reportes/horometro"
                 element={<ReporteHorometro />}
               />
-              <Route path="/users/change_password">hello</Route>
-              <Route path="/gestion/accesorios">hello</Route>
+              <Route exact path="/configuracion/pagos" element={<Pagos />} />
             </Routes>
           </div>
         </div>

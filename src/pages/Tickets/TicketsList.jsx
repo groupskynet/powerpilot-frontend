@@ -57,12 +57,23 @@ function TicketsList() {
   }, [fetchData]);
 
   const handleNewTicket = useCallback(() => {
-    modalTicket.show().then(() => {});
+    modalTicket.show().then((ticket) => {
+      setInfo({ type: 'success', message: 'Ticket Creado Correctamente' });
+      setTickets((state) => ({ ...state, data: [...state.data, ticket] }));
+    });
   }, [modalTicket]);
 
   const handleViewTicket = useCallback(
     (ticket) => {
-      modalViewTicket.show({ ticket }).then(() => {});
+      modalViewTicket.show({ ticket }).then((newTicket) => {
+        setTickets((state) => {
+          const i = state.data.findIndex((t) => t.id === newTicket.id);
+          const updated = { ...state.data[i], ...newTicket };
+          const arr = [...state.data];
+          arr.splice(i, 1, updated);
+          return { ...state, data: arr };
+        });
+      });
     },
     [modalViewTicket]
   );
@@ -160,7 +171,7 @@ function TicketsList() {
                 }`}
                 key={item.id}
               >
-                <td>{`TICKET-${String(item.id).padStart(4, '0')}`}</td>
+                <td>{`${item.consecutivo}`}</td>
                 <td>{`${item.operador.nombres} ${item.operador.apellidos}`}</td>
                 <td>{item.maquina.nombre}</td>
                 <td>

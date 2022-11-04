@@ -102,8 +102,8 @@ export default NiceModal.create(() => {
           setInfo({ type: 'error', message: resp.message });
           return;
         }
-        modal.resolve(newTicket);
-        await modal.remove();
+        modal.resolve(resp.data);
+        await modal.hide();
       } catch (e) {
         setInfo({
           type: 'error',

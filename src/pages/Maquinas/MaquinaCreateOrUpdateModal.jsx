@@ -137,6 +137,7 @@ export default NiceModal.create(({ maquina }) => {
                   nombre: '',
                   marca: '',
                   modelo: '',
+                  prefijo: '',
                   serie: '',
                   linea: '',
                   registro: '',
@@ -279,7 +280,7 @@ export default NiceModal.create(({ maquina }) => {
                             formik.values.tipo === 'MAQUINA'
                               ? 'md:w-1/3'
                               : 'md:w-1/4'
-                          }  px-3 mb-6 md:mb-0"`}
+                          }  px-3 mb-1 md:mb-0"`}
                         >
                           <label
                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -306,7 +307,7 @@ export default NiceModal.create(({ maquina }) => {
                             formik.values.tipo === 'MAQUINA'
                               ? 'md:w-1/3'
                               : 'md:w-1/4'
-                          }  px-3 mb-6 md:mb-0"`}
+                          }  px-3 mb-1 md:mb-0"`}
                         >
                           <label
                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -333,7 +334,7 @@ export default NiceModal.create(({ maquina }) => {
                             formik.values.tipo === 'MAQUINA'
                               ? 'md:w-1/3'
                               : 'md:w-1/4'
-                          }  px-3 mb-6 md:mb-0"`}
+                          }  px-3 mb-1 md:mb-0"`}
                         >
                           <label
                             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -378,6 +379,33 @@ export default NiceModal.create(({ maquina }) => {
                             />
                           </div>
                         )}
+                        <div
+                          className={`${
+                            formik.values.tipo === 'VEHICULO'
+                              ? 'w-1/4'
+                              : 'w-1/3'
+                          } px-3 md:mb-0`}
+                        >
+                          <label
+                            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                            htmlFor="grid-plate"
+                          >
+                            Prefijo
+                          </label>
+                          <input
+                            className={`input-box ${
+                              formik.errors.prefijo && formik.touched.prefijo
+                                ? 'border border-red-500'
+                                : ''
+                            }`}
+                            id="grid-plate"
+                            type="text"
+                            name="prefijo"
+                            value={formik.values.prefijo}
+                            onChange={formik.handleChange}
+                            placeholder="prefijo"
+                          />
+                        </div>
                       </div>
                       <div className="flex justify-end mt-4">
                         <button type="submit" className="btn btn-success">
