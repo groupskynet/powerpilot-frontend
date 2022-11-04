@@ -12,6 +12,8 @@ import { useNavigate } from 'react-router-dom';
 import BreadCrumbs from '../../components/ BreadCrumbs';
 import LiteralesServices from '../../services/LiteralesServices';
 import Loading from '../../components/Loading';
+import Table from '../../components/Table';
+import Pagination from '../../components/Pagination/Pagination';
 
 function ReporteHorometro() {
   const navigate = useNavigate();
@@ -21,8 +23,22 @@ function ReporteHorometro() {
 
   const breadCrumbs = useMemo(
     () => [
-      { title: 'Reportes', url: '/reportes/' },
-      { title: 'Reporte Horometro', url: '/reportes/reporte-horometro/' }
+      { title: 'Reportes', url: '/reportes' },
+      { title: 'Reporte Horometro', url: '/reportes/horometro' }
+    ],
+    []
+  );
+  const columns = useMemo(
+    () => [
+      'Orden de Servicio',
+      'Ticket #',
+      'Fecha',
+      'Accesorio',
+      'Horometro Inicial',
+      'Horometro Final',
+      'Total Horas',
+      'Valor X Hora',
+      'Subtotal'
     ],
     []
   );
@@ -68,7 +84,7 @@ function ReporteHorometro() {
         </div>
       )}
       <Box display="flex" alignItems="center" borderRadius="md">
-        <div className="w-1/3 ">
+        <div className="w-1/4 ">
           <Box display="flex" alignItems="end">
             <Box flexGrow={1}>
               <label
@@ -92,99 +108,145 @@ function ReporteHorometro() {
             </Box>
           </Box>
         </div>
-        <div className="w-1/3 ml-4">
+        <div className="w-1/4 ml-4">
           <label
             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
             htmlFor="grid-fecha-inicio"
           >
             Fecha Inicio
-          </label>
+          </label>{' '}
+          {maquinas && (
+            <Select
+              id="maquina"
+              options={maquinas}
+              getOptionLabel={(maquina) => maquina && maquina.nombre}
+              getOptionValue={(maquina) => maquina && maquina.id}
+              value={maquinas.filter((maquina) => maquina.id)}
+              onChange={(maquina) => {
+                maquina.setFieldValue('maquina', maquina);
+              }}
+            />
+          )}
         </div>
-        <div className="w-1/3 ml-4">
+        <div className="w-1/4 ml-4">
           <label
             className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
             htmlFor="grid-fecha-fin"
           >
             Fecha Fin
           </label>
+          {maquinas && (
+            <Select
+              id="maquina"
+              options={maquinas}
+              getOptionLabel={(maquina) => maquina && maquina.nombre}
+              getOptionValue={(maquina) => maquina && maquina.id}
+              value={maquinas.filter((maquina) => maquina.id)}
+              onChange={(maquina) => {
+                maquina.setFieldValue('maquina', maquina);
+              }}
+            />
+          )}
+        </div>
+        <div className="w-1/4 ml-4 pt-5 pl-4" display="flex">
+          <Button type="button" colorScheme="blue" onClick={() => {}}>
+            Buscar
+          </Button>
         </div>
       </Box>
-
-      <Box display="flex" alignItems="center" borderRadius="md" marginY={4}>
+      <Box marginY={4}>
+        <Table columns={columns} title="a">
+          <tr>
+            <td>{}</td>
+            <td>{}</td>
+            <td>{}</td>
+            <td>{}</td>
+            <td>{}</td>
+            <td>{}</td>
+          </tr>
+        </Table>
+        <Pagination />
+      </Box>
+      <Box display="flex" alignItems="center" borderRadius="md">
         <div className="w-1/3">
-          <Box display="flex" alignItems="end">
-            <Box flexGrow={1}>
-              <label
-                className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                htmlFor="grid-horometro-inicial"
-              >
-                Horometro Inicial
-              </label>
-            </Box>
-          </Box>
-        </div>
-        <div className="w-1/4 ml-4">
           <label
-            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            htmlFor="grid-horometro-final"
-          >
-            Horometro Final
-          </label>
-        </div>
-
-        <div className="w-1/3 ml-4">
-          <label
-            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            htmlFor="grid-total-horas"
-          >
-            Total Horas
-          </label>
-        </div>
-      </Box>
-      <Box display="flex" alignItems="center" borderRadius="md" marginY={4}>
-        <div className="w-1/4">
-          <label
-            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+            className="block tracking-wide text-gray-700 text-xs font-bold mb-2"
             htmlFor="grid-horas-accesorio"
           >
             Horas Por Accesorio
           </label>
-        </div>
-        <div className="w-1/4 ml-4">
+          <div>
+            <label
+              className="block tracking-wide text-gray-700 text-xs font-bold mb-2"
+              htmlFor="grid-balde"
+            >
+              Balde :
+            </label>
+          </div>
+          <div>
+            <label
+              className="block tracking-wide text-gray-700 text-xs font-bold mb-2"
+              htmlFor="grid-martillo"
+            >
+              Martillo :
+            </label>
+          </div>
+          <div>
+            <label
+              className="block tracking-wide text-gray-700 text-xs font-bold mb-2"
+              htmlFor="grid-martillo"
+            >
+              Total Horas :
+            </label>
+          </div>
+        </div>{' '}
+        <div className="w-1/3">
           <label
-            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            htmlFor="grid-balde"
+            className="block tracking-wide text-gray-700 text-xs font-bold mb-2"
+            htmlFor="grid-horas-accesorio"
           >
-            Balde
+            Valores
           </label>
+          <div>
+            <label
+              className="block tracking-wide text-gray-700 text-xs font-bold mb-2"
+              htmlFor="grid-balde"
+            >
+              Hora Balde :
+            </label>
+          </div>
+          <div>
+            <label
+              className="block tracking-wide text-gray-700 text-xs font-bold mb-2"
+              htmlFor="grid-martillo"
+            >
+              Hora Martillo :
+            </label>
+          </div>
         </div>
-
-        <div className="w-1/4 ml-4">
+        <div className="w-1/3">
           <label
-            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            htmlFor="grid-martillo"
-          >
-            Martillo
-          </label>
-        </div>
-      </Box>
-      <Box>
-        <div className="w-1/4 ml-4">
-          <label
-            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+            className="block tracking-wide text-gray-700 text-xs font-bold mb-2"
             htmlFor="grid-promedio-combustible"
           >
-            Promedio Combustible
+            Total $ :
           </label>
-        </div>
-
-        <div className="w-1/4 mb-6 md:mb-0">
-          <label
-            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            htmlFor="grid-promedio-horas"
-          >
-            Promedio de Horas
-          </label>
+          <div>
+            <label
+              className="block tracking-wide text-gray-700 text-xs font-bold mb-2"
+              htmlFor="grid-promedio-horas"
+            >
+              Promedio de combustible :
+            </label>
+          </div>
+          <div>
+            <label
+              className="block tracking-wide text-gray-700 text-xs font-bold mb-2"
+              htmlFor="grid-promedio-horas"
+            >
+              Promedio de Horas por Días :
+            </label>
+          </div>
         </div>
       </Box>
       <Box display="flex" justifyContent="end">
