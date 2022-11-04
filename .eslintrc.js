@@ -19,6 +19,14 @@ module.exports = {
   },
   plugins: ['react', 'jsx-a11y', 'react-hooks', 'prettier'],
   rules: {
+    'import/no-extraneous-dependencies': [
+      'error',
+      {
+        devDependencies: false,
+        optionalDependencies: false,
+        peerDependencies: false
+      }
+    ],
     'prettier/prettier': [
       'error',
       { singleQuote: true, endOfLine: 'auto', trailingComma: 'none' }

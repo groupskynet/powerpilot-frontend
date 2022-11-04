@@ -17,10 +17,12 @@ import Loading from '../../components/Loading';
 import OperadoresServices from '../../services/OperadoresServices';
 import OperadoresCreateOrUpdateModal from './OperadoresCreateOrUpdateModal';
 import DeleteModal from '../Shared/DeleteModal';
+import ModalPdf from '../../components/ModalPdf';
 
 function OperadoresList() {
   const operadorModal = useModal(OperadoresCreateOrUpdateModal);
   const deleteModal = useModal(DeleteModal);
+  const documentModal = useModal(ModalPdf);
 
   const [operadores, setOperadores] = useState([]);
   const [info, setInfo] = useState(null);
@@ -133,6 +135,13 @@ function OperadoresList() {
     [deleteModal]
   );
 
+  const handleDocumento = useCallback(
+    (soporte) => {
+      documentModal.show({ soporte });
+    },
+    [documentModal]
+  );
+
   if (loading) return <Loading />;
 
   return (
@@ -182,7 +191,11 @@ function OperadoresList() {
                 <td>{item.direccion}</td>
                 <td>{item.email}</td>
                 <td className="flex justify-center">
-                  <ButtonDownload />
+                  <ButtonDownload
+                    onClick={() => {
+                      handleDocumento(item.licencia);
+                    }}
+                  />
                 </td>
                 <td className="items-center">
                   <ButtonEdit
