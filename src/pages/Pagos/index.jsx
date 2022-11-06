@@ -1,6 +1,5 @@
 import { Box, Stack } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Formik } from 'formik';
 import BreadCrumbs from '../../components/ BreadCrumbs';
 import Info from '../../components/Info';
 import Loading from '../../components/Loading';
@@ -10,10 +9,11 @@ import MaquinaServices from '../../services/MaquinasServices';
 import ArrowDown from './Components/ArrowDown';
 import ArrowRight from './Components/ArrowRight';
 import ArrowUp from './Components/ArrowUp';
+import { OnlyLetter } from '../../utils/stringConversions';
+import PagosServices from '../../services/PagosServices';
 
 function Pagos() {
   const [maquinas, setMaquinas] = useState(null);
-  const [data, setData] = useState({ maquinas: [], accesorios: [] });
   const [loading, setLoading] = useState(false);
   const [info, setInfo] = useState(null);
   const [actives, setAcitves] = useState([]);
@@ -39,12 +39,137 @@ function Pagos() {
     } catch (error) {
       setInfo({
         type: 'error',
-        message: 'se ha producido un error,por favor intentelo más tarde.'
+        message: 'se ha producido un error, por favor intentelo más tarde.'
       });
     } finally {
       setLoading(false);
     }
   }, []);
+
+  const fetchSubmit = useCallback(async (id, value, type = 'maquina') => {
+    if (type === 'maquina') {
+      await PagosServices.maquina({ id, value });
+      return;
+    }
+    await PagosServices.accesorio({ id, value });
+  }, []);
+
+  const handleOnChangeMaquina = useCallback(async (id, value) => {
+    try {
+      setLoading(true);
+      const number = OnlyLetter(value);
+      setMaquinas((state) => {
+        const data = state.data.map((i) => {
+          if (i.id === id) {
+            return {
+              ...i,
+              pagos: [{ ...i.pagos[0], valor: number }]
+            };
+          }
+          return i;
+        });
+        return { state, data: [...data] };
+      });
+    } catch (e) {
+      setInfo({
+        type: 'error',
+        message: 'se ha producido un error, por favor intentalo más tarde.'
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const handleOnBlurMaquina = useCallback(
+    async (id, value) => {
+      try {
+        setLoading(true);
+        await fetchSubmit(id, value, 'maquina');
+        setMaquinas((state) => {
+          const data = state.data.map((i) => {
+            if (i.id === id) {
+              return {
+                ...i,
+                pagos: [{ ...i.pagos[0], valor: value }]
+              };
+            }
+            return i;
+          });
+          return { state, data: [...data] };
+        });
+      } catch (e) {
+        setInfo({
+          type: 'error',
+          message: 'se ha producido un error, por favor intentalo más tarde.'
+        });
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchSubmit]
+  );
+
+  const handleOnChangeAccesorio = useCallback(async (id, value) => {
+    try {
+      setLoading(true);
+      const number = OnlyLetter(value);
+      setMaquinas((state) => {
+        const data = state.data.map((item) => {
+          const accesorios = item.accesorios.map((accesorio) => {
+            if (accesorio.id === id) {
+              return {
+                ...accesorio,
+                pagos: [{ ...accesorio.pagos[0], valor: number }]
+              };
+            }
+            return accesorio;
+          });
+          return { ...item, accesorios };
+        });
+        return { state, data: [...data] };
+      });
+    } catch (e) {
+      setInfo({
+        type: 'error',
+        message: 'se ha producido un error, por favor intentalo más tarde.'
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const handleOnBlurAccesorio = useCallback(
+    async (id, value) => {
+      try {
+        setLoading(true);
+        await fetchSubmit(id, value, 'accesorio');
+        const number = OnlyLetter(value);
+        setMaquinas((state) => {
+          const data = state.data.map((item) => {
+            const accesorios = item.accesorios.map((accesorio) => {
+              if (accesorio.id === id) {
+                return {
+                  ...accesorio,
+                  pagos: [{ ...accesorio.pagos[0], valor: number }]
+                };
+              }
+              return accesorio;
+            });
+            return { ...item, accesorios };
+          });
+          return { state, data: [...data] };
+        });
+      } catch (e) {
+        setInfo({
+          type: 'error',
+          message: 'se ha producido un error, por favor intentalo más tarde.'
+        });
+      } finally {
+        setLoading(false);
+      }
+    },
+    [fetchSubmit]
+  );
 
   useEffect(() => {
     fetchData();
@@ -78,120 +203,134 @@ function Pagos() {
         {loading && <Loading />}
         {!loading && (
           <Box marginTop={5}>
-            <Formik
-              initialValues={{ pagos: { maquinas: [], accesorios: [] } }}
-              onSubmit={() => {}}
-              enableReinitialize
+            <Table
+              columns={['TIPO', 'SERIE', 'MAQUINA', 'OPERADOR', 'VALOR X HORA']}
             >
-              {(formik) => (
-                <Table
-                  columns={[
-                    'TIPO',
-                    'SERIE',
-                    'MAQUINA',
-                    'OPERADOR',
-                    'VALOR X HORA'
-                  ]}
-                >
-                  {maquinas &&
-                    maquinas.data.map((item) => (
-                      <>
-                        <tr
-                          key={item.id}
-                          className="cursor-pointer font-sans border-b-2"
-                        >
-                          <td
-                            role="gridcell"
-                            onClick={() => {
-                              if (item.accesorios.length === 0) return;
-                              setAcitves((state) => {
-                                const exist =
-                                  state.findIndex((i) => i === item.id) !== -1;
-                                if (exist)
-                                  return state.filter((i) => i !== item.id);
-                                return [...state, item.id];
-                              });
-                            }}
-                          >
-                            {item.accesorios.length > 0 && (
-                              <Stack direction="row" spacing={2}>
-                                {isActive(item.id) ? (
-                                  <ArrowUp />
-                                ) : (
-                                  <ArrowDown />
-                                )}
-                                <p>{item.tipo}</p>
-                              </Stack>
-                            )}
-                            {item.accesorios.length === 0 && (
-                              <Stack direction="row" spacing={2}>
-                                <ArrowRight />
-                                <p>{item.tipo}</p>
-                              </Stack>
-                            )}
-                          </td>
-                          <td>{item.serie}</td>
-                          <td>{item.nombre}</td>
-                          <td>
-                            {item.operador
-                              ? item.operador.nombres
-                              : 'SIN ASIGNAR'}
-                          </td>
-                          <td>
-                            <input
-                              className="border border-gray-400 rounded p-1"
-                              type="text"
-                              value={
-                                item.pagos.length > 0 ? item.pagos[0].valor : 0
-                              }
-                              placeholder="valor"
-                            />
-                          </td>
-                        </tr>
-                        <tr
-                          id={item.id}
-                          className={`${!isActive(item.id) ? 'hidden' : ''}`}
-                        >
-                          <td colSpan={5}>
-                            <Box padding={2} width="100%">
-                              <table className="w-full">
-                                <thead className="text-left">
-                                  <th>NOMBRE</th>
-                                  <th>MARCA</th>
-                                  <th>MODELO</th>
-                                  <th>SERIE</th>
-                                  <th>VALOR X HORA</th>
-                                </thead>
-                                {item.accesorios &&
-                                  item.accesorios.map((asesorio) => (
-                                    <tr key={asesorio.id}>
-                                      <td>{asesorio.nombre}</td>
-                                      <td>{asesorio.marca.nombre}</td>
-                                      <td>{asesorio.modelo}</td>
-                                      <td>{asesorio.serie}</td>
-                                      <td>
-                                        <input
-                                          className="border border-gray-400 rounded p-1"
-                                          type="text"
-                                          value={
-                                            asesorio.pagos.length > 0
-                                              ? asesorio.pagos[0].valor
-                                              : 0
-                                          }
-                                          placeholder="valor"
-                                        />
-                                      </td>
-                                    </tr>
-                                  ))}
-                              </table>
-                            </Box>
-                          </td>
-                        </tr>
-                      </>
-                    ))}
-                </Table>
-              )}
-            </Formik>
+              {maquinas &&
+                maquinas.data.map((item) => (
+                  <>
+                    <tr
+                      key={item.id}
+                      className="cursor-pointer font-sans border-b-2"
+                    >
+                      <td
+                        role="gridcell"
+                        onClick={() => {
+                          if (item.accesorios.length === 0) return;
+                          setAcitves((state) => {
+                            const exist =
+                              state.findIndex((i) => i === item.id) !== -1;
+                            if (exist)
+                              return state.filter((i) => i !== item.id);
+                            return [...state, item.id];
+                          });
+                        }}
+                      >
+                        {item.accesorios.length > 0 && (
+                          <Stack direction="row" spacing={2}>
+                            {isActive(item.id) ? <ArrowUp /> : <ArrowDown />}
+                            <p>{item.tipo}</p>
+                          </Stack>
+                        )}
+                        {item.accesorios.length === 0 && (
+                          <Stack direction="row" spacing={2}>
+                            <ArrowRight />
+                            <p>{item.tipo}</p>
+                          </Stack>
+                        )}
+                      </td>
+                      <td>{item.serie}</td>
+                      <td>{item.nombre}</td>
+                      <td>
+                        {item.operador ? item.operador.nombres : 'SIN ASIGNAR'}
+                      </td>
+                      <td>
+                        <input
+                          data-input-id={item.id}
+                          className="border border-gray-400 rounded p-1"
+                          type="text"
+                          value={
+                            item.pagos.length > 0 ? item.pagos[0].valor : 0
+                          }
+                          onChange={(event) => {
+                            const { value } = event.target;
+                            handleOnChangeMaquina(item.id, value);
+                          }}
+                          onKeyUpCapture={(event) => {
+                            if (event.key === 'Enter') {
+                              handleOnBlurMaquina(item.id, event.target.value);
+                            }
+                          }}
+                          onBlur={(event) =>
+                            handleOnBlurMaquina(item.id, event.target.value)
+                          }
+                          placeholder="valor"
+                        />
+                      </td>
+                    </tr>
+                    <tr
+                      id={item.id}
+                      className={`${!isActive(item.id) ? 'hidden' : ''}`}
+                    >
+                      <td colSpan={5}>
+                        <Box padding={2} width="100%">
+                          <table className="w-full">
+                            <thead className="text-left">
+                              <th>NOMBRE</th>
+                              <th>MARCA</th>
+                              <th>MODELO</th>
+                              <th>SERIE</th>
+                              <th>VALOR X HORA</th>
+                            </thead>
+                            {item.accesorios &&
+                              item.accesorios.map((asesorio) => (
+                                <tr key={asesorio.id}>
+                                  <td>{asesorio.nombre}</td>
+                                  <td>{asesorio.marca.nombre}</td>
+                                  <td>{asesorio.modelo}</td>
+                                  <td>{asesorio.serie}</td>
+                                  <td>
+                                    <input
+                                      className="border border-gray-400 rounded p-1"
+                                      type="text"
+                                      value={
+                                        asesorio.pagos.length > 0
+                                          ? asesorio.pagos[0].valor
+                                          : 0
+                                      }
+                                      onChange={(event) => {
+                                        const { value } = event.target;
+                                        handleOnChangeAccesorio(
+                                          asesorio.id,
+                                          value
+                                        );
+                                      }}
+                                      onKeyUpCapture={(event) => {
+                                        if (event.key === 'Enter') {
+                                          handleOnBlurAccesorio(
+                                            asesorio.id,
+                                            event.target.value
+                                          );
+                                        }
+                                      }}
+                                      onBlur={(event) =>
+                                        handleOnBlurAccesorio(
+                                          asesorio.id,
+                                          event.target.value
+                                        )
+                                      }
+                                      placeholder="valor"
+                                    />
+                                  </td>
+                                </tr>
+                              ))}
+                          </table>
+                        </Box>
+                      </td>
+                    </tr>
+                  </>
+                ))}
+            </Table>
             <Pagination
               onPageChange={(pageNumber) => {
                 fetchData(pageNumber);
