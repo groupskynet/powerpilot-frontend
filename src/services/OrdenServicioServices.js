@@ -4,41 +4,35 @@ import { jsonToFormData } from '../utils/services';
 const OrdenServicioServices = {};
 
 OrdenServicioServices.get = async () => {
-  const { data } = await axios.get('http://localhost:8000/api/orden-servicio');
+  const { data } = await axios.get('orden-servicio');
   return data;
 };
 
 OrdenServicioServices.find = async (id) => {
-  const { data } = await axios.get(
-    `http://localhost:8000/api/orden-servicio/${id}`
-  );
+  const { data } = await axios.get(`orden-servicio/${id}`);
   return data;
 };
 
 OrdenServicioServices.buscarOrdenDeServicioActiva = async (id) => {
-  const { data } = await axios.get(`http://localhost:8000/api/orden/${id}`);
+  const { data } = await axios.get(`orden/${id}`);
   return data;
 };
 
 OrdenServicioServices.post = async (request) => {
   const formData = jsonToFormData(request);
-  const { data } = await axios.post(
-    'http://localhost:8000/api/orden-servicio',
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        type: 'formData'
-      }
+  const { data } = await axios.post('orden-servicio', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      type: 'formData'
     }
-  );
+  });
   return data;
 };
 
 OrdenServicioServices.update = async (request) => {
   const formData = jsonToFormData(request);
   const { data } = await axios.post(
-    `http://localhost:8000/api/orden-servicio/${request.id}?_method=PUT`,
+    `orden-servicio/${request.id}?_method=PUT`,
     formData,
     {
       headers: {
@@ -51,9 +45,7 @@ OrdenServicioServices.update = async (request) => {
 };
 
 OrdenServicioServices.delete = async (id) => {
-  const { data } = await axios.delete(
-    `http://localhost:8000/api/orden-servicio/${id}`
-  );
+  const { data } = await axios.delete(`orden-servicio/${id}`);
   return data;
 };
 

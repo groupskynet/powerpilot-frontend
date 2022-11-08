@@ -3,30 +3,22 @@ import axios from 'axios';
 const ClientesServices = {};
 
 ClientesServices.get = async () => {
-  const { data } = await axios.get('http://localhost:8000/api/clientes');
+  const { data } = await axios.get('clientes');
   return data;
 };
 
 ClientesServices.post = async (request) => {
-  const { data } = await axios.post(
-    'http://localhost:8000/api/clientes',
-    request
-  );
+  const { data } = await axios.post('clientes', request);
   return data;
 };
 
 ClientesServices.update = async (request) => {
-  const { data } = await axios.put(
-    `http://localhost:8000/api/clientes/${request.id}`,
-    request
-  );
+  const { data } = await axios.put(`clientes/${request.id}`, request);
   return data;
 };
 
 ClientesServices.delete = async (id) => {
-  const { data } = await axios.delete(
-    `http://localhost:8000/api/clientes/${id}`
-  );
+  const { data } = await axios.delete(`clientes/${id}`);
   return data;
 };
 

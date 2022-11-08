@@ -3,9 +3,7 @@ import axios from 'axios';
 const LiteralesServices = {};
 
 LiteralesServices.get = async ({ model }) => {
-  const { data } = await axios.get(
-    `http://localhost:8000/api/literales/${model}/all`
-  );
+  const { data } = await axios.get(`literales/${model}/all`);
   return data;
 };
 
