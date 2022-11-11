@@ -1,9 +1,9 @@
 import Keycloak from 'keycloak-js';
 
 const keycloak = new Keycloak({
-  url: import.meta.VITE_KEYCLOACK_URL,
-  realm: import.meta.VITE_KEYCLOACK_REALM,
-  clientId: import.meta.VITE_KEYCLOACK_CLIENT_ID
+  url: 'https://dar-keycloack.groupskynet.site',
+  realm: 'dar',
+  clientId: 'dar-web'
 });
 
 export default keycloak;
