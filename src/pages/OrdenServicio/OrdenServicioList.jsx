@@ -13,7 +13,6 @@ import BreadCrumbs from '../../components/ BreadCrumbs';
 import ButtonDelete from '../../components/ButtonDelete';
 import ButtonEdit from '../../components/ButtonEdit';
 import ButtonDownload from '../../components/ButtonDownload';
-import ButtonView from '../../components/ButtonView';
 import ButtonCheck from '../../components/ButtonCheck';
 import Table from '../../components/Table';
 import OrdenServicioServices from '../../services/OrdenServicioServices';
@@ -21,10 +20,12 @@ import Loading from '../../components/Loading';
 import DeleteModal from '../Shared/DeleteModal';
 import Pagination from '../../components/Pagination/Pagination';
 import ModalPdf from '../../components/ModalPdf';
+import ConfirmarOdsModal from './ConfirmarOdsModal';
 
 function OrdenServicioList() {
   const deleteModal = useModal(DeleteModal);
   const documentoModal = useModal(ModalPdf);
+  const confirmarOds = useModal(ConfirmarOdsModal);
   const navegar = useNavigate();
   const [info, setInfo] = useState(null);
   const [ordenServicios, setOrdenServicio] = useState([]);
@@ -85,6 +86,41 @@ function OrdenServicioList() {
     },
     [deleteModal]
   );
+
+  const handleConfirmOds = (orden) => {
+    confirmarOds.show({ orden }).then(async () => {
+      try {
+        setLoading(true);
+        const response = await OrdenServicioServices.put(orden);
+        if (response.status === 200) {
+          setOrdenServicio((state) => {
+            const i = state.data.findIndex((m) => m.id === orden);
+            const updated = { ...state.data[i], estado: 'CONFIRMADA' };
+            const list = [...state.data];
+            list.splice(i, 1, updated);
+            return { ...state, data: list };
+          });
+          setInfo({
+            type: 'success',
+            message: 'Orden de Servicio Confirmada Correctamente'
+          });
+        } else {
+          setInfo({
+            type: 'warning',
+            message: response.message
+          });
+        }
+      } catch (error) {
+        setInfo({
+          type: 'error',
+          message: 'se ha producido un error,por favor intentelo más tarde.'
+        });
+      } finally {
+        setLoading(false);
+        deleteModal.remove();
+      }
+    });
+  };
 
   const breadCrumbs = useMemo(
     () => [
@@ -166,11 +202,9 @@ function OrdenServicioList() {
                   />
                 </td>
                 <td className="flex items-center ">
-                  {item.estado === 'PENDIENTE' ? (
-                    <ButtonCheck onClick={() => {}} />
-                  ) : (
-                    <ButtonView onClick={() => {}} />
-                  )}
+                  {item.estado ? (
+                    <ButtonCheck onClick={() => handleConfirmOds(item.id)} />
+                  ) : null}
                   <ButtonEdit
                     onClick={() => {
                       navegar(`/servicios/orden-servicio/update/${item.id}`);

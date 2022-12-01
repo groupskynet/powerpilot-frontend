@@ -3,5 +3,5 @@ export function OnlyNumber(value) {
 }
 
 export function OnlyLetter(value) {
-  return value.replace(/[^0-9]/, '');
+  return value.replace(/[^0-9\w]/, '');
 }

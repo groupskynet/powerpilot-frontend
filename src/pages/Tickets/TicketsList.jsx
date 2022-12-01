@@ -112,6 +112,7 @@ function TicketsList() {
 
   const columns = useMemo(
     () => [
+      '# ORDEN',
       '# TICKET',
       'OPERADOR',
       'MAQUINA',
@@ -171,6 +172,7 @@ function TicketsList() {
                 }`}
                 key={item.id}
               >
+                <td>{`ORD-${String(item.orden.id).padStart(4, '0')}`}</td>
                 <td>{`${item.consecutivo}`}</td>
                 <td>{`${item.operador.nombres} ${item.operador.apellidos}`}</td>
                 <td>{item.maquina.nombre}</td>

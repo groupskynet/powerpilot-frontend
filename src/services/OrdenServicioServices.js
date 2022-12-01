@@ -29,6 +29,16 @@ OrdenServicioServices.post = async (request) => {
   return data;
 };
 
+OrdenServicioServices.put = async (orden) => {
+  const { data } = await axios.post(`orden/confirmarOds/${orden}?_method=PUT`, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      type: 'formData'
+    }
+  });
+  return data;
+};
+
 OrdenServicioServices.update = async (request) => {
   const formData = jsonToFormData(request);
   const { data } = await axios.post(
