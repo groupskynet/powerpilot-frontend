@@ -3,8 +3,8 @@ import { jsonToFormData } from '../utils/services';
 
 const TicketsServices = {};
 
-TicketsServices.get = async () => {
-  const { data } = await axios.get('tickets');
+TicketsServices.get = async (page) => {
+  const { data } = await axios.get('tickets?page=' + page);
   return data;
 };
 
