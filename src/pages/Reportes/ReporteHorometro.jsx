@@ -215,11 +215,11 @@ function ReporteHorometro() {
                 <td>{item.horometroInicial}</td>
                 <td>{item.horometroFinal}</td>
                 <td>{Math.abs(item.horometroFinal - item.horometroInicial)}</td>
-                <td>{new Intl.NumberFormat().format(item.valor_por_hora)}</td>
+                <td>{new Intl.NumberFormat().format(item.valor_por_hora_orden)}</td>
                 <td>
                   {new Intl.NumberFormat().format(
                     (item.horometroFinal - item.horometroInicial) *
-                      item.valor_por_hora
+                      item.valor_por_hora_orden
                   )}
                 </td>
               </tr>
