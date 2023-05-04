@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import {
   Alert,
@@ -6,6 +6,7 @@ import {
   AlertIcon,
   Box,
   CloseButton,
+  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -27,6 +28,16 @@ export default NiceModal.create(({ gasto }) => {
   const [info, setInfo] = useState(null);
   const [data, setData] = useState(null);
   const [maquinas, setMaquinas] = useState([]);
+  const [proveedores, setProveedores] = useState([]);
+
+  const modalidades = useMemo(
+    () => [
+      { label: 'CREDITO', value: 'CREDITO' },
+      { label: 'PAGO PARCIAL', value: 'PAGO PARCIAL' },
+      { label: 'EFECTIVO', value: 'EFECTIVO' }
+    ],
+    []
+  );
 
   useEffect(() => {
     if (gasto) {
@@ -44,6 +55,13 @@ export default NiceModal.create(({ gasto }) => {
         const respMaquinas = await LiteralesServices.get({ model: 'maquinas' });
         if (respMaquinas.status === 200) {
           setMaquinas(respMaquinas.data);
+        }
+
+        const respProveedores = await LiteralesServices.get({
+          model: 'proveedores'
+        });
+        if (respProveedores.status == 200) {
+          setProveedores(respProveedores.data);
         }
       } catch (error) {
         setInfo({
@@ -69,7 +87,7 @@ export default NiceModal.create(({ gasto }) => {
         }
         const maquina = maquinas.find((item) => item.id === values.maquina);
         modal.resolve({ ...newGasto, maquina });
-        await modal.remove();
+        modal.remove();
       } catch (e) {
         setInfo({
           type: 'error',
@@ -115,7 +133,10 @@ export default NiceModal.create(({ gasto }) => {
               initialValues={
                 data || {
                   maquina: '',
+                  proveedor: '',
+                  modalidad: '',
                   valor: '',
+                  abono: '',
                   descripcion: '',
                   soporte: ''
                 }
@@ -128,8 +149,8 @@ export default NiceModal.create(({ gasto }) => {
             >
               {(formik) => (
                 <form className="my-4" onSubmit={formik.handleSubmit}>
-                  <div className="flex flex-wrap -mx-3 mb-2">
-                    <div className="w-full md:w-2/4 px-3 mb-6 md:mb-0">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="w-full">
                       <label
                         className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                         htmlFor="grid-maquina"
@@ -154,29 +175,103 @@ export default NiceModal.create(({ gasto }) => {
                         />
                       </div>
                     </div>
-                    <div className="w-full md:w-2/4 px-3 mb-6 md:mb-0">
+                    <div className="w-full">
                       <label
                         className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                        htmlFor="grid-cost"
+                        htmlFor="grid-maquina"
                       >
-                        Valor
+                        Proveedor
                       </label>
-                      <input
-                        className={`input-box ${
-                          formik.errors.valor && formik.touched.valor
-                            ? 'border border-red-500'
-                            : ''
-                        }`}
-                        id="grid-valor"
-                        type="number"
-                        name="valor"
-                        value={formik.values.valor}
-                        placeholder="valor"
-                        onChange={formik.handleChange}
-                      />
+
+                      <div className="relative">
+                        <Select
+                          className="border-red-400"
+                          options={proveedores}
+                          getOptionLabel={(proveedor) =>
+                            proveedor && proveedor.nombres
+                          }
+                          getOptionValue={(proveedor) =>
+                            proveedor && proveedor.id
+                          }
+                          value={proveedores.filter(
+                            (proveedor) =>
+                              proveedor.id === formik.values.proveedor
+                          )}
+                          onChange={(proveedor) => {
+                            formik.setFieldValue('proveedor', proveedor.id);
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="w-full">
+                      <label
+                        className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                        htmlFor="grid-maquina"
+                      >
+                        Modalidad de pago
+                      </label>
+
+                      <div className="relative">
+                        <Select
+                          className={`${
+                            formik.errors.modalidad &&
+                            formik.touched.modalidad &&
+                            'border border-red-500 rounded'
+                          }`}
+                          options={modalidades}
+                          textField="label"
+                          valueField="value"
+                          value={modalidades.filter(
+                            (tipo) => tipo.value === formik.values.modalidad
+                          )}
+                          onChange={(type) => {
+                            formik.setFieldValue('modalidad', type.value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div >
+                        <label
+                          className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                          htmlFor="grid-cost"
+                        >
+                          Valor
+                        </label>
+                          <Input
+                            isInvalid={
+                              formik.errors.valor && formik.touched.valor
+                            }
+                            value={formik.values.valor}
+                            type="input"
+                            name="valor"
+                            placeholder="$ valor"
+                            onChange={formik.handleChange}
+                          />
+                      </div>
+                      {formik.values.modalidad === 'PAGO PARCIAL' && (
+                        <div>
+                          <label
+                            className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                            htmlFor="grid-abono"
+                          >
+                            Abono
+                          </label>
+                          <Input
+                            isInvalid={
+                              formik.errors.abono && formik.touched.abono
+                            }
+                            value={formik.values.abono}
+                            type="input"
+                            name="abono"
+                            placeholder="$ abono"
+                            onChange={formik.handleChange}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <div className="flex flex-wrap -mx-3 mb-2">
+                  <div className="flex flex-wrap -mx-3 mb-2 mt-2">
                     <div className="w-full md:w-2/3 px-3 mb-6 md:mb-0">
                       <label
                         className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
